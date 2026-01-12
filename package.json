@@ -1,0 +1,24 @@
+{
+  "name": "medi-track",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Production-ready hospital management & patient engagement SaaS platform built with MERN + TypeScript.",
+  "scripts": {
+    "client": "npm run dev --prefix client",
+    "server": "npm run dev --prefix server",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "install:client": "npm install --prefix client",
+    "install:server": "npm install --prefix server",
+    "install:all": "npm run install:server && npm run install:client"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "dependencies": {
+    "uuid": "^13.0.0"
+  }
+}
