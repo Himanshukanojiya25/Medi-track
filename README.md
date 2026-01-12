@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🏥 MediTrack – Hospital Management & Patient Engagement Platform
 
 MediTrack is a **production-grade, SaaS-ready Hospital Management System**
@@ -64,3 +65,7 @@ medi-track/
 ├── .gitignore
 ├── README.md
 └── tsconfig.base.json
+=======
+# Medi-track
+Production-ready Hospital Management &amp; Patient Engagement SaaS with role-based dashboards and AI chatbot.
+>>>>>>> 3b77926d9bd900b40d36561ea4902d09e7301b8d
