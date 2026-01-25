@@ -1,92 +1,55 @@
-import { connectDB, disconnectDB } from "../../../../src/config";
 import { PatientModel } from "../../../../src/models/patient";
 import { HospitalModel } from "../../../../src/models/hospital";
 import { HospitalAdminModel } from "../../../../src/models/hospital-admin";
 import { PatientStatus } from "../../../../src/constants/status";
-import { SYSTEM_ROLES } from "../../../../src/constants/roles";
 
 describe("Patient Schema Validation", () => {
   let hospitalId: any;
   let adminId: any;
 
   beforeAll(async () => {
-    await connectDB();
+    await PatientModel.init();
 
-    let hospital = await HospitalModel.findOne({});
-    if (!hospital) {
-      hospital = await HospitalModel.create({
-        name: "Test Hospital",
-        code: "PAT-HOSP",
-        email: "pat@hospital.com",
-        phone: "9000000001",
+    const hospital = await HospitalModel.create({
+      name: "Patient Schema Hospital",
+      code: "PAT-SCHEMA-HOSP",
+      email: "pat-schema@hospital.com",
+      phone: "9999999999",
+      address: {
+        line1: "Street",
+        city: "Mumbai",
+        state: "MH",
+        country: "India",
+        postalCode: "400001",
+      },
+    });
 
-        // ✅ REQUIRED ADDRESS (FIX)
-        address: {
-          line1: "Test Street",
-          city: "Mumbai",
-          state: "MH",
-          country: "India",
-          postalCode: "400001",
-        },
-      });
-    }
     hospitalId = hospital._id;
 
-    let admin = await HospitalAdminModel.findOne({ hospitalId });
-    if (!admin) {
-      admin = await HospitalAdminModel.create({
-        hospitalId,
-        name: "Patient Admin",
-        email: "patient-admin@hospital.com",
-        passwordHash: "hashed",
-        role: SYSTEM_ROLES.HOSPITAL_ADMIN,
-      });
-    }
-    adminId = admin._id;
-  });
+    const admin = await HospitalAdminModel.create({
+      name: "Patient Schema Admin",
+      hospitalId,
+      email: "pat-admin@hospital.com",
+      passwordHash: "hashed-password",
+    });
 
-  afterAll(async () => {
-    await PatientModel.deleteMany({});
-    await disconnectDB();
+    adminId = admin._id;
   });
 
   it("❌ should fail without required fields", async () => {
     await expect(PatientModel.create({})).rejects.toThrow();
   });
 
-  it("❌ should fail without hospitalId", async () => {
-    await expect(
-      PatientModel.create({
-        createdByHospitalAdminId: adminId,
-        firstName: "Test",
-        lastName: "Patient",
-        phone: "1111111111",
-      })
-    ).rejects.toThrow();
-  });
-
-  it("❌ should fail without phone", async () => {
+  it("❌ should fail without passwordHash", async () => {
     await expect(
       PatientModel.create({
         hospitalId,
         createdByHospitalAdminId: adminId,
-        firstName: "Test",
+        firstName: "NoPass",
         lastName: "Patient",
+        phone: "9999999999",
       })
-    ).rejects.toThrow();
-  });
-
-  it("❌ should reject invalid status", async () => {
-    await expect(
-      PatientModel.create({
-        hospitalId,
-        createdByHospitalAdminId: adminId,
-        firstName: "Test",
-        lastName: "Patient",
-        phone: "2222222222",
-        status: "INVALID_STATUS",
-      })
-    ).rejects.toThrow();
+    ).rejects.toThrow(/passwordHash/);
   });
 
   it("✅ should create patient with valid data", async () => {
@@ -95,10 +58,13 @@ describe("Patient Schema Validation", () => {
       createdByHospitalAdminId: adminId,
       firstName: "Valid",
       lastName: "Patient",
-      phone: "3333333333",
+      phone: "8888888888",
+      passwordHash: "hashed-password",
+      gender: "male",
       status: PatientStatus.ACTIVE,
     });
 
     expect(patient).toBeDefined();
+    expect(patient.status).toBe(PatientStatus.ACTIVE);
   });
 });

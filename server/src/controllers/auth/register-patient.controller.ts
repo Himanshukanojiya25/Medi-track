@@ -7,10 +7,11 @@ import { asyncHandler } from "../../utils/async/async-handler.util";
  */
 export const registerPatientController = asyncHandler(
   async (req: Request, res: Response) => {
-    const { name, email, password, phone } = req.body;
+    const { firstName, lastName, email, password, phone } = req.body;
 
     const result = await registerPatientService({
-      name,
+      firstName,
+      lastName,
       email,
       password,
       phone,

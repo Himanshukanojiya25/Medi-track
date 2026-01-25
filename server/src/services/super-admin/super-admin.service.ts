@@ -1,49 +1,42 @@
 import { Types } from "mongoose";
 import { SuperAdminModel } from "../../models/super-admin";
 
-/**
- * Super Admin Service
- * -------------------
- * Pure business logic layer.
- * No Express, no req/res.
- */
 export default class SuperAdminService {
   static async create(payload: Record<string, unknown>) {
-    const superAdmin = new SuperAdminModel(payload);
-    return superAdmin.save();
+    return SuperAdminModel.create(payload);
   }
 
   static async getById(id: string) {
     if (!Types.ObjectId.isValid(id)) {
       throw new Error("Invalid Super Admin ID");
     }
-
-    return SuperAdminModel.findById(id).exec();
+    return SuperAdminModel.findById(id);
   }
 
   static async getAll() {
-    return SuperAdminModel.find().exec();
+    return SuperAdminModel.find();
   }
 
-  static async updateById(
-    id: string,
-    payload: Partial<Record<string, unknown>>
-  ) {
+  static async updateById(id: string, payload: { isActive?: boolean }) {
     if (!Types.ObjectId.isValid(id)) {
       throw new Error("Invalid Super Admin ID");
     }
 
-    return SuperAdminModel.findByIdAndUpdate(id, payload, {
-      new: true,
-      runValidators: true,
-    }).exec();
+    const admin = await SuperAdminModel.findById(id);
+    if (!admin) return null;
+
+    if (payload.isActive !== undefined) {
+      admin.isActive = payload.isActive;
+    }
+
+    await admin.save();
+    return admin;
   }
 
   static async deleteById(id: string) {
     if (!Types.ObjectId.isValid(id)) {
       throw new Error("Invalid Super Admin ID");
     }
-
-    return SuperAdminModel.findByIdAndDelete(id).exec();
+    return SuperAdminModel.findByIdAndDelete(id);
   }
 }

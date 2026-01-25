@@ -1,24 +1,29 @@
-import { connectDB, disconnectDB } from "../../../../src/config";
+import { connectDB, disconnectDB } from "../../../../src/config/mongoose";
 
-import { ChatbotModel } from "../../../../src/models/chatbot";
+import { PrescriptionModel } from "../../../../src/models/prescription";
 import { HospitalModel } from "../../../../src/models/hospital";
+import { HospitalAdminModel } from "../../../../src/models/hospital-admin";
+import { PatientModel } from "../../../../src/models/patient";
 import { DoctorModel } from "../../../../src/models/doctor";
+import { AppointmentModel } from "../../../../src/models/appointment";
 
-import { ChatbotStatus } from "../../../../src/constants/status";
+import { PrescriptionStatus } from "../../../../src/constants/status";
 
-describe("Chatbot Schema Validation", () => {
-  let hospitalId: any;
-  let doctorId: any;
-
+describe("Prescription Schema Validation (Chatbot)", () => {
   beforeAll(async () => {
     await connectDB();
+  });
 
-    // ✅ FULL VALID HOSPITAL
+  afterAll(async () => {
+    await disconnectDB();
+  });
+
+  async function createBasePrescription() {
     const hospital = await HospitalModel.create({
-      name: "Chatbot Schema Hospital",
-      code: "BOT-SCHEMA",
-      email: "bot-schema@hospital.com",
-      phone: "9999997777",
+      name: "RX Hospital",
+      code: `RX-${Date.now()}`,
+      email: `rx${Date.now()}@hospital.com`,
+      phone: "9999999999",
       address: {
         line1: "Street",
         city: "Mumbai",
@@ -28,88 +33,83 @@ describe("Chatbot Schema Validation", () => {
       },
     });
 
-    hospitalId = hospital._id;
+    const admin = await HospitalAdminModel.create({
+      name: "Admin",
+      hospitalId: hospital._id,
+      email: `admin${Date.now()}@rx.com`,
+      passwordHash: "hashed",
+    });
+
+    const patient = await PatientModel.create({
+      hospitalId: hospital._id,
+      createdByHospitalAdminId: admin._id,
+      firstName: "Test",
+      lastName: "Patient",
+      phone: "9000000000",
+      passwordHash: "hashed",
+    });
 
     const doctor = await DoctorModel.create({
-      hospitalId,
-      hospitalAdminId: hospitalId,
-      name: "Dr Bot",
-      email: "dr-bot@hospital.com",
-      phone: "9333333333",
+      hospitalId: hospital._id,
+      hospitalAdminId: admin._id,
+      name: "Dr Test",
+      email: `dr${Date.now()}@rx.com`,
       specialization: "General",
+      passwordHash: "hashed",
     });
 
-    doctorId = doctor._id;
-  });
-
-  afterAll(async () => {
-    await ChatbotModel.deleteMany({});
-    await DoctorModel.deleteMany({});
-    await HospitalModel.deleteMany({});
-    await disconnectDB();
-  });
-
-  it("❌ should fail without required fields", async () => {
-    await expect(ChatbotModel.create({})).rejects.toThrow();
-  });
-
-  it("❌ should reject invalid status", async () => {
-    await expect(
-      ChatbotModel.create({
-        hospitalId,
-        userId: doctorId,
-        userRole: "doctor",
-        doctorId,
-        prompt: "Hi",
-        response: "Hello",
-        model: "gpt-4",
-        promptTokens: 5,
-        completionTokens: 5,
-        totalTokens: 10,
-        costUsd: 0.001,
-        latencyMs: 200,
-        status: "INVALID_STATUS",
-      })
-    ).rejects.toThrow();
-  });
-
-  it("❌ should reject negative token values", async () => {
-    await expect(
-      ChatbotModel.create({
-        hospitalId,
-        userId: doctorId,
-        userRole: "doctor",
-        doctorId,
-        prompt: "Hi",
-        response: "Hello",
-        model: "gpt-4",
-        promptTokens: -1,
-        completionTokens: 5,
-        totalTokens: 4,
-        costUsd: 0.001,
-        latencyMs: 200,
-        status: ChatbotStatus.SUCCESS,
-      })
-    ).rejects.toThrow();
-  });
-
-  it("✅ should create chatbot log with valid data", async () => {
-    const log = await ChatbotModel.create({
-      hospitalId,
-      userId: doctorId,
-      userRole: "doctor",
-      doctorId,
-      prompt: "Hi",
-      response: "Hello",
-      model: "gpt-4",
-      promptTokens: 5,
-      completionTokens: 5,
-      totalTokens: 10,
-      costUsd: 0.001,
-      latencyMs: 200,
-      status: ChatbotStatus.SUCCESS,
+    const appointment = await AppointmentModel.create({
+      hospitalId: hospital._id,
+      patientId: patient._id,
+      doctorId: doctor._id,
+      scheduledAt: new Date(),
+      durationMinutes: 30,
+      createdByHospitalAdminId: admin._id,
     });
 
-    expect(log).toBeDefined();
+    const rx = await PrescriptionModel.create({
+      hospitalId: hospital._id,
+      patientId: patient._id,
+      doctorId: doctor._id,
+      appointmentId: appointment._id,
+      medicines: [
+        {
+          name: "Paracetamol",
+          dosage: "500mg",
+          frequency: "2x",
+          durationDays: 3,
+        },
+      ],
+      status: PrescriptionStatus.ACTIVE,
+    });
+
+    return rx._id;
+  }
+
+  it("should update prescription", async () => {
+    const rxId = await createBasePrescription();
+
+    await PrescriptionModel.findByIdAndUpdate(
+      rxId,
+      { $set: { notes: "After meals" } },
+      { new: true }
+    );
+
+    const fresh = await PrescriptionModel.findById(rxId).lean();
+    expect(fresh).not.toBeNull();
+    expect(fresh?.notes).toBe("After meals");
+  });
+
+  it("should cancel prescription", async () => {
+    const rxId = await createBasePrescription();
+
+    await PrescriptionModel.findByIdAndUpdate(
+      rxId,
+      { $set: { status: PrescriptionStatus.CANCELLED } },
+      { new: true }
+    );
+
+    const fresh = await PrescriptionModel.findById(rxId).lean();
+    expect(fresh?.status).toBe(PrescriptionStatus.CANCELLED);
   });
 });

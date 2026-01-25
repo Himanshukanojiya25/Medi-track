@@ -1,7 +1,7 @@
-import { BaseDocument } from "../../types/db";
-import { DOCTOR_STATUS } from "../../constants/status";
-import { SYSTEM_ROLES } from "../../constants/roles";
-import { Types } from "mongoose";
+import { BaseDocument } from '../../types/db';
+import { DOCTOR_STATUS } from '../../constants/status';
+import { ROLES } from '../../constants/roles';
+import { Types } from 'mongoose';
 
 /**
  * Doctor Entity Type
@@ -29,7 +29,7 @@ export interface Doctor extends BaseDocument {
   specialization: string;
 
   // 🧑‍⚕️ Role & status
-  role: SYSTEM_ROLES.DOCTOR;
+  role: typeof ROLES.DOCTOR;
   status: DOCTOR_STATUS;
 
   // ⚙️ Meta

@@ -1,6 +1,5 @@
 import { connectDB, disconnectDB } from "../../../src/config/mongoose";
 import ChatbotService from "../../../src/services/ai/chatbot.service";
-
 import { HospitalModel } from "../../../src/models/hospital";
 import { HospitalAdminModel } from "../../../src/models/hospital-admin";
 import { DoctorModel } from "../../../src/models/doctor";
@@ -11,13 +10,12 @@ import { BillingModel } from "../../../src/models/billing";
 
 describe("Chatbot Service", () => {
   let hospitalId: string;
-  let hospitalAdminId: string;
+  let adminId: string;
   let doctorId: string;
   let patientId: string;
 
   beforeAll(async () => {
     await connectDB();
-
     await BillingModel.deleteMany({});
     await PrescriptionModel.deleteMany({});
     await AppointmentModel.deleteMany({});
@@ -27,12 +25,12 @@ describe("Chatbot Service", () => {
     await HospitalModel.deleteMany({});
 
     const hospital = await HospitalModel.create({
-      name: "Chatbot Test Hospital",
-      code: "CHATBOT-HOSP-001",
-      email: "chatbot-hospital@test.com",
+      name: "Chatbot Service Hospital",
+      code: "BOT-SERVICE-HOSP",
+      email: "bot@hospital.com",
       phone: "9999999999",
       address: {
-        line1: "MG Road",
+        line1: "Street",
         city: "Mumbai",
         state: "MH",
         country: "India",
@@ -42,31 +40,30 @@ describe("Chatbot Service", () => {
     hospitalId = hospital._id.toString();
 
     const admin = await HospitalAdminModel.create({
+      name: "Bot Admin",
       hospitalId,
-      name: "Chatbot Admin",
-      email: "chatbot-admin@test.com",
+      email: "bot-admin@hospital.com",
       passwordHash: "hashed-password",
     });
-    hospitalAdminId = admin._id.toString();
+    adminId = admin._id.toString();
 
     const doctor = await DoctorModel.create({
       hospitalId,
-      hospitalAdminId,
-      name: "Dr Chatbot",
-      email: "dr-chatbot@test.com",
-      phone: "8888888888",
+      hospitalAdminId: adminId,
+      name: "Dr Bot",
+      email: "dr-bot@hospital.com",
       specialization: "General",
+      passwordHash: "hashed-password",
     });
     doctorId = doctor._id.toString();
 
     const patient = await PatientModel.create({
       hospitalId,
-      createdByHospitalAdminId: hospitalAdminId,
+      createdByHospitalAdminId: adminId,
       firstName: "Chat",
       lastName: "Patient",
-      phone: "7777777777",
-      gender: "male",
-      status: "active",
+      phone: "9888888888",
+      passwordHash: "hashed-password",
     });
     patientId = patient._id.toString();
 
@@ -76,6 +73,7 @@ describe("Chatbot Service", () => {
       patientId,
       scheduledAt: new Date(),
       durationMinutes: 30,
+      createdByHospitalAdminId: adminId,
     });
 
     await PrescriptionModel.create({
@@ -86,24 +84,18 @@ describe("Chatbot Service", () => {
         {
           name: "Paracetamol",
           dosage: "500mg",
-          frequency: "Twice a day",
+          frequency: "2x",
           durationDays: 5,
         },
       ],
-      status: "active",
     });
 
     await BillingModel.create({
       hospitalId,
       patientId,
-      invoiceNumber: "INV-CHATBOT-001",
+      invoiceNumber: "INV-CHAT-001",
       lineItems: [
-        {
-          description: "Consultation Fee",
-          quantity: 1,
-          unitPrice: 500,
-          amount: 500,
-        },
+        { description: "Consultation", quantity: 1, unitPrice: 500, amount: 500 },
       ],
       subTotal: 500,
       taxAmount: 0,
@@ -111,7 +103,7 @@ describe("Chatbot Service", () => {
       totalAmount: 500,
       paidAmount: 0,
       dueAmount: 500,
-      createdByHospitalAdminId: hospitalAdminId,
+      createdByHospitalAdminId: adminId,
     });
   });
 
@@ -119,7 +111,7 @@ describe("Chatbot Service", () => {
     await disconnectDB();
   });
 
-  it("should handle greeting intent", async () => {
+  it("✅ should handle greeting intent", async () => {
     const result = await ChatbotService.handleQuery({
       role: "PATIENT",
       intent: "GREETING",
@@ -129,7 +121,7 @@ describe("Chatbot Service", () => {
     expect(result).toHaveProperty("message");
   });
 
-  it("should return appointments for doctor", async () => {
+  it("✅ should return appointments for doctor", async () => {
     const result = await ChatbotService.handleQuery({
       role: "DOCTOR",
       intent: "APPOINTMENT_QUERY",
@@ -139,7 +131,7 @@ describe("Chatbot Service", () => {
     expect(Array.isArray(result)).toBe(true);
   });
 
-  it("should return prescriptions for patient", async () => {
+  it("✅ should return prescriptions for patient", async () => {
     const result = await ChatbotService.handleQuery({
       role: "PATIENT",
       intent: "PRESCRIPTION_QUERY",
@@ -149,18 +141,18 @@ describe("Chatbot Service", () => {
     expect(Array.isArray(result)).toBe(true);
   });
 
-  it("should return billings for hospital admin", async () => {
+  it("✅ should return billings for hospital admin", async () => {
     const result = await ChatbotService.handleQuery({
       role: "HOSPITAL_ADMIN",
       intent: "BILLING_QUERY",
-      userId: hospitalAdminId,
+      userId: adminId,
       hospitalId,
     });
 
     expect(Array.isArray(result)).toBe(true);
   });
 
-  it("should throw error for invalid user id", async () => {
+  it("❌ should throw error for invalid user id", async () => {
     await expect(
       ChatbotService.handleQuery({
         role: "PATIENT",

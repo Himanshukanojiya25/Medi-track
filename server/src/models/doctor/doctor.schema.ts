@@ -1,5 +1,5 @@
 import { Schema } from "mongoose";
-import { SYSTEM_ROLES } from "../../constants/roles";
+import { ROLES } from "../../constants/roles";
 import { DOCTOR_STATUS } from "../../constants/status";
 
 export const DoctorSchema = new Schema(
@@ -29,11 +29,13 @@ export const DoctorSchema = new Schema(
       required: true,
       lowercase: true,
       trim: true,
+      index: true,
     },
 
     phone: {
       type: String,
       trim: true,
+      index: true,
     },
 
     specialization: {
@@ -44,7 +46,7 @@ export const DoctorSchema = new Schema(
     },
 
     /**
-     * 🔐 AUTH FIELD (LOGIN DEPENDS ON THIS)
+     * 🔐 AUTH FIELD
      */
     passwordHash: {
       type: String,
@@ -54,9 +56,10 @@ export const DoctorSchema = new Schema(
 
     role: {
       type: String,
-      enum: [SYSTEM_ROLES.DOCTOR],
-      default: SYSTEM_ROLES.DOCTOR,
+      enum: [ROLES.DOCTOR],
+      default: ROLES.DOCTOR,
       immutable: true,
+      index: true,
     },
 
     status: {
@@ -81,3 +84,13 @@ export const DoctorSchema = new Schema(
     versionKey: false,
   }
 );
+
+/**
+ * =========================
+ * INDEXES
+ * =========================
+ */
+DoctorSchema.index({ hospitalId: 1, email: 1 }, { unique: true });
+DoctorSchema.index({ hospitalId: 1, specialization: 1 });
+DoctorSchema.index({ status: 1, createdAt: -1 });
+DoctorSchema.index({ isActive: 1, lastLoginAt: -1 });

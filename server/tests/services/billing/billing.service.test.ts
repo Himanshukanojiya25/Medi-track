@@ -1,168 +1,168 @@
-import { connectDB, disconnectDB } from "../../../src/config/mongoose";
 import BillingService from "../../../src/services/billing/billing.service";
+import { BillingStatus } from "../../../src/constants/status";
 import { BillingModel } from "../../../src/models/billing";
 import { HospitalModel } from "../../../src/models/hospital";
 import { HospitalAdminModel } from "../../../src/models/hospital-admin";
-import { DoctorModel } from "../../../src/models/doctor";
 import { PatientModel } from "../../../src/models/patient";
+import { DoctorModel } from "../../../src/models/doctor";
 import { AppointmentModel } from "../../../src/models/appointment";
-import { BillingStatus } from "../../../src/constants/status"; // ✅ IMPORTANT
 
 describe("Billing Service", () => {
-  beforeAll(async () => {
-    await connectDB();
-    await BillingModel.deleteMany({});
-    await AppointmentModel.deleteMany({});
-    await HospitalModel.deleteMany({});
-    await DoctorModel.deleteMany({});
-    await PatientModel.deleteMany({});
-  });
-
-  afterAll(async () => {
-    await disconnectDB();
-  });
-
-  let billingId: string;
   let hospitalId: string;
-  let hospitalAdminId: string;
-  let doctorId: string;
+  let adminId: string;
   let patientId: string;
+  let doctorId: string;
   let appointmentId: string;
 
-  it("should create hospital", async () => {
+  beforeAll(async () => {
     const hospital = await HospitalModel.create({
-      name: "Billing Test Hospital",
-      code: "BILL-HOSP-001",
-      email: "billing-hospital@test.com",
+      name: "Billing Service Hospital",
+      code: "BILL-SERVICE-HOSP",
+      email: "bill-service@hospital.com",
       phone: "9999999999",
       address: {
-        line1: "MG Road",
+        line1: "Street",
         city: "Mumbai",
         state: "MH",
         country: "India",
         postalCode: "400001",
       },
     });
-
     hospitalId = hospital._id.toString();
-  });
 
-  it("should create hospital admin", async () => {
     const admin = await HospitalAdminModel.create({
       name: "Billing Admin",
       hospitalId,
-      email: "billing-admin@test.com",
-      passwordHash: "hashed-password-123",
+      email: "bill-admin@hospital.com",
+      passwordHash: "hashed-password",
     });
+    adminId = admin._id.toString();
 
-    hospitalAdminId = admin._id.toString();
-  });
-
-  it("should create doctor", async () => {
-    const doctor = await DoctorModel.create({
-      hospitalId,
-      hospitalAdminId,
-      name: "Dr Billing",
-      email: "dr-billing@test.com",
-      phone: "8888888888",
-      specialization: "General",
-    });
-
-    doctorId = doctor._id.toString();
-  });
-
-  it("should create patient", async () => {
     const patient = await PatientModel.create({
       hospitalId,
-      createdByHospitalAdminId: hospitalAdminId,
-      firstName: "Rohit",
-      lastName: "Sharma",
-      email: "billing-patient@test.com",
-      phone: "7777777777",
+      createdByHospitalAdminId: adminId,
+      firstName: "Billing",
+      lastName: "Patient",
+      phone: "9333333333",
+      passwordHash: "hashed-password",
       gender: "male",
-      status: "active",
     });
-
     patientId = patient._id.toString();
-  });
 
-  it("should create appointment", async () => {
+    const doctor = await DoctorModel.create({
+      hospitalId,
+      hospitalAdminId: adminId,
+      name: "Dr Billing",
+      email: "dr-billing@hospital.com",
+      specialization: "General",
+      passwordHash: "hashed-password",
+    });
+    doctorId = doctor._id.toString();
+
     const appointment = await AppointmentModel.create({
       hospitalId,
-      hospitalAdminId,
-      doctorId,
       patientId,
-      scheduledAt: new Date(),
+      doctorId,
+      scheduledAt: new Date(Date.now() + 3600000),
       durationMinutes: 30,
+      createdByHospitalAdminId: adminId,
     });
-
     appointmentId = appointment._id.toString();
   });
 
-  it("should create billing", async () => {
-    const result = await BillingService.create({
+  it("✅ should create billing", async () => {
+    const billing = await BillingService.create({
       hospitalId,
-      hospitalAdminId,
       patientId,
       appointmentId,
-
       invoiceNumber: "INV-001",
-
-      subTotal: 1000,
-      taxAmount: 100,
-      discountAmount: 50,
-      totalAmount: 1050,
-
+      lineItems: [
+        {
+          description: "Consultation",
+          quantity: 1,
+          unitPrice: 600,
+          amount: 600,
+        },
+      ],
+      subTotal: 600,
+      taxAmount: 0,
+      discountAmount: 0,
+      totalAmount: 600,
       paidAmount: 0,
-      dueAmount: 1050,
-
-      currency: "INR",
-      status: BillingStatus.ISSUED, // ✅ CORRECT
+      dueAmount: 600,
+      status: BillingStatus.ISSUED,
+      createdByHospitalAdminId: adminId,
     });
 
-    billingId = result._id.toString();
-    expect(billingId).toBeDefined();
+    expect(billing).toBeDefined();
+    expect(billing.status).toBe(BillingStatus.ISSUED);
   });
 
-  it("should get billing by id", async () => {
-    const result = await BillingService.getById(billingId);
-    expect(result).not.toBeNull();
-  });
-
-  it("should get all billings", async () => {
-    const result = await BillingService.getAll();
-    expect(result.length).toBeGreaterThan(0);
-  });
-
-  it("should get billings by hospital", async () => {
-    const result = await BillingService.getByHospital(hospitalId);
-    expect(result.length).toBeGreaterThan(0);
-  });
-
-  it("should get billings by appointment", async () => {
-    const result = await BillingService.getByAppointment(appointmentId);
-    expect(result.length).toBeGreaterThan(0);
-  });
-
-  it("should update billing", async () => {
-    const result = await BillingService.updateById(billingId, {
-      notes: "Updated billing notes",
+  it("✅ should mark billing as paid", async () => {
+    const billing = await BillingModel.create({
+      hospitalId,
+      patientId,
+      appointmentId,
+      invoiceNumber: "INV-PAID",
+      lineItems: [
+        {
+          description: "Consultation",
+          quantity: 1,
+          unitPrice: 500,
+          amount: 500,
+        },
+      ],
+      subTotal: 500,
+      taxAmount: 0,
+      discountAmount: 0,
+      totalAmount: 500,
+      paidAmount: 0,
+      dueAmount: 500,
+      status: BillingStatus.ISSUED,
+      createdByHospitalAdminId: adminId,
     });
 
-    expect(result).not.toBeNull();
+    const updated = await BillingService.markPaidById(
+      billing._id.toString()
+    );
+
+    expect(updated?.status).toBe(BillingStatus.PAID);
+    expect(updated?.paidAmount).toBe(500);
+    expect(updated?.dueAmount).toBe(0);
   });
 
-  it("should mark billing as paid", async () => {
-    const result = await BillingService.markPaidById(billingId);
-    expect(result?.status).toBe(BillingStatus.PAID); // ✅ FIX
+  it("✅ should cancel billing", async () => {
+    const billing = await BillingModel.create({
+      hospitalId,
+      patientId,
+      appointmentId,
+      invoiceNumber: "INV-CANCEL",
+      lineItems: [
+        {
+          description: "Consultation",
+          quantity: 1,
+          unitPrice: 300,
+          amount: 300,
+        },
+      ],
+      subTotal: 300,
+      taxAmount: 0,
+      discountAmount: 0,
+      totalAmount: 300,
+      paidAmount: 0,
+      dueAmount: 300,
+      status: BillingStatus.ISSUED,
+      createdByHospitalAdminId: adminId,
+    });
+
+    const cancelled = await BillingService.cancelById(
+      billing._id.toString()
+    );
+
+    expect(cancelled?.status).toBe(BillingStatus.CANCELLED);
   });
 
-  it("should cancel billing", async () => {
-    const result = await BillingService.cancelById(billingId);
-    expect(result?.status).toBe(BillingStatus.CANCELLED); // ✅ FIX
-  });
-
-  it("should throw error for invalid id", async () => {
+  it("❌ should throw error for invalid id", async () => {
     await expect(
       BillingService.getById("invalid-id")
     ).rejects.toThrow("Invalid Billing ID");

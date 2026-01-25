@@ -1,26 +1,21 @@
 import mongoose, { Types } from "mongoose";
 import { connectDB, disconnectDB } from "../../../../src/config/mongoose";
-import { AIAuditLog } from "../../../../src/models/ai/ai-audit-log";
+import { AIAuditLogModel } from "../../../../src/models/ai/ai-audit-log";
 
-beforeAll(async () => {
-  await connectDB();
-});
+describe("AI Audit Log Schema", () => {
+  beforeAll(async () => {
+    await connectDB();
+  });
 
-afterAll(async () => {
-  if (mongoose.connection.readyState === 1) {
-    const db = mongoose.connection.db;
-    if (db) {
-      await db.dropDatabase();
+  afterAll(async () => {
+    if (mongoose.connection.readyState === 1) {
+      await mongoose.connection.db.dropDatabase();
     }
-  }
+    await disconnectDB();
+  });
 
-  await disconnectDB();
-});
-
-
-describe("Schema Validation: AIAuditLog", () => {
   it("should create valid audit log", async () => {
-    const log = await AIAuditLog.create({
+    const log = await AIAuditLogModel.create({
       hospitalId: new Types.ObjectId(),
       actorRole: "system",
       action: "SESSION_CREATED",
@@ -30,14 +25,14 @@ describe("Schema Validation: AIAuditLog", () => {
   });
 
   it("should not allow update (immutable)", async () => {
-    const log = await AIAuditLog.create({
+    const log = await AIAuditLogModel.create({
       hospitalId: new Types.ObjectId(),
       actorRole: "system",
       action: "SESSION_CREATED",
     });
 
     await expect(
-      AIAuditLog.updateOne(
+      AIAuditLogModel.updateOne(
         { _id: log._id },
         { action: "UPDATED" }
       )

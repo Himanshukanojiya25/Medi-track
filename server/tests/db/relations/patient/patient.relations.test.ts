@@ -1,37 +1,15 @@
-import { connectDB, disconnectDB } from "../../../../src/config";
-
+import { connectDB, disconnectDB } from "../../../../src/config/mongoose";
 import { PatientModel } from "../../../../src/models/patient";
-import { HospitalModel } from "../../../../src/models/hospital";
-import { HospitalAdminModel } from "../../../../src/models/hospital-admin";
+
+import {
+  createHospital,
+  createHospitalAdmin,
+  createPatient,
+} from "../../../helpers/factories";
 
 describe("Patient Relations", () => {
-  let hospital: any;
-  let admin: any;
-
   beforeAll(async () => {
     await connectDB();
-
-    hospital = await HospitalModel.create({
-      name: "Patient Relation Hospital",
-      code: "PAT-HOSP",
-      email: "pat@hospital.com",
-      phone: "9000003333",
-      address: {
-        line1: "Street",
-        city: "Mumbai",
-        state: "MH",
-        country: "India",
-        postalCode: "400003",
-      },
-    });
-
-    admin = await HospitalAdminModel.create({
-      name: "Patient Admin",
-      hospitalId: hospital._id,
-      email: "pat-admin@hospital.com",
-      passwordHash: "hashed",
-      createdBy: hospital._id,
-    });
   });
 
   afterAll(async () => {
@@ -39,27 +17,21 @@ describe("Patient Relations", () => {
     await disconnectDB();
   });
 
-  it("✅ should link patient to hospital", async () => {
-    const patient = await PatientModel.create({
-      hospitalId: hospital._id,
-      createdByHospitalAdminId: admin._id,
-      firstName: "Relation",
-      lastName: "Test",
-      phone: "4444444444",
-    });
+  it("should link patient to hospital", async () => {
+    const hospital = await createHospital();
+    const admin = await createHospitalAdmin(hospital._id);
+
+    const patient = await createPatient(hospital._id, admin._id);
 
     const populated = await PatientModel.findById(patient._id).populate("hospitalId");
     expect(populated?.hospitalId).toBeDefined();
   });
 
-  it("✅ should link patient to hospital admin", async () => {
-    const patient = await PatientModel.create({
-      hospitalId: hospital._id,
-      createdByHospitalAdminId: admin._id,
-      firstName: "Admin",
-      lastName: "Link",
-      phone: "5555555555",
-    });
+  it("should link patient to hospital admin", async () => {
+    const hospital = await createHospital();
+    const admin = await createHospitalAdmin(hospital._id);
+
+    const patient = await createPatient(hospital._id, admin._id);
 
     const populated = await PatientModel.findById(patient._id).populate(
       "createdByHospitalAdminId"

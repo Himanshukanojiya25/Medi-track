@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 import { HospitalAdmin } from "./hospitalAdmin.types";
-import { SYSTEM_ROLES } from "../../constants/roles";
+import { ROLES } from "../../constants/roles";
 import { HOSPITAL_ADMIN_STATUS } from "../../constants/status";
 
 export const HospitalAdminSchema = new Schema<HospitalAdmin>(
@@ -23,29 +23,34 @@ export const HospitalAdminSchema = new Schema<HospitalAdmin>(
       required: true,
       lowercase: true,
       trim: true,
+      index: true,
     },
 
     passwordHash: {
       type: String,
       required: true,
+      select: false,
     },
 
     role: {
       type: String,
-      enum: [SYSTEM_ROLES.HOSPITAL_ADMIN],
-      default: SYSTEM_ROLES.HOSPITAL_ADMIN,
+      enum: [ROLES.HOSPITAL_ADMIN],
+      default: ROLES.HOSPITAL_ADMIN,
       immutable: true,
+      index: true,
     },
 
     status: {
       type: String,
       enum: Object.values(HOSPITAL_ADMIN_STATUS),
       default: HOSPITAL_ADMIN_STATUS.ACTIVE,
+      index: true,
     },
 
     isActive: {
       type: Boolean,
       default: true,
+      index: true,
     },
 
     lastLoginAt: {
@@ -59,10 +64,10 @@ export const HospitalAdminSchema = new Schema<HospitalAdmin>(
 );
 
 /**
- * Indexes (production-safe)
- * One hospital → unique admin email
+ * =========================
+ * INDEXES
+ * =========================
  */
-HospitalAdminSchema.index(
-  { hospitalId: 1, email: 1 },
-  { unique: true }
-);
+HospitalAdminSchema.index({ hospitalId: 1, email: 1 }, { unique: true });
+HospitalAdminSchema.index({ status: 1, createdAt: -1 });
+HospitalAdminSchema.index({ isActive: 1, lastLoginAt: -1 });

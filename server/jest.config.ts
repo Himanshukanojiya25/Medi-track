@@ -1,19 +1,77 @@
 import type { Config } from "jest";
 
 const config: Config = {
+  /* =========================
+     CORE
+  ========================= */
   preset: "ts-jest",
   testEnvironment: "node",
+  rootDir: ".", // 🔥 VERY IMPORTANT for relative paths
 
-  testMatch: ["**/tests/**/*.test.ts"],
+  /* =========================
+     TEST DISCOVERY
+  ========================= */
+  testMatch: ["<rootDir>/tests/**/*.test.ts"],
   moduleFileExtensions: ["ts", "js", "json"],
 
-  clearMocks: true,
-  verbose: true,
+  /* =========================
+     TYPESCRIPT
+  ========================= */
+  globals: {
+    "ts-jest": {
+      tsconfig: "<rootDir>/tsconfig.json",
+      isolatedModules: true,
+    },
+  },
 
-  // ✅ correct options
+  /* =========================
+     MODULE RESOLUTION
+     (NO @, ONLY RELATIVE)
+  ========================= */
+  moduleDirectories: ["node_modules", "<rootDir>"],
+
+  /* =========================
+     ISOLATION & SAFETY
+  ========================= */
+  clearMocks: true,
+  resetMocks: true,
+  restoreMocks: true,
+
+  /* =========================
+     STABILITY (Mongo / Mongoose)
+  ========================= */
+  testTimeout: 30000,
+  detectOpenHandles: true,
+  maxWorkers: 1, // 🔥 REQUIRED for mongoose
+
+  /* =========================
+     SETUP
+  ========================= */
   setupFilesAfterEnv: ["<rootDir>/tests/jest.setup.ts"],
-  testTimeout: 20000,
-  forceExit: true,
+
+  /* =========================
+     COVERAGE (DISABLED FOR NOW)
+  ========================= */
+  collectCoverage: false,
+  coverageProvider: "v8",
+  coverageDirectory: "coverage",
+  collectCoverageFrom: [
+    "src/**/*.ts",
+    "!src/**/index.ts",
+    "!src/config/**",
+    "!src/types/**",
+  ],
+  coverageThreshold: undefined,
+
+  /* =========================
+     OUTPUT
+  ========================= */
+  verbose: false,
+
+  /* =========================
+     EXIT BEHAVIOR
+  ========================= */
+  forceExit: false,
 };
 
 export default config;

@@ -2,34 +2,26 @@ import { Types } from "mongoose";
 import { PrescriptionModel } from "../../models/prescription";
 import { PrescriptionStatus } from "../../constants/status";
 
-/**
- * Prescription Service
- * --------------------
- * Pure business logic layer.
- * No Express, no req/res.
- */
 export default class PrescriptionService {
   /**
-   * Create Prescription
+   * Create prescription
    */
-  static async create(payload: Record<string, unknown>) {
-    const prescription = new PrescriptionModel(payload);
-    return prescription.save();
+  static async create(payload: Record<string, any>) {
+    return PrescriptionModel.create(payload);
   }
 
   /**
-   * Get Prescription by ID
+   * Get prescription by ID
    */
   static async getById(id: string) {
     if (!Types.ObjectId.isValid(id)) {
       throw new Error("Invalid Prescription ID");
     }
-
-    return PrescriptionModel.findById(id).exec();
+    return PrescriptionModel.findById(id);
   }
 
   /**
-   * Get Prescriptions by Patient
+   * ✅ Get prescriptions by patient
    */
   static async getByPatient(patientId: string) {
     if (!Types.ObjectId.isValid(patientId)) {
@@ -40,7 +32,7 @@ export default class PrescriptionService {
   }
 
   /**
-   * Get Prescriptions by Doctor
+   * ✅ Get prescriptions by doctor
    */
   static async getByDoctor(doctorId: string) {
     if (!Types.ObjectId.isValid(doctorId)) {
@@ -51,34 +43,38 @@ export default class PrescriptionService {
   }
 
   /**
-   * Update Prescription
+   * Update prescription
    */
-  static async updateById(
-    id: string,
-    payload: Partial<Record<string, unknown>>
-  ) {
+  static async updateById(id: string, payload: { notes?: string }) {
     if (!Types.ObjectId.isValid(id)) {
       throw new Error("Invalid Prescription ID");
     }
 
-    return PrescriptionModel.findByIdAndUpdate(id, payload, {
-      new: true,
-      runValidators: true,
-    }).exec();
+    const rx = await PrescriptionModel.findById(id);
+    if (!rx) return null;
+
+    if (payload.notes !== undefined) {
+      rx.notes = payload.notes;
+    }
+
+    await rx.save();
+    return rx;
   }
 
   /**
-   * Cancel Prescription
+   * Cancel prescription
    */
   static async cancelById(id: string) {
     if (!Types.ObjectId.isValid(id)) {
       throw new Error("Invalid Prescription ID");
     }
 
-    return PrescriptionModel.findByIdAndUpdate(
-      id,
-      { status: PrescriptionStatus.CANCELLED },
-      { new: true }
-    ).exec();
+    const rx = await PrescriptionModel.findById(id);
+    if (!rx) return null;
+
+    rx.status = PrescriptionStatus.CANCELLED;
+
+    await rx.save();
+    return rx;
   }
 }

@@ -1,28 +1,33 @@
-import { connectDB, disconnectDB } from "../../../../src/config";
-
+import { connectDB, disconnectDB } from "../../../../src/config/mongoose";
 import { PrescriptionModel } from "../../../../src/models/prescription";
 import { HospitalModel } from "../../../../src/models/hospital";
 import { HospitalAdminModel } from "../../../../src/models/hospital-admin";
 import { PatientModel } from "../../../../src/models/patient";
 import { DoctorModel } from "../../../../src/models/doctor";
-
+import { AppointmentModel } from "../../../../src/models/appointment";
 import { PrescriptionStatus } from "../../../../src/constants/status";
 
 describe("Prescription Schema Validation", () => {
-  let hospitalId: any;
-  let adminId: any;
-  let patientId: any;
-  let doctorId: any;
+  let hospitalId: string;
+  let adminId: string;
+  let patientId: string;
+  let doctorId: string;
+  let appointmentId: string;
 
   beforeAll(async () => {
     await connectDB();
+    await PrescriptionModel.deleteMany({});
+    await AppointmentModel.deleteMany({});
+    await PatientModel.deleteMany({});
+    await DoctorModel.deleteMany({});
+    await HospitalAdminModel.deleteMany({});
+    await HospitalModel.deleteMany({});
 
-    // ✅ FULL VALID HOSPITAL (MOST IMPORTANT)
     const hospital = await HospitalModel.create({
       name: "Prescription Schema Hospital",
-      code: "RX-SCHEMA",
-      email: "rx-schema@hospital.com",
-      phone: "9999998888",
+      code: "RX-SCHEMA-HOSP",
+      email: "rx@hospital.com",
+      phone: "9999999999",
       address: {
         line1: "Street",
         city: "Mumbai",
@@ -31,18 +36,15 @@ describe("Prescription Schema Validation", () => {
         postalCode: "400001",
       },
     });
-
-    hospitalId = hospital._id;
+    hospitalId = hospital._id.toString();
 
     const admin = await HospitalAdminModel.create({
       name: "Rx Admin",
       hospitalId,
       email: "rx-admin@hospital.com",
-      passwordHash: "hashed",
-      createdBy: hospitalId,
+      passwordHash: "hashed-password",
     });
-
-    adminId = admin._id;
+    adminId = admin._id.toString();
 
     const patient = await PatientModel.create({
       hospitalId,
@@ -50,24 +52,34 @@ describe("Prescription Schema Validation", () => {
       firstName: "Rx",
       lastName: "Patient",
       phone: "9111111111",
+      passwordHash: "hashed-password",
     });
-
-    patientId = patient._id;
+    patientId = patient._id.toString();
 
     const doctor = await DoctorModel.create({
       hospitalId,
       hospitalAdminId: adminId,
       name: "Dr Rx",
       email: "dr-rx@hospital.com",
-      phone: "9222222222",
       specialization: "General",
+      passwordHash: "hashed-password",
     });
+    doctorId = doctor._id.toString();
 
-    doctorId = doctor._id;
+    const appointment = await AppointmentModel.create({
+      hospitalId,
+      patientId,
+      doctorId,
+      scheduledAt: new Date(Date.now() + 60 * 60 * 1000),
+      durationMinutes: 30,
+      createdByHospitalAdminId: adminId,
+    });
+    appointmentId = appointment._id.toString();
   });
 
   afterAll(async () => {
     await PrescriptionModel.deleteMany({});
+    await AppointmentModel.deleteMany({});
     await PatientModel.deleteMany({});
     await DoctorModel.deleteMany({});
     await HospitalAdminModel.deleteMany({});
@@ -114,7 +126,8 @@ describe("Prescription Schema Validation", () => {
       hospitalId,
       patientId,
       doctorId,
-      status: PrescriptionStatus.COMPLETED,
+      appointmentId,
+      status: PrescriptionStatus.ACTIVE,
       medicines: [
         {
           name: "Paracetamol",
@@ -126,5 +139,6 @@ describe("Prescription Schema Validation", () => {
     });
 
     expect(rx).toBeDefined();
+    expect(rx.status).toBe(PrescriptionStatus.ACTIVE);
   });
 });

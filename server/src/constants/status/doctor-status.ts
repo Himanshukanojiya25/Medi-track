@@ -1,6 +1,6 @@
 export enum DOCTOR_STATUS {
-  ACTIVE = "ACTIVE",
-  INACTIVE = "INACTIVE",
-  ON_LEAVE = "ON_LEAVE",
-  SUSPENDED = "SUSPENDED",
+  ACTIVE = "active",
+  INACTIVE = "inactive",
+  ON_LEAVE = "on_leave",
+  SUSPENDED = "suspended",
 }

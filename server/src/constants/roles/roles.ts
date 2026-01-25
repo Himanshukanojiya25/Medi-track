@@ -1,6 +1,7 @@
-export enum SYSTEM_ROLES {
-  SUPER_ADMIN = "SUPER_ADMIN",
-  HOSPITAL_ADMIN = "HOSPITAL_ADMIN",
-  DOCTOR = "DOCTOR",
-  PATIENT = "PATIENT",
-}
+/**
+ * Compatibility layer
+ * Old imports should keep working
+ */
+
+export { ROLES } from "./roles.constants";
+export type { Role } from "./roles.constants";

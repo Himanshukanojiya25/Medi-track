@@ -7,11 +7,11 @@ yarn-debug.log*
 yarn-error.log*
 
 # ===============================
-# ENV
+# ENV (ALL VARIANTS)
 # ===============================
 .env
-.env.local
-.env.production
+.env.*
+!.env.example
 
 # ===============================
 # BUILD OUTPUTS

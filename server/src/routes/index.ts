@@ -1,135 +1,138 @@
 import { Router } from "express";
 
+/**
+ * ============================
+ * ROUTE IMPORTS
+ * ============================
+ */
+import authRoutes from "./auth/auth.routes";
+
 import superAdminRoutes from "./super-admin/super-admin.routes";
+import hospitalOnboardingRoutes from "./super-admin/hospital-onboarding.routes";
+
 import hospitalRoutes from "./hospital/hospital.routes";
 import hospitalAdminRoutes from "./hospital-admin/hospital-admin.routes";
 import doctorRoutes from "./doctor/doctor.routes";
 import patientRoutes from "./patient/patient.routes";
+
 import appointmentRoutes from "./appointment/appointment.routes";
 import billingRoutes from "./billing/billing.routes";
 import prescriptionRoutes from "./prescription/prescription.routes";
+
 import aiRoutes from "./ai";
 import notificationRoutes from "./notification/notification.routes";
 import doctorLeaveRoutes from "./doctor-leave/doctor-leave.routes";
-import authRoutes from "./auth/auth.routes";
+
 import { requireAuth } from "../middlewares/auth/require-auth.middleware";
 import { requireRole } from "../middlewares/auth/require-role.middleware";
+
 const router = Router();
 
 /**
- * --------------------
- * Super Admin Routes
- * --------------------
- */
-router.use("/super-admins", superAdminRoutes);
-
-/**
- * --------------------
- * Hospital Routes
- * --------------------
- */
-router.use("/hospitals", hospitalRoutes);
-
-/**
- * --------------------
- * Hospital Admin Routes
- * --------------------
- */
-router.use("/hospital-admins", hospitalAdminRoutes);
-
-/**
- * --------------------
- * Doctor Routes
- * --------------------
- */
-router.use("/doctors", doctorRoutes);
-
-/**
- * --------------------
- * Patient Routes
- * --------------------
- */
-router.use("/patients", patientRoutes);
-
-/**
- * --------------------
- * Appointment Routes
- * --------------------
- */
-router.use("/appointments", appointmentRoutes);
-
-/**
- * --------------------
- * Billing Routes
- * --------------------
- */
-router.use("/billings", billingRoutes);
-
-/**
- * --------------------
- * Prescription Routes
- * --------------------
- */
-router.use("/prescriptions", prescriptionRoutes);
-
-/**
- * --------------------
- * AI Routes ✅
- * --------------------
- * Base: /api/v1/ai
- */
-router.use("/ai", aiRoutes);
-
-
-/**
- * --------------------
- * Notification Routes ✅
- * --------------------
- * Base: /api/v1/notifications
- */
-router.use("/notifications", notificationRoutes);
-
-/**
- * --------------------
- * Doctor Leave Routes ✅
- * --------------------
- * Base: /api/v1/doctor-leaves
- */
-router.use("/doctor-leaves", doctorLeaveRoutes);
-
-/**
- * --------------------
- * Auth Routes
- * --------------------
+ * ============================
+ * 🔓 AUTH ROUTES (NO AUTH)
+ * ============================
+ * IMPORTANT:
+ * Auth routes MUST be mounted FIRST
+ * Otherwise 404 / auth issues can happen
  */
 router.use("/auth", authRoutes);
 
 /**
- * --------------------
- * TEMP AUTH / RBAC TEST ROUTES
- * ❗ ONLY FOR DEVELOPMENT
- * --------------------
+ * ============================
+ * 👑 SUPER ADMIN ROUTES
+ * ============================
  */
+router.use("/super-admins", superAdminRoutes);
 
 /**
- * Test JWT authentication
- * URL: GET /api/v1/test/auth
+ * 🔥 SUPER ADMIN – HOSPITAL ONBOARDING
+ * BASE: /api/v1/super-admin/hospitals
  */
-router.get(
-  "/test/auth",
-  requireAuth,
-  (req, res) => {
-    res.json({
-      success: true,
-      user: req.user,
-    });
-  }
-);
+router.use("/super-admin/hospitals", hospitalOnboardingRoutes);
 
 /**
- * Test RBAC (SUPER ADMIN only)
- * URL: GET /api/v1/test/super-admin
+ * ============================
+ * 🏥 HOSPITAL ROUTES
+ * ============================
  */
+router.use("/hospitals", hospitalRoutes);
+
+/**
+ * ============================
+ * 🧑‍💼 HOSPITAL ADMIN ROUTES
+ * ============================
+ */
+router.use("/hospital-admins", hospitalAdminRoutes);
+
+/**
+ * ============================
+ * 🧑‍⚕️ DOCTOR ROUTES
+ * ============================
+ */
+router.use("/doctors", doctorRoutes);
+
+/**
+ * ============================
+ * 🧑‍🤝‍🧑 PATIENT ROUTES
+ * ============================
+ */
+router.use("/patients", patientRoutes);
+
+/**
+ * ============================
+ * 📅 APPOINTMENTS
+ * ============================
+ */
+router.use("/appointments", appointmentRoutes);
+
+/**
+ * ============================
+ * 💳 BILLING
+ * ============================
+ */
+router.use("/billings", billingRoutes);
+
+/**
+ * ============================
+ * 💊 PRESCRIPTIONS
+ * ============================
+ */
+router.use("/prescriptions", prescriptionRoutes);
+
+/**
+ * ============================
+ * 🤖 AI MODULE
+ * ============================
+ */
+router.use("/ai", aiRoutes);
+
+/**
+ * ============================
+ * 🔔 NOTIFICATIONS
+ * ============================
+ */
+router.use("/notifications", notificationRoutes);
+
+/**
+ * ============================
+ * 🛑 DOCTOR LEAVE
+ * ============================
+ */
+router.use("/doctor-leaves", doctorLeaveRoutes);
+
+/**
+ * ============================
+ * 🧪 TEST ROUTES
+ * ============================
+ */
+router.get("/test/auth", requireAuth, (req, res) => {
+  res.json({
+    success: true,
+    user: req.user,
+  });
+});
+
 router.get(
   "/test/super-admin",
   requireAuth,
@@ -141,6 +144,5 @@ router.get(
     });
   }
 );
-
 
 export default router;

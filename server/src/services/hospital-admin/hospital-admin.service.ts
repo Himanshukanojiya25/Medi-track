@@ -3,51 +3,32 @@ import bcrypt from "bcrypt";
 import { HospitalAdminModel } from "../../models/hospital-admin";
 import { ENV } from "../../config/env";
 
-/**
- * Hospital Admin Service
- * ----------------------
- * Pure business logic layer.
- * - Password hashing handled here
- * - No Express, no req/res
- */
 export default class HospitalAdminService {
-  /**
-   * Create Hospital Admin
-   */
   static async create(payload: Record<string, unknown>) {
-    const { password, ...rest } = payload as {
-      password?: string;
-    };
+    const data = payload as any;
 
-    /**
-     * 🔐 Password validation
-     */
-    if (!password) {
+    let passwordHash = data.passwordHash;
+
+    if (!passwordHash && data.password) {
+      passwordHash = await bcrypt.hash(
+        data.password,
+        ENV.BCRYPT_SALT_ROUNDS
+      );
+    }
+
+    if (!passwordHash) {
       throw new Error("Password is required");
     }
 
-    /**
-     * 🔐 Hash password (SERVER SIDE)
-     */
-    const passwordHash = await bcrypt.hash(
-      password,
-      ENV.BCRYPT_SALT_ROUNDS
-    );
+    delete data.password;
+    delete data.passwordHash;
 
-    /**
-     * Create Hospital Admin with hashed password
-     */
-    const hospitalAdmin = new HospitalAdminModel({
-      ...rest,
-      passwordHash, // ✅ schema-required field
+    return HospitalAdminModel.create({
+      ...data,
+      passwordHash,
     });
-
-    return hospitalAdmin.save();
   }
 
-  /**
-   * Get Hospital Admin by ID
-   */
   static async getById(id: string) {
     if (!Types.ObjectId.isValid(id)) {
       throw new Error("Invalid Hospital Admin ID");
@@ -56,16 +37,10 @@ export default class HospitalAdminService {
     return HospitalAdminModel.findById(id).exec();
   }
 
-  /**
-   * Get all Hospital Admins
-   */
   static async getAll() {
     return HospitalAdminModel.find().exec();
   }
 
-  /**
-   * Update Hospital Admin by ID
-   */
   static async updateById(
     id: string,
     payload: Partial<Record<string, unknown>>
@@ -74,28 +49,25 @@ export default class HospitalAdminService {
       throw new Error("Invalid Hospital Admin ID");
     }
 
-    /**
-     * 🔐 If password update is requested, hash it
-     */
-    if (payload.password) {
-      const hashed = await bcrypt.hash(
-        payload.password as string,
+    const doc = await HospitalAdminModel.findById(id);
+    if (!doc) return null;
+
+    const data = payload as any;
+
+    if (data.password) {
+      doc.passwordHash = await bcrypt.hash(
+        data.password,
         ENV.BCRYPT_SALT_ROUNDS
       );
-
-      delete payload.password;
-      payload.passwordHash = hashed;
+      delete data.password;
     }
 
-    return HospitalAdminModel.findByIdAndUpdate(id, payload, {
-      new: true,
-      runValidators: true,
-    }).exec();
+    Object.assign(doc, data);
+    await doc.save();
+
+    return doc;
   }
 
-  /**
-   * Delete Hospital Admin by ID
-   */
   static async deleteById(id: string) {
     if (!Types.ObjectId.isValid(id)) {
       throw new Error("Invalid Hospital Admin ID");

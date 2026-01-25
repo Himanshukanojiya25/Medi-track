@@ -1,6 +1,12 @@
+import crypto from "crypto";
 import { LoginInput, LoginResponse } from "../../types/auth";
 import { comparePassword } from "../../utils/auth/password.util";
-import { signAccessToken, signRefreshToken } from "../../utils/auth/jwt.util";
+import {
+  signAccessToken,
+  signRefreshToken,
+} from "../../utils/auth/jwt.util";
+
+import { RefreshTokenModel } from "../../models/auth/refresh-token.model";
 
 // ===============================
 // MODELS
@@ -10,27 +16,15 @@ import { HospitalAdminModel } from "../../models/hospital-admin";
 import { DoctorModel } from "../../models/doctor";
 import { PatientModel } from "../../models/patient";
 
-/**
- * ======================================================
- * CENTRAL LOGIN SERVICE
- * ------------------------------------------------------
- * Supports login for:
- * - SUPER_ADMIN
- * - HOSPITAL_ADMIN
- * - DOCTOR
- * - PATIENT
- *
- * Same email/password API for all roles
- * ======================================================
- */
+function hashToken(token: string) {
+  return crypto.createHash("sha256").update(token).digest("hex");
+}
+
 export const loginService = async (
   input: LoginInput
 ): Promise<LoginResponse> => {
   const { email, password } = input;
 
-  // --------------------------------------------------
-  // COMMON VARIABLES
-  // --------------------------------------------------
   let user: any = null;
   let role:
     | "SUPER_ADMIN"
@@ -38,12 +32,10 @@ export const loginService = async (
     | "DOCTOR"
     | "PATIENT"
     | null = null;
+
   let passwordHash: string | null = null;
   let hospitalId: string | undefined;
 
-  // ==================================================
-  // 1️⃣ SUPER ADMIN LOGIN (HIGHEST PRIORITY)
-  // ==================================================
   const superAdmin = await SuperAdminModel
     .findOne({ email })
     .select("+passwordHash");
@@ -54,9 +46,6 @@ export const loginService = async (
     passwordHash = superAdmin.passwordHash;
   }
 
-  // ==================================================
-  // 2️⃣ HOSPITAL ADMIN LOGIN
-  // ==================================================
   if (!user) {
     const hospitalAdmin = await HospitalAdminModel
       .findOne({ email })
@@ -70,9 +59,6 @@ export const loginService = async (
     }
   }
 
-  // ==================================================
-  // 3️⃣ DOCTOR LOGIN
-  // ==================================================
   if (!user) {
     const doctor = await DoctorModel
       .findOne({ email })
@@ -86,56 +72,43 @@ export const loginService = async (
     }
   }
 
-  // ==================================================
-  // 4️⃣ PATIENT LOGIN (LAST PRIORITY)
-  // ==================================================
   if (!user) {
     const patient = await PatientModel
       .findOne({ email })
-      .select("+password");
+      .select("+passwordHash");
 
     if (patient) {
       user = patient;
       role = "PATIENT";
-      passwordHash = patient.password;
+      passwordHash = patient.passwordHash;
       hospitalId = patient.hospitalId?.toString();
     }
   }
 
-  // ==================================================
-  // 5️⃣ USER NOT FOUND ANYWHERE
-  // ==================================================
   if (!user || !passwordHash || !role) {
     throw new Error("Invalid email or password");
   }
 
-  // ==================================================
-  // 6️⃣ PASSWORD VERIFICATION
-  // ==================================================
   const isValid = await comparePassword(password, passwordHash);
   if (!isValid) {
     throw new Error("Invalid email or password");
   }
 
-  // ==================================================
-  // 7️⃣ JWT PAYLOAD
-  // (This becomes req.user after auth middleware)
-  // ==================================================
   const payload = {
     id: user._id.toString(),
     role,
     hospitalId,
   };
 
-  // ==================================================
-  // 8️⃣ TOKEN GENERATION
-  // ==================================================
   const accessToken = signAccessToken(payload);
   const refreshToken = signRefreshToken(payload);
 
-  // ==================================================
-  // 9️⃣ FINAL RESPONSE
-  // ==================================================
+  await RefreshTokenModel.create({
+    userId: payload.id,
+    tokenHash: hashToken(refreshToken),
+    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+  });
+
   return {
     accessToken,
     refreshToken,

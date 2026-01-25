@@ -1,5 +1,3 @@
-import { connectDB, disconnectDB } from "../../../../src/config";
-
 import { AppointmentModel } from "../../../../src/models/appointment";
 import { HospitalModel } from "../../../../src/models/hospital";
 import { HospitalAdminModel } from "../../../../src/models/hospital-admin";
@@ -13,15 +11,13 @@ describe("Appointment Relations", () => {
   let doctor: any;
 
   beforeAll(async () => {
-    await connectDB();
-
     hospital = await HospitalModel.create({
-      name: "Appointment Relation Hospital",
-      code: "APT-HOSP",
-      email: "apt@hospital.com",
+      name: "Relation Hospital",
+      code: "APT-REL-HOSP",
+      email: "rel@hospital.com",
       phone: "9000001111",
       address: {
-        line1: "Street 1",
+        line1: "Street",
         city: "Mumbai",
         state: "MH",
         country: "India",
@@ -30,11 +26,10 @@ describe("Appointment Relations", () => {
     });
 
     admin = await HospitalAdminModel.create({
-      name: "Appointment Admin",
+      name: "Relation Admin",
       hospitalId: hospital._id,
-      email: "apt-admin@hospital.com",
-      passwordHash: "hashed",
-      createdBy: hospital._id,
+      email: "rel-admin@hospital.com",
+      passwordHash: "hashed-password",
     });
 
     patient = await PatientModel.create({
@@ -43,6 +38,8 @@ describe("Appointment Relations", () => {
       firstName: "Rel",
       lastName: "Patient",
       phone: "9333333333",
+      passwordHash: "hashed-password",
+      gender: "male",
     });
 
     doctor = await DoctorModel.create({
@@ -50,14 +47,9 @@ describe("Appointment Relations", () => {
       hospitalAdminId: admin._id,
       name: "Dr Rel",
       email: "dr-rel@hospital.com",
-      phone: "9444444444",
       specialization: "General",
+      passwordHash: "hashed-password",
     });
-  });
-
-  afterAll(async () => {
-    await AppointmentModel.deleteMany({});
-    await disconnectDB();
   });
 
   it("✅ should link appointment to hospital", async () => {
@@ -112,6 +104,7 @@ describe("Appointment Relations", () => {
     const populated = await AppointmentModel.findById(appt._id).populate(
       "createdByHospitalAdminId"
     );
+
     expect(populated?.createdByHospitalAdminId).toBeDefined();
   });
 });

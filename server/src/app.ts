@@ -1,3 +1,5 @@
+import "dotenv/config"; // 🔥 MUST BE FIRST
+
 import express, {
   Application,
   Request,
@@ -9,7 +11,6 @@ import morgan from "morgan";
 
 import routes from "./routes";
 import { ENV } from "./config/env";
-import { connectDB } from "./config/mongoose";
 
 /**
  * --------------------
@@ -23,7 +24,22 @@ const app: Application = express();
  * Global Middlewares
  * --------------------
  */
-app.use(cors());
+
+/**
+ * ✅ SAFE CORS CONFIG
+ * - Browser login works
+ * - Tests unaffected
+ * - Postman unaffected
+ */
+app.use(
+  cors({
+    origin: ENV.NODE_ENV === "development"
+      ? "http://localhost:5173"
+      : undefined, // prod me reverse proxy / same origin
+    credentials: true,
+  })
+);
+
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan("dev"));
@@ -45,11 +61,6 @@ app.get("/health", (_req: Request, res: Response) => {
  * --------------------
  * API Routes (v1)
  * --------------------
- * Base path: /api/v1
- *
- * Examples:
- * /api/v1/ai/chat/start
- * /api/v1/ai/prompts/active
  */
 app.use("/api/v1", routes);
 
@@ -85,12 +96,5 @@ app.use(
     });
   }
 );
-
-/**
- * --------------------
- * Database Connection
- * --------------------
- */
-connectDB();
 
 export default app;

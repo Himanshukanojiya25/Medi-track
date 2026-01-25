@@ -1,6 +1,6 @@
 // src/services/ai/ai-provider.service.ts
 
-import { v4 as uuidv4 } from "uuid";
+import crypto from "crypto";
 
 /**
  * AI input structure
@@ -67,7 +67,7 @@ export class MockAIProvider implements AIProvider {
     const textResponse = `${rolePrefix} ${input.prompt}${languageSuffix}`;
 
     return {
-      id: uuidv4(),
+      id: crypto.randomUUID(), // ✅ Node native UUID
       text: textResponse,
       tokensUsed: this.estimateTokens(input.prompt),
       model: this.modelName,

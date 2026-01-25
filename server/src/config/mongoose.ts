@@ -9,7 +9,8 @@ let isConnected = false;
  * Safe to call multiple times (idempotent)
  */
 export async function connectDB(): Promise<void> {
-  if (isConnected) {
+  // ✅ Prevent duplicate connections (important for Jest)
+  if (isConnected || mongoose.connection.readyState === 1) {
     return;
   }
 
@@ -18,9 +19,13 @@ export async function connectDB(): Promise<void> {
   while (attempts < DB_CONFIG.retry.MAX_RETRIES) {
     try {
       await mongoose.connect(DB_CONFIG.uri, DB_CONFIG.options);
+
       isConnected = true;
 
-      console.log(`[DB] Connected to MongoDB (${ENV.NODE_ENV})`);
+      if (ENV.NODE_ENV !== "test") {
+        console.log(`[DB] Connected to MongoDB (${ENV.NODE_ENV})`);
+      }
+
       return;
     } catch (error) {
       attempts++;
@@ -30,7 +35,12 @@ export async function connectDB(): Promise<void> {
         error
       );
 
+      // ❌ Never kill Jest process
       if (attempts >= DB_CONFIG.retry.MAX_RETRIES) {
+        if (ENV.NODE_ENV === "test") {
+          throw error;
+        }
+
         console.error("[DB] Max retries reached. Exiting process.");
         process.exit(1);
       }
@@ -47,12 +57,14 @@ export async function connectDB(): Promise<void> {
  * Used in tests and shutdown hooks
  */
 export async function disconnectDB(): Promise<void> {
-  if (!isConnected) return;
+  if (!isConnected && mongoose.connection.readyState === 0) return;
 
   await mongoose.disconnect();
   isConnected = false;
 
-  console.log("[DB] Disconnected from MongoDB");
+  if (ENV.NODE_ENV !== "test") {
+    console.log("[DB] Disconnected from MongoDB");
+  }
 }
 
 /**

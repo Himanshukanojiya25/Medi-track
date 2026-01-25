@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import { ENV } from "../../config/env";
 import { JwtPayload } from "../../types/auth";
 
@@ -12,7 +13,7 @@ export const signAccessToken = (payload: JwtPayload): string => {
     payload,
     ENV.JWT_ACCESS_SECRET as jwt.Secret,
     {
-      expiresIn: ENV.JWT_ACCESS_EXPIRES_IN as any, // 🔥 FIX
+      expiresIn: ENV.JWT_ACCESS_EXPIRES_IN as any,
     }
   );
 };
@@ -21,13 +22,17 @@ export const signAccessToken = (payload: JwtPayload): string => {
  * -------------------------
  * Sign REFRESH token
  * -------------------------
+ * 🔥 FIX: add `jti` to avoid duplicate refresh tokens
  */
 export const signRefreshToken = (payload: JwtPayload): string => {
   return jwt.sign(
-    payload,
+    {
+      ...payload,
+      jti: crypto.randomUUID(), // ✅ ensures uniqueness
+    },
     ENV.JWT_REFRESH_SECRET as jwt.Secret,
     {
-      expiresIn: ENV.JWT_REFRESH_EXPIRES_IN as any, // 🔥 FIX
+      expiresIn: ENV.JWT_REFRESH_EXPIRES_IN as any,
     }
   );
 };

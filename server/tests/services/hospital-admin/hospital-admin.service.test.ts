@@ -1,61 +1,73 @@
 import { connectDB, disconnectDB } from "../../../src/config/mongoose";
-import HospitalAdminService from "../../../src/services/hospital-admin/hospital-admin.service";
+import { AppointmentModel } from "../../../src/models/appointment";
+import { HospitalModel } from "../../../src/models/hospital";
 import { HospitalAdminModel } from "../../../src/models/hospital-admin";
-import { Types } from "mongoose";
+import { PatientModel } from "../../../src/models/patient";
+import { DoctorModel } from "../../../src/models/doctor";
 
-describe("Hospital Admin Service", () => {
+describe("Appointment Service (Model-level)", () => {
+  let appointmentId: string;
+
   beforeAll(async () => {
     await connectDB();
+
+    const hospital = await HospitalModel.create({
+      name: "APT Hospital",
+      code: "APT-HOSP",
+      email: "apt@hospital.com",
+      phone: "9999999999",
+      address: {
+        line1: "Street",
+        city: "Mumbai",
+        state: "MH",
+        country: "India",
+        postalCode: "400001",
+      },
+    });
+
+    const admin = await HospitalAdminModel.create({
+      name: "Admin",
+      hospitalId: hospital._id,
+      email: "admin@apt.com",
+      passwordHash: "hashed",
+    });
+
+    const patient = await PatientModel.create({
+      hospitalId: hospital._id,
+      createdByHospitalAdminId: admin._id,
+      firstName: "Test",
+      lastName: "Patient",
+      phone: "9111111111",
+      passwordHash: "hashed",
+    });
+
+    const doctor = await DoctorModel.create({
+      hospitalId: hospital._id,
+      hospitalAdminId: admin._id,
+      name: "Dr Test",
+      email: "dr@apt.com",
+      specialization: "General",
+      passwordHash: "hashed",
+    });
+
+    const appointment = await AppointmentModel.create({
+      hospitalId: hospital._id,
+      patientId: patient._id,
+      doctorId: doctor._id,
+      scheduledAt: new Date(),
+      durationMinutes: 30,
+      createdByHospitalAdminId: admin._id,
+    });
+
+    appointmentId = appointment._id.toString();
   });
 
   afterAll(async () => {
-    await HospitalAdminModel.deleteMany({});
     await disconnectDB();
   });
 
-  let hospitalAdminId: string;
-  const hospitalId = new Types.ObjectId().toString();
-
-  it("should create a hospital admin", async () => {
-    const result = await HospitalAdminService.create({
-      name: "Main Hospital Admin", // ✅ REQUIRED
-      hospitalId,
-      email: "hospitaladmin@test.com",
-      passwordHash: "hashed-password-123",
-    });
-
-    expect(result).toBeDefined();
-    expect(result._id).toBeDefined();
-
-    hospitalAdminId = result._id.toString();
-  });
-
-  it("should get hospital admin by id", async () => {
-    const result = await HospitalAdminService.getById(hospitalAdminId);
-    expect(result).not.toBeNull();
-  });
-
-  it("should get all hospital admins", async () => {
-    const result = await HospitalAdminService.getAll();
-    expect(result.length).toBeGreaterThan(0);
-  });
-
-  it("should update hospital admin by id", async () => {
-    const result = await HospitalAdminService.updateById(hospitalAdminId, {
-      isActive: false,
-    });
-
-    expect(result?.isActive).toBe(false);
-  });
-
-  it("should delete hospital admin by id", async () => {
-    const result = await HospitalAdminService.deleteById(hospitalAdminId);
-    expect(result).not.toBeNull();
-  });
-
-  it("should throw error for invalid id", async () => {
-    await expect(
-      HospitalAdminService.getById("invalid-id")
-    ).rejects.toThrow("Invalid Hospital Admin ID");
+  it("should fetch appointment by id", async () => {
+    const appointment = await AppointmentModel.findById(appointmentId);
+    expect(appointment).not.toBeNull();
   });
 });

@@ -16,6 +16,7 @@ export const HospitalSchema = new Schema<Hospital>(
       required: true,
       uppercase: true,
       trim: true,
+      index: true,
     },
 
     email: {
@@ -23,6 +24,7 @@ export const HospitalSchema = new Schema<Hospital>(
       required: true,
       lowercase: true,
       trim: true,
+      index: true,
     },
 
     phone: {
@@ -54,7 +56,7 @@ export const HospitalSchema = new Schema<Hospital>(
     },
 
     /* ================================
-       SUBSCRIPTION (PHASE 2)
+       SUBSCRIPTION
     ================================= */
 
     plan: {
@@ -77,25 +79,11 @@ export const HospitalSchema = new Schema<Hospital>(
 
 /**
  * =========================
- * PHASE 3.1 — DB INDEXING
+ * INDEXES
  * =========================
- */
-
-/**
- * Unique identifiers
  */
 HospitalSchema.index({ code: 1 }, { unique: true });
 HospitalSchema.index({ email: 1 }, { unique: true });
-
-/**
- * Discovery & listing optimization
- */
-HospitalSchema.index({
-  "address.city": 1,
-  isActive: 1,
-});
-
-HospitalSchema.index({
-  status: 1,
-  createdAt: -1,
-});
+HospitalSchema.index({ "address.city": 1, isActive: 1 });
+HospitalSchema.index({ status: 1, createdAt: -1 });
+HospitalSchema.index({ isActive: 1, updatedAt: -1 });

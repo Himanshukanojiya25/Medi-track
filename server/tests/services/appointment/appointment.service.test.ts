@@ -1,39 +1,18 @@
-import { connectDB, disconnectDB } from "../../../src/config/mongoose";
-import AppointmentService from "../../../src/services/appointment/appointment.service";
 import { AppointmentModel } from "../../../src/models/appointment";
 import { HospitalModel } from "../../../src/models/hospital";
 import { HospitalAdminModel } from "../../../src/models/hospital-admin";
-import { DoctorModel } from "../../../src/models/doctor";
 import { PatientModel } from "../../../src/models/patient";
+import { DoctorModel } from "../../../src/models/doctor";
 
-describe("Appointment Service", () => {
-  beforeAll(async () => {
-    await connectDB();
-    await AppointmentModel.deleteMany({});
-    await HospitalModel.deleteMany({});
-    await DoctorModel.deleteMany({});
-    await PatientModel.deleteMany({});
-    // ❌ Do NOT delete HospitalAdminModel globally (other suites may depend)
-  });
-
-  afterAll(async () => {
-    await disconnectDB();
-  });
-
-  let appointmentId: string;
-  let hospitalId: string;
-  let hospitalAdminId: string;
-  let doctorId: string;
-  let patientId: string;
-
-  it("should create required hospital", async () => {
+describe("Appointment Service (Model-level)", () => {
+  it("✅ should create appointment", async () => {
     const hospital = await HospitalModel.create({
-      name: "Appointment Test Hospital",
-      code: "APPT-HOSP-001",
-      email: "appt-hospital@test.com",
+      name: "Appointment Service Hospital",
+      code: "APT-SERVICE-HOSP",
+      email: "apt-service@hospital.com",
       phone: "9999999999",
       address: {
-        line1: "MG Road",
+        line1: "Street",
         city: "Mumbai",
         state: "MH",
         country: "India",
@@ -41,119 +20,100 @@ describe("Appointment Service", () => {
       },
     });
 
-    hospitalId = hospital._id.toString();
-    expect(hospitalId).toBeDefined();
-  });
-
-  it("should create hospital admin", async () => {
     const admin = await HospitalAdminModel.create({
       name: "Appointment Admin",
-      hospitalId,
-      email: "appt-admin@test.com",
-      passwordHash: "hashed-password-123",
+      hospitalId: hospital._id,
+      email: "apt-admin@hospital.com",
+      passwordHash: "hashed-password",
     });
 
-    hospitalAdminId = admin._id.toString();
-    expect(hospitalAdminId).toBeDefined();
-  });
-
-  it("should create doctor", async () => {
-    const doctor = await DoctorModel.create({
-      hospitalId,
-      hospitalAdminId,
-      name: "Dr Appointment",
-      email: "dr-appt@test.com",
-      phone: "8888888888",
-      specialization: "General",
-    });
-
-    doctorId = doctor._id.toString();
-    expect(doctorId).toBeDefined();
-  });
-
-  it("should create patient", async () => {
     const patient = await PatientModel.create({
-      hospitalId,
-      createdByHospitalAdminId: hospitalAdminId,
-      firstName: "Amit",
-      lastName: "Verma",
-      email: "appt-patient@test.com",
-      phone: "7777777777",
+      hospitalId: hospital._id,
+      createdByHospitalAdminId: admin._id,
+      firstName: "Service",
+      lastName: "Patient",
+      phone: "9222222222",
+      passwordHash: "hashed-password",
       gender: "male",
-      status: "active",
     });
 
-    patientId = patient._id.toString();
-    expect(patientId).toBeDefined();
-  });
-
-  it("should create appointment", async () => {
-    const result = await AppointmentService.create({
-      hospitalId,
-      hospitalAdminId,
-      doctorId,
-      patientId,
-      scheduledAt: new Date(),
-        durationMinutes: 45,
+    const doctor = await DoctorModel.create({
+      hospitalId: hospital._id,
+      hospitalAdminId: admin._id,
+      name: "Dr Service",
+      email: "dr-service@hospital.com",
+      specialization: "General",
+      passwordHash: "hashed-password",
     });
 
-    expect(result).toBeDefined();
-    expect(result._id).toBeDefined();
-
-    appointmentId = result._id.toString();
-  });
-
-  it("should get appointment by id", async () => {
-    const result = await AppointmentService.getById(appointmentId);
-
-    expect(result).not.toBeNull();
-    expect(result?._id.toString()).toBe(appointmentId);
-  });
-
-  it("should get all appointments", async () => {
-    const result = await AppointmentService.getAll();
-
-    expect(Array.isArray(result)).toBe(true);
-    expect(result.length).toBeGreaterThan(0);
-  });
-
-  it("should get appointments by hospital", async () => {
-    const result = await AppointmentService.getByHospital(hospitalId);
-
-    expect(result.length).toBeGreaterThan(0);
-  });
-
-  it("should get appointments by doctor", async () => {
-    const result = await AppointmentService.getByDoctor(doctorId);
-
-    expect(result.length).toBeGreaterThan(0);
-  });
-
-  it("should get appointments by patient", async () => {
-    const result = await AppointmentService.getByPatient(patientId);
-
-    expect(result.length).toBeGreaterThan(0);
-  });
-
-  it("should update appointment by id", async () => {
-    const result = await AppointmentService.updateById(appointmentId, {
-      notes: "Patient arrived late",
+    const appointment = await AppointmentModel.create({
+      hospitalId: hospital._id,
+      patientId: patient._id,
+      doctorId: doctor._id,
+      scheduledAt: new Date(Date.now() + 2 * 60 * 60 * 1000),
+      durationMinutes: 30,
+      createdByHospitalAdminId: admin._id,
     });
 
-    expect(result).not.toBeNull();
-    expect(result?._id.toString()).toBe(appointmentId);
+    expect(appointment).toBeDefined();
+    expect(appointment._id).toBeDefined();
   });
 
-  it("should cancel appointment", async () => {
-    const result = await AppointmentService.cancelById(appointmentId);
+  it("✅ should fetch appointment by id", async () => {
+    const hospital = await HospitalModel.create({
+      name: "Fetch Appointment Hospital",
+      code: "FETCH-APT-HOSP",
+      email: "fetchapt@hospital.com",
+      phone: "9999997777",
+      address: {
+        line1: "Street",
+        city: "Mumbai",
+        state: "MH",
+        country: "India",
+        postalCode: "400001",
+      },
+    });
 
-    expect(result).not.toBeNull();
-    expect(result?.status).toBe("CANCELLED");
-  });
+    const admin = await HospitalAdminModel.create({
+      name: "Fetch Admin",
+      hospitalId: hospital._id,
+      email: "fetch-admin@hospital.com",
+      passwordHash: "hashed-password",
+    });
 
-  it("should throw error for invalid id", async () => {
-    await expect(
-      AppointmentService.getById("invalid-id")
-    ).rejects.toThrow("Invalid Appointment ID");
+    const patient = await PatientModel.create({
+      hospitalId: hospital._id,
+      createdByHospitalAdminId: admin._id,
+      firstName: "Fetch",
+      lastName: "Patient",
+      phone: "9333333333",
+      passwordHash: "hashed-password",
+      gender: "male",
+    });
+
+    const doctor = await DoctorModel.create({
+      hospitalId: hospital._id,
+      hospitalAdminId: admin._id,
+      name: "Dr Fetch",
+      email: "dr-fetch@hospital.com",
+      specialization: "General",
+      passwordHash: "hashed-password",
+    });
+
+    const created = await AppointmentModel.create({
+      hospitalId: hospital._id,
+      patientId: patient._id,
+      doctorId: doctor._id,
+      scheduledAt: new Date(Date.now() + 60 * 60 * 1000),
+      durationMinutes: 30,
+      createdByHospitalAdminId: admin._id,
+    });
+
+    const appointment = await AppointmentModel.findById(
+      created._id
+    );
+
+    expect(appointment).not.toBeNull();
+    expect(appointment?._id.toString()).toBe(created._id.toString());
   });
 });

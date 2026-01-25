@@ -1,78 +1,68 @@
 import { hashPassword } from "../../utils/auth/password.util";
 import { PatientModel } from "../../models/patient";
-import { Types } from "mongoose";
 
 /**
  * Input required for patient registration
  */
-interface RegisterPatientInput {
-  name: string;
+export interface RegisterPatientInput {
+  firstName: string;
+  lastName?: string;
   email: string;
   password: string;
   phone?: string;
 }
 
 /**
- * DB view used internally (safe subset)
- */
-interface PatientCreateDoc {
-  _id: Types.ObjectId;
-  name: string;
-  email: string;
-  phone?: string;
-  role: string;
-  isActive: boolean;
-}
-
-/**
  * Safe response after registration
  */
-interface RegisterPatientResponse {
+export interface RegisterPatientResponse {
   id: string;
-  name: string;
+  fullName: string;
   email: string;
   phone?: string;
-  role: string;
-  isActive: boolean;
+  role: "PATIENT";
+  isActive: true;
 }
 
-/**
- * Register Patient Service
- */
 export const registerPatientService = async (
   input: RegisterPatientInput
 ): Promise<RegisterPatientResponse> => {
-  const { name, email, password, phone } = input;
+  const { firstName, lastName, email, password, phone } = input;
 
-  // 1️⃣ Check if email already exists
-  const existingPatient = await PatientModel.findOne({ email }).lean();
-
-  if (existingPatient) {
+  // 1️⃣ Duplicate check
+  const exists = await PatientModel.findOne({ email }).lean();
+  if (exists) {
     throw new Error("Email already registered");
   }
 
   // 2️⃣ Hash password
-  const hashedPassword = await hashPassword(password);
+  const passwordHash = await hashPassword(password);
 
-  // 3️⃣ Create patient & immediately convert to safe view
-  const createdPatient = await PatientModel.create({
-    name,
+  // 3️⃣ Create patient (ONLY schema fields)
+  const created = await PatientModel.create({
+    firstName,
+    lastName,
     email,
-    password: hashedPassword,
+    passwordHash,
     phone,
-    role: "PATIENT",
-    isActive: true,
   });
 
-const patient = (createdPatient.toObject() as unknown) as PatientCreateDoc;
+  // 4️⃣ Fetch lean object
+  const patient = await PatientModel.findById(created._id)
+    .select("firstName lastName email phone")
+    .lean();
 
-  // 4️⃣ Return safe response (NO mongoose document)
+  if (!patient || !patient.email) {
+    throw new Error("Patient creation failed");
+  }
+
+  // 5️⃣ Normalized response (NO schema assumptions)
   return {
     id: patient._id.toString(),
-    name: patient.name,
+    fullName: `${patient.firstName ?? ""} ${patient.lastName ?? ""}`.trim(),
     email: patient.email,
     phone: patient.phone,
-    role: patient.role,
-    isActive: patient.isActive,
+    role: "PATIENT",
+    isActive: true,
   };
 };

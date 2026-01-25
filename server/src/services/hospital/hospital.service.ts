@@ -1,108 +1,67 @@
 import { Types } from "mongoose";
 import { HospitalModel } from "../../models/hospital";
-import { CacheService } from "../../cache/cache.service";
-import { CacheKeys } from "../../cache/cache.keys";
-import { CacheTTL } from "../../cache/cache.ttl";
+import { HOSPITAL_STATUS } from "../../constants/status";
 
-/**
- * Hospital Service
- * ----------------
- * Pure business logic layer.
- * No Express, no req/res.
- */
 export default class HospitalService {
   /**
-   * Create Hospital
+   * Create hospital
    */
   static async create(payload: Record<string, unknown>) {
-    const hospital = new HospitalModel(payload);
-    const saved = await hospital.save();
-
-    // Invalidate hospital listings cache
-    await CacheService.invalidateByPattern("hospital:list");
-
-    return saved;
+    return HospitalModel.create(payload);
   }
 
   /**
-   * Get Hospital by ID
+   * Get hospital by ID
    */
   static async getById(id: string) {
     if (!Types.ObjectId.isValid(id)) {
       throw new Error("Invalid Hospital ID");
     }
-
-    return HospitalModel.findById(id).exec();
+    return HospitalModel.findById(id);
   }
 
   /**
-   * Get all Hospitals (CACHED)
+   * ✅ Get all hospitals
+   * (Used by controller)
    */
   static async getAll() {
-    const cacheKey = CacheKeys.hospital.list();
-
-    // 1️⃣ Try cache first
-  const cached = await CacheService.get(cacheKey);
-if (cached) {
-  console.log("⚡ HOSPITAL CACHE HIT");
-  return cached;
-}
-
-console.log("🐢 HOSPITAL CACHE MISS");
-
-
-    // 2️⃣ DB query
-    const hospitals = await HospitalModel.find().exec();
-
-    // 3️⃣ Store in cache
-    await CacheService.set(
-      cacheKey,
-      hospitals,
-      CacheTTL.hospitalList
-    );
-
-    return hospitals;
+    return HospitalModel.find();
   }
 
   /**
-   * Update Hospital by ID
+   * Update hospital by ID
    */
-  static async updateById(
-    id: string,
-    payload: Partial<Record<string, unknown>>
-  ) {
+  static async updateById(id: string, payload: { name?: string }) {
     if (!Types.ObjectId.isValid(id)) {
       throw new Error("Invalid Hospital ID");
     }
 
-    const updated = await HospitalModel.findByIdAndUpdate(id, payload, {
-      new: true,
-      runValidators: true,
-    }).exec();
+    const hospital = await HospitalModel.findById(id);
+    if (!hospital) return null;
 
-    // Invalidate hospital listings cache
-    await CacheService.invalidateByPattern("hospital:list");
+    if (payload.name !== undefined) {
+      hospital.name = payload.name;
+    }
 
-    return updated;
+    await hospital.save();
+    return hospital;
   }
 
   /**
-   * Deactivate Hospital (soft control via status)
+   * Deactivate hospital
    */
   static async deactivateById(id: string) {
     if (!Types.ObjectId.isValid(id)) {
       throw new Error("Invalid Hospital ID");
     }
 
-    const updated = await HospitalModel.findByIdAndUpdate(
-      id,
-      { status: "INACTIVE" },
-      { new: true }
-    ).exec();
+    const hospital = await HospitalModel.findById(id);
+    if (!hospital) return null;
 
-    // Invalidate hospital listings cache
-    await CacheService.invalidateByPattern("hospital:list");
+    hospital.status = HOSPITAL_STATUS.INACTIVE;
+    hospital.isActive = false;
 
-    return updated;
+    await hospital.save();
+    return hospital;
   }
 }

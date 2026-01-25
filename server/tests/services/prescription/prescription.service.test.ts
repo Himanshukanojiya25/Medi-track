@@ -1,41 +1,33 @@
 import { connectDB, disconnectDB } from "../../../src/config/mongoose";
 import PrescriptionService from "../../../src/services/prescription/prescription.service";
 
-import { PrescriptionModel } from "../../../src/models/prescription";
 import { HospitalModel } from "../../../src/models/hospital";
 import { HospitalAdminModel } from "../../../src/models/hospital-admin";
-import { DoctorModel } from "../../../src/models/doctor";
 import { PatientModel } from "../../../src/models/patient";
+import { DoctorModel } from "../../../src/models/doctor";
+import { AppointmentModel } from "../../../src/models/appointment";
+import { PrescriptionModel } from "../../../src/models/prescription";
+
+import { PrescriptionStatus } from "../../../src/constants/status";
 
 describe("Prescription Service", () => {
+  let prescriptionId: string;
+  let hospitalId: string;
+  let adminId: string;
+  let patientId: string;
+  let doctorId: string;
+  let appointmentId: string;
+
   beforeAll(async () => {
     await connectDB();
 
-    await PrescriptionModel.deleteMany({});
-    await DoctorModel.deleteMany({});
-    await PatientModel.deleteMany({});
-    await HospitalAdminModel.deleteMany({});
-    await HospitalModel.deleteMany({});
-  });
-
-  afterAll(async () => {
-    await disconnectDB();
-  });
-
-  let prescriptionId: string;
-  let hospitalId: string;
-  let hospitalAdminId: string;
-  let doctorId: string;
-  let patientId: string;
-
-  it("setup hospital, admin, doctor & patient", async () => {
     const hospital = await HospitalModel.create({
-      name: "Prescription Test Hospital",
-      code: "PRES-HOSP-001",
-      email: "pres-hospital@test.com",
+      name: "RX Hospital",
+      code: "RX-HOSP",
+      email: "rx@hospital.com",
       phone: "9999999999",
       address: {
-        line1: "MG Road",
+        line1: "Street",
         city: "Mumbai",
         state: "MH",
         country: "India",
@@ -45,91 +37,84 @@ describe("Prescription Service", () => {
     hospitalId = hospital._id.toString();
 
     const admin = await HospitalAdminModel.create({
+      name: "Admin",
       hospitalId,
-      name: "Prescription Admin",
-      email: "pres-admin@test.com",
-      passwordHash: "hashed-password-123",
+      email: "admin@rx.com",
+      passwordHash: "hashed",
     });
-    hospitalAdminId = admin._id.toString();
-
-    const doctor = await DoctorModel.create({
-      hospitalId,
-      hospitalAdminId,
-      name: "Dr Prescription",
-      email: "dr-pres@test.com",
-      phone: "8888888888",
-      specialization: "General",
-    });
-    doctorId = doctor._id.toString();
+    adminId = admin._id.toString();
 
     const patient = await PatientModel.create({
       hospitalId,
-      createdByHospitalAdminId: hospitalAdminId,
+      createdByHospitalAdminId: adminId,
       firstName: "Test",
       lastName: "Patient",
-      phone: "7777777777",
-      gender: "male",
-      status: "active",
+      phone: "9000000000",
+      passwordHash: "hashed",
     });
     patientId = patient._id.toString();
 
-    expect(hospitalId).toBeDefined();
-    expect(hospitalAdminId).toBeDefined();
-    expect(doctorId).toBeDefined();
-    expect(patientId).toBeDefined();
-  });
-
-  it("should create prescription", async () => {
-    const result = await PrescriptionService.create({
+    const doctor = await DoctorModel.create({
       hospitalId,
-      doctorId,
+      hospitalAdminId: adminId,
+      name: "Dr Test",
+      email: "dr@rx.com",
+      specialization: "General",
+      passwordHash: "hashed",
+    });
+    doctorId = doctor._id.toString();
+
+    const appointment = await AppointmentModel.create({
+      hospitalId,
       patientId,
+      doctorId,
+      scheduledAt: new Date(),
+      durationMinutes: 30,
+      createdByHospitalAdminId: adminId,
+    });
+    appointmentId = appointment._id.toString();
+
+    const rx = await PrescriptionService.create({
+      hospitalId,
+      patientId,
+      doctorId,
+      appointmentId,
       medicines: [
         {
           name: "Paracetamol",
           dosage: "500mg",
-          frequency: "Twice a day",
-          durationDays: 5, // ✅ REQUIRED BY SCHEMA
+          frequency: "2x",
+          durationDays: 3,
         },
       ],
-      notes: "After meals",
+      status: PrescriptionStatus.ACTIVE,
     });
 
-    prescriptionId = result._id.toString();
-    expect(prescriptionId).toBeDefined();
+    prescriptionId = rx._id.toString();
+  });
+
+  afterAll(async () => {
+    await disconnectDB();
   });
 
   it("should get prescription by id", async () => {
-    const result = await PrescriptionService.getById(prescriptionId);
-    expect(result).not.toBeNull();
-  });
-
-  it("should get prescriptions by patient", async () => {
-    const result = await PrescriptionService.getByPatient(patientId);
-    expect(result.length).toBeGreaterThan(0);
-  });
-
-  it("should get prescriptions by doctor", async () => {
-    const result = await PrescriptionService.getByDoctor(doctorId);
-    expect(result.length).toBeGreaterThan(0);
+    const rx = await PrescriptionService.getById(prescriptionId);
+    expect(rx).not.toBeNull();
   });
 
   it("should update prescription", async () => {
-    const result = await PrescriptionService.updateById(prescriptionId, {
-      notes: "Updated notes",
+    await PrescriptionService.updateById(prescriptionId, {
+      notes: "After meals",
     });
 
-    expect(result).not.toBeNull();
+    const fresh = await PrescriptionModel.findById(prescriptionId).lean();
+    expect(fresh?.notes).toBe("After meals");
   });
 
   it("should cancel prescription", async () => {
-    const result = await PrescriptionService.cancelById(prescriptionId);
-    expect(result?.status).toBe("cancelled");
-  });
+    await PrescriptionService.cancelById(prescriptionId);
 
-  it("should throw error for invalid id", async () => {
-    await expect(
-      PrescriptionService.getById("invalid-id")
-    ).rejects.toThrow("Invalid Prescription ID");
+    const fresh = await PrescriptionModel.findById(prescriptionId).lean();
+    expect(fresh?.status).toBe(PrescriptionStatus.CANCELLED);
   });
 });

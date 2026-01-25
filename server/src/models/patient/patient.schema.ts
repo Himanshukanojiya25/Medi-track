@@ -17,7 +17,7 @@ export const PatientSchema = new Schema<IPatient>(
       type: Schema.Types.ObjectId,
       ref: "HospitalAdmin",
       index: true,
-      required: false, // ✅ self-signup allowed
+      required: false, // self-signup allowed
     },
 
     firstName: {
@@ -54,11 +54,9 @@ export const PatientSchema = new Schema<IPatient>(
     },
 
     /**
-     * 🔐 AUTH FIELD (CRITICAL)
-     * Stored as hash
-     * Hidden by default in queries
+     * 🔐 AUTH FIELD (LOCKED)
      */
-    password: {
+    passwordHash: {
       type: String,
       required: true,
       select: false,
@@ -84,27 +82,11 @@ export const PatientSchema = new Schema<IPatient>(
       relation: { type: String, trim: true },
     },
 
-    /**
-     * STATUS
-     * Backward compatible (ACTIVE / active)
-     */
     status: {
       type: String,
       enum: Object.values(PatientStatus),
       default: PatientStatus.ACTIVE,
       index: true,
-      set: (value: string) => {
-        if (!value) return PatientStatus.ACTIVE;
-
-        if (value === "ACTIVE") return PatientStatus.ACTIVE;
-        if (value === "INACTIVE") return PatientStatus.INACTIVE;
-
-        const normalized = value.toLowerCase();
-        if (normalized === "active") return PatientStatus.ACTIVE;
-        if (normalized === "inactive") return PatientStatus.INACTIVE;
-
-        return value;
-      },
     },
   },
   {
@@ -114,9 +96,8 @@ export const PatientSchema = new Schema<IPatient>(
 );
 
 /**
- * 📌 Compound index
- * One phone number must be unique per hospital
- * Self-signup patients have hospitalId = null → ignored by index
+ * One phone per hospital
+ * Self-signup patients (hospitalId = null) ignored
  */
 PatientSchema.index(
   { hospitalId: 1, phone: 1 },

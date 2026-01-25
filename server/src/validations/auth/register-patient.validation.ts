@@ -1,16 +1,25 @@
-// src/validations/auth/register-patient.validation.ts
-
 import { z } from "zod";
 
 /**
  * Patient registration validation
+ * --------------------------------
+ * Must stay in sync with:
+ * - Patient schema
+ * - registerPatientController
+ * - registerPatientService
  */
 export const registerPatientSchema = z.object({
   body: z.object({
-    name: z
+    firstName: z
       .string()
-      .min(2, "Name must be at least 2 characters")
-      .max(100, "Name is too long"),
+      .min(2, "First name must be at least 2 characters")
+      .max(50, "First name is too long"),
+
+    lastName: z
+      .string()
+      .min(2, "Last name must be at least 2 characters")
+      .max(50, "Last name is too long")
+      .optional(),
 
     email: z
       .string()
