@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from 'express';
-import { HttpError } from '../../utils/response';
-import { ROLES } from '../../constants/roles';
+import { Request, Response, NextFunction } from "express";
+import { HttpError } from "../../utils/response";
+import { ROLES } from "../../constants/roles";
 
 export const requireSuperAdmin = (
   req: Request,
@@ -8,11 +8,11 @@ export const requireSuperAdmin = (
   next: NextFunction
 ) => {
   if (!req.user) {
-    throw new HttpError('Unauthorized', 401);
+    throw new HttpError("Unauthorized", 401);
   }
 
   if (req.user.role !== ROLES.SUPER_ADMIN) {
-    throw new HttpError('Super admin access required', 403);
+    throw new HttpError("Super admin access required", 403);
   }
 
   next();

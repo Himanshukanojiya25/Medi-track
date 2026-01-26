@@ -45,6 +45,13 @@ export const DoctorSchema = new Schema(
       index: true,
     },
 
+ departmentId: {
+  type: Schema.Types.ObjectId,
+  ref: "Department",
+  index: true,
+},
+
+
     /**
      * 🔐 AUTH FIELD
      */

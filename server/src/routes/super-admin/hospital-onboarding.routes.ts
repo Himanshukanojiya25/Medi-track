@@ -1,35 +1,41 @@
-import { Router } from 'express';
-import { HospitalOnboardingController } from '../../controllers/super-admin/hospital-onboarding.controller';
+import { Router } from "express";
+import { HospitalOnboardingController } from "../../controllers/super-admin/hospital-onboarding.controller";
 
-// ✅ DEFAULT IMPORT (VERY IMPORTANT)
-import authenticate from '../../middlewares/auth/authenticate.middleware';
-import { requireSuperAdmin } from '../../middlewares/super-admin/require-super-admin.middleware';
+import { requireAuth } from "../../middlewares/auth/require-auth.middleware";
+import { requireSuperAdmin } from "../../middlewares/super-admin/require-super-admin.middleware";
 
-// ✅ validate IS NAMED EXPORT
-import { validate } from '../../middlewares/validation/zod-validation.middleware';
+import { validate } from "../../middlewares/validation/zod-validation.middleware";
 
 import {
   hospitalIdParamSchema,
   rejectHospitalSchema,
-} from '../../validations/super-admin/hospital-onboarding.validation';
+} from "../../validations/super-admin/hospital-onboarding.validation";
 
 const router = Router();
 
 /**
- * All routes below require:
- * 1. Authenticated user
- * 2. SUPER_ADMIN role
+ * ============================
+ * 🔐 SUPER ADMIN ONLY ROUTES
+ * ============================
  */
-router.use(authenticate, requireSuperAdmin);
+router.use(requireAuth, requireSuperAdmin);
 
+/**
+ * ✅ APPROVE HOSPITAL
+ * POST /api/v1/super-admin/hospitals/:hospitalId/approve
+ */
 router.post(
-  '/:hospitalId/approve',
+  "/:hospitalId/approve",
   validate({ params: hospitalIdParamSchema }),
   HospitalOnboardingController.approve
 );
 
+/**
+ * ❌ REJECT HOSPITAL
+ * POST /api/v1/super-admin/hospitals/:hospitalId/reject
+ */
 router.post(
-  '/:hospitalId/reject',
+  "/:hospitalId/reject",
   validate({
     params: hospitalIdParamSchema,
     body: rejectHospitalSchema,
@@ -37,8 +43,12 @@ router.post(
   HospitalOnboardingController.reject
 );
 
+/**
+ * 🛑 SUSPEND HOSPITAL
+ * POST /api/v1/super-admin/hospitals/:hospitalId/suspend
+ */
 router.post(
-  '/:hospitalId/suspend',
+  "/:hospitalId/suspend",
   validate({ params: hospitalIdParamSchema }),
   HospitalOnboardingController.suspend
 );

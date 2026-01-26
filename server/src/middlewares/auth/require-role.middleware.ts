@@ -23,25 +23,33 @@ export const requireRole =
     }
 
     /**
-     * 🔥 IMPORTANT FIX
-     * Tell TypeScript that role is a valid Role
+     * 🔒 Canonical role from JWT
+     * Runtime guarantee: always valid Role
+     * TS fix: explicit assertion
      */
-const userRole = req.user.role as any;
+    const userRole = req.user.role as Role;
 
-console.log("==== RBAC DEBUG ====");
-console.log("req.user:", req.user);
-console.log("userRole:", userRole, typeof userRole);
-console.log("allowedRoles:", allowedRoles);
-console.log("====================");
+    /**
+     * 🔍 Debug (optional)
+     */
+    console.log("==== RBAC DEBUG ====");
+    console.log("req.user:", req.user);
+    console.log("userRole:", userRole);
+    console.log("allowedRoles:", allowedRoles);
+    console.log("====================");
 
-if (!allowedRoles.includes(userRole)) {
-  return res.status(403).json({
-    success: false,
-    message: "Access denied",
-  });
-}
+    /**
+     * ❌ Access denied if role not allowed
+     */
+    if (!allowedRoles.includes(userRole)) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied",
+      });
+    }
 
-
-
+    /**
+     * ✅ Role allowed
+     */
     next();
   };

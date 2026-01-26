@@ -1,3 +1,8 @@
+import dotenv from "dotenv";
+
+// 🔥 EXPLICIT PATH TO server/.env
+dotenv.config({ path: "./server/.env" });
+
 import app from "./app";
 import { ENV } from "./config/env";
 import { connectDB } from "./config/mongoose";

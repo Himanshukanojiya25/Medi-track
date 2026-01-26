@@ -22,6 +22,12 @@ import prescriptionRoutes from "./prescription/prescription.routes";
 import aiRoutes from "./ai";
 import notificationRoutes from "./notification/notification.routes";
 import doctorLeaveRoutes from "./doctor-leave/doctor-leave.routes";
+import doctorAvailabilityRoutes from "./doctor-availability/doctor-availability.routes";
+
+/**
+ * 🔥 NEW: DEPARTMENT ROUTES
+ */
+import departmentRoutes from "./department/department.routes";
 
 import { requireAuth } from "../middlewares/auth/require-auth.middleware";
 import { requireRole } from "../middlewares/auth/require-role.middleware";
@@ -32,9 +38,6 @@ const router = Router();
  * ============================
  * 🔓 AUTH ROUTES (NO AUTH)
  * ============================
- * IMPORTANT:
- * Auth routes MUST be mounted FIRST
- * Otherwise 404 / auth issues can happen
  */
 router.use("/auth", authRoutes);
 
@@ -120,6 +123,20 @@ router.use("/notifications", notificationRoutes);
  * ============================
  */
 router.use("/doctor-leaves", doctorLeaveRoutes);
+
+/**
+ * ============================
+ * 🕒 DOCTOR AVAILABILITY
+ * ============================
+ */
+router.use("/doctor-availability", doctorAvailabilityRoutes);
+
+/**
+ * ============================
+ * 🏥 DEPARTMENTS  🔥🔥🔥
+ * BASE: /api/v1/departments
+ */
+router.use("/departments", departmentRoutes);
 
 /**
  * ============================

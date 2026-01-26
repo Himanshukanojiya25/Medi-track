@@ -1,18 +1,34 @@
 import { Router } from "express";
 import DoctorController from "../../controllers/doctor/doctor.controller";
 import { requireAuth } from "../../middlewares/auth/require-auth.middleware";
-import { authorize } from "../../middlewares/auth/authorize.middleware";
+import { requireRole } from "../../middlewares/auth/require-role.middleware";
+import { validate } from "../../middlewares/validation";
+import { doctorListQuerySchema } from "../../validations/doctor/doctor.query.validation";
 
 const router = Router();
 
 /**
- * Create Doctor
- * Only hospital-admin allowed
+ * ============================
+ * 🔥 OPTION A: LIST DOCTORS (PATIENT / PUBLIC)
+ * ============================
+ * GET /api/v1/doctors
+ */
+router.get(
+  "/",
+  validate({ query: doctorListQuerySchema }),
+  DoctorController.listForPatients
+);
+
+/**
+ * ============================
+ * 👨‍⚕️ CREATE DOCTOR
+ * Only HOSPITAL_ADMIN allowed
+ * ============================
  */
 router.post(
   "/",
-  requireAuth,                  // ✅ JWT → req.user
-  authorize("hospital-admin"),  // ✅ RBAC
+  requireAuth,
+  requireRole("HOSPITAL_ADMIN"),
   DoctorController.create
 );
 

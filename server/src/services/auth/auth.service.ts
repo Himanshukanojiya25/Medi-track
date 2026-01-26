@@ -1,6 +1,7 @@
 import crypto from "crypto";
+import bcrypt from "bcrypt";
+
 import { LoginInput, LoginResponse } from "../../types/auth";
-import { comparePassword } from "../../utils/auth/password.util";
 import {
   signAccessToken,
   signRefreshToken,
@@ -36,6 +37,9 @@ export const loginService = async (
   let passwordHash: string | null = null;
   let hospitalId: string | undefined;
 
+  // ===============================
+  // SUPER ADMIN
+  // ===============================
   const superAdmin = await SuperAdminModel
     .findOne({ email })
     .select("+passwordHash");
@@ -46,6 +50,9 @@ export const loginService = async (
     passwordHash = superAdmin.passwordHash;
   }
 
+  // ===============================
+  // HOSPITAL ADMIN
+  // ===============================
   if (!user) {
     const hospitalAdmin = await HospitalAdminModel
       .findOne({ email })
@@ -59,6 +66,9 @@ export const loginService = async (
     }
   }
 
+  // ===============================
+  // DOCTOR
+  // ===============================
   if (!user) {
     const doctor = await DoctorModel
       .findOne({ email })
@@ -68,10 +78,13 @@ export const loginService = async (
       user = doctor;
       role = "DOCTOR";
       passwordHash = doctor.passwordHash;
-      hospitalId = doctor.hospitalId.toString();
+      hospitalId = doctor.hospitalId?.toString();
     }
   }
 
+  // ===============================
+  // PATIENT
+  // ===============================
   if (!user) {
     const patient = await PatientModel
       .findOne({ email })
@@ -85,15 +98,25 @@ export const loginService = async (
     }
   }
 
+  // ===============================
+  // VALIDATION
+  // ===============================
   if (!user || !passwordHash || !role) {
     throw new Error("Invalid email or password");
   }
 
-  const isValid = await comparePassword(password, passwordHash);
+  /**
+   * 🔥 FINAL FIX
+   * Direct bcrypt.compare (no custom util)
+   */
+  const isValid = await bcrypt.compare(password, passwordHash);
   if (!isValid) {
     throw new Error("Invalid email or password");
   }
 
+  // ===============================
+  // TOKEN PAYLOAD
+  // ===============================
   const payload = {
     id: user._id.toString(),
     role,
@@ -103,6 +126,9 @@ export const loginService = async (
   const accessToken = signAccessToken(payload);
   const refreshToken = signRefreshToken(payload);
 
+  // ===============================
+  // REFRESH TOKEN STORE
+  // ===============================
   await RefreshTokenModel.create({
     userId: payload.id,
     tokenHash: hashToken(refreshToken),

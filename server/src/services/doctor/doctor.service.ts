@@ -17,50 +17,39 @@ import { ENV } from "../../config/env";
  */
 export default class DoctorService {
   /**
-   * Create Doctor
-   * 🔐 Password hashing handled here
+   * ============================
+   * CREATE DOCTOR (Hospital Admin)
+   * ============================
    */
   static async create(payload: Record<string, unknown>) {
-    /**
-     * 1️⃣ Validate password presence
-     */
     if (!payload.password) {
       throw new Error("Password is required");
     }
 
-    /**
-     * 2️⃣ Hash password
-     */
     const passwordHash = await bcrypt.hash(
       String(payload.password),
       ENV.BCRYPT_SALT_ROUNDS
     );
 
-    /**
-     * 3️⃣ Remove raw password (security)
-     */
     delete payload.password;
 
-    /**
-     * 4️⃣ Create doctor document
-     */
     const doctor = new DoctorModel({
       ...payload,
-      passwordHash, // ✅ REQUIRED by schema
+      passwordHash,
     });
 
     const saved = await doctor.save();
 
-    /**
-     * 5️⃣ Invalidate doctor list cache
-     */
+    // Invalidate all doctor lists
     await CacheService.invalidateByPattern("doctor:list");
 
     return saved;
   }
 
   /**
-   * Get Doctor by ID
+   * ============================
+   * GET DOCTOR BY ID
+   * ============================
    */
   static async getById(id: string) {
     if (!Types.ObjectId.isValid(id)) {
@@ -71,30 +60,20 @@ export default class DoctorService {
   }
 
   /**
-   * Get all Doctors (CACHED)
+   * ============================
+   * GET ALL DOCTORS (ADMIN USE)
+   * ============================
    */
   static async getAll() {
     const cacheKey = CacheKeys.doctor.listByHospital("all");
 
-    /**
-     * 1️⃣ Try cache
-     */
     const cached = await CacheService.get(cacheKey);
     if (cached) {
-      console.log("⚡ DOCTOR CACHE HIT");
       return cached;
     }
 
-    console.log("🐢 DOCTOR CACHE MISS");
-
-    /**
-     * 2️⃣ DB query
-     */
     const doctors = await DoctorModel.find().exec();
 
-    /**
-     * 3️⃣ Store in cache
-     */
     await CacheService.set(
       cacheKey,
       doctors,
@@ -105,7 +84,53 @@ export default class DoctorService {
   }
 
   /**
-   * Update Doctor by ID
+   * ============================
+   * 🔥 OPTION A: GET DOCTORS FOR PATIENTS
+   * ============================
+   * Public / Patient-safe listing
+   */
+  static async getDoctorsForPatients(filters: {
+    departmentId?: string;
+    hospitalId?: string;
+  }) {
+    const query: any = {
+      isActive: true,
+    };
+
+    if (filters.hospitalId) {
+      query.hospitalId = filters.hospitalId;
+    }
+
+    if (filters.departmentId) {
+      query.departmentIds = filters.departmentId;
+    }
+
+    const cacheKey = CacheKeys.doctor.listByHospital(
+      `${filters.hospitalId || "all"}:${filters.departmentId || "all"}`
+    );
+
+    const cached = await CacheService.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    const doctors = await DoctorModel.find(query)
+      .select("name specialization hospitalId departmentIds")
+      .lean();
+
+    await CacheService.set(
+      cacheKey,
+      doctors,
+      CacheTTL.doctorList
+    );
+
+    return doctors;
+  }
+
+  /**
+   * ============================
+   * UPDATE DOCTOR
+   * ============================
    */
   static async updateById(
     id: string,
@@ -115,9 +140,6 @@ export default class DoctorService {
       throw new Error("Invalid Doctor ID");
     }
 
-    /**
-     * 🔐 If password update requested → hash again
-     */
     if (payload.password) {
       payload.passwordHash = await bcrypt.hash(
         String(payload.password),
@@ -131,16 +153,15 @@ export default class DoctorService {
       runValidators: true,
     }).exec();
 
-    /**
-     * Invalidate cache
-     */
     await CacheService.invalidateByPattern("doctor:list");
 
     return updated;
   }
 
   /**
-   * Delete Doctor by ID
+   * ============================
+   * DELETE DOCTOR
+   * ============================
    */
   static async deleteById(id: string) {
     if (!Types.ObjectId.isValid(id)) {
@@ -149,9 +170,6 @@ export default class DoctorService {
 
     const deleted = await DoctorModel.findByIdAndDelete(id).exec();
 
-    /**
-     * Invalidate cache
-     */
     await CacheService.invalidateByPattern("doctor:list");
 
     return deleted;
