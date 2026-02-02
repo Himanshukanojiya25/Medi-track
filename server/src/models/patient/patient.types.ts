@@ -30,6 +30,13 @@ export interface IPatient {
 
   status: PatientStatus;
 
-  createdAt: Date;
-  updatedAt: Date;
+  /**
+   * =========================
+   * SOFT BLOCK (PHASE-2.5)
+   * =========================
+   */
+  isBlocked: boolean;
+
+  createdAt?: Date;
+  updatedAt?: Date;
 }

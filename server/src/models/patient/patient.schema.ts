@@ -1,14 +1,13 @@
 import { Schema } from "mongoose";
-import { IPatient } from "./patient.types";
 import { PatientStatus } from "../../constants/status";
 
-export const PatientSchema = new Schema<IPatient>(
+export const PatientSchema = new Schema(
   {
     hospitalId: {
       type: Schema.Types.ObjectId,
       ref: "Hospital",
       index: true,
-      required: function () {
+      required: function (this: any): boolean {
         return this.createdByHospitalAdminId != null;
       },
     },
@@ -25,7 +24,7 @@ export const PatientSchema = new Schema<IPatient>(
       trim: true,
       minlength: 2,
       maxlength: 50,
-      required: function () {
+      required: function (this: any): boolean {
         return this.createdByHospitalAdminId != null;
       },
     },
@@ -35,7 +34,7 @@ export const PatientSchema = new Schema<IPatient>(
       trim: true,
       minlength: 2,
       maxlength: 50,
-      required: function () {
+      required: function (this: any): boolean {
         return this.createdByHospitalAdminId != null;
       },
     },
@@ -86,6 +85,17 @@ export const PatientSchema = new Schema<IPatient>(
       type: String,
       enum: Object.values(PatientStatus),
       default: PatientStatus.ACTIVE,
+      index: true,
+    },
+
+    /**
+     * =========================
+     * SOFT BLOCK (PHASE-2.5)
+     * =========================
+     */
+    isBlocked: {
+      type: Boolean,
+      default: false,
       index: true,
     },
   },

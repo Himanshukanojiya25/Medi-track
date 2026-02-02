@@ -1,6 +1,9 @@
 import { Router } from "express";
 import AppointmentController from "../../controllers/appointment/appointment.controller";
+import AppointmentCancelController from "../../controllers/appointment/appointment.cancel.controller";
+import AppointmentPatientListController from "../../controllers/appointment/appointment.patient.list.controller";
 import { devAuth } from "../../middlewares/auth/dev-auth.middleware";
+import AppointmentCompleteController from "../../controllers/appointment/appointment.complete.controller";
 
 const router = Router();
 
@@ -20,7 +23,17 @@ router.post("/", AppointmentController.create);
  */
 router.get("/hospital/:hospitalId", AppointmentController.getByHospital);
 router.get("/doctor/:doctorId", AppointmentController.getByDoctor);
-router.get("/patient/:patientId", AppointmentController.getByPatient);
+
+/**
+ * ✅ PATIENT DASHBOARD – LIST OWN APPOINTMENTS
+ * GET /api/v1/appointments/patient
+ * ?type=UPCOMING | PAST | ALL
+ */
+router.get(
+  "/patient",
+  devAuth,
+  AppointmentPatientListController.list
+);
 
 /**
  * Generic routes AFTER
@@ -29,19 +42,27 @@ router.get("/", AppointmentController.getAll);
 router.get("/:id", AppointmentController.getById);
 
 /**
- * Update / Cancel / Reschedule
+ * Update Appointment
  */
 router.put("/:id", AppointmentController.updateById);
 
-router.patch("/:id/cancel", AppointmentController.cancelById);
+/**
+ * ✅ PATIENT CANCEL APPOINTMENT
+ * PATCH /api/v1/appointments/:id/cancel
+ */
+router.patch("/:id/cancel", AppointmentCancelController.cancel);
 
 /**
- * 🔥 RESCHEDULE APPOINTMENT (NEW)
+ * 🔥 RESCHEDULE APPOINTMENT (FUTURE)
+ */
+router.patch("/:id/reschedule", devAuth, AppointmentController.reschedule);
+
+/**
+ * ✅ DOCTOR COMPLETE APPOINTMENT
+ * PATCH /api/v1/appointments/:id/complete
  */
 router.patch(
-  "/:id/reschedule",
-  devAuth,
-  AppointmentController.reschedule
-);
+  "/:id/complete", devAuth, AppointmentCompleteController.complete);
+
 
 export default router;
