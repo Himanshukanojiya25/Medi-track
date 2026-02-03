@@ -10,9 +10,9 @@ export function devAuth(
   next: NextFunction
 ): void {
   req.user = {
-    id: "69601aabfc7a199f1749919d",          // 🔒 FIXED ADMIN USER ID
-    role: "hospital-admin",                 // ✅ REQUIRED ROLE
-    hospitalId: "69601aabfc7a199f1749919e",  // 🔒 FIXED HOSPITAL ID
+    id: "69601aabfc7a199f1749919d",
+    role: "hospital-admin",
+    hospitalId: "69601aabfc7a199f1749919e",
   } as any;
 
   next();

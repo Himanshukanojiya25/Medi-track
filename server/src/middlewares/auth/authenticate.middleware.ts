@@ -1,28 +1,34 @@
 import { Request, Response, NextFunction } from "express";
 
-/**
- * Authenticate Middleware (DEV MODE)
- * ---------------------------------
- * Temporary mock authentication
- *
- * NOTE:
- * - This is ONLY for development / testing
- * - Replace with real JWT logic later
- */
 export default function authenticate(
   req: Request,
-  _res: Response,
+  res: Response,
   next: NextFunction
 ): void {
-  /**
-   * 🔥 MOCK USER (FAKE LOGIN)
-   * This simulates a logged-in user
-   */
-  req.user = {
-    id: "66cf1234abcd5678ef901234",
-    role: "patient", // try changing to: doctor | hospital-admin | super-admin
-    hospitalId: "66cf9999abcd5678ef901111",
-  };
+  const testUser = req.headers["x-test-user"];
 
-  next();
+  if (testUser) {
+    try {
+      req.user = JSON.parse(
+        typeof testUser === "string"
+          ? testUser
+          : testUser[0]
+      );
+      next();
+      return;
+    } catch {
+      res.status(401).json({
+        success: false,
+        message: "Invalid test user",
+      });
+      return; // ✅ explicit void return
+    }
+  }
+
+  // ❌ Unauthorized
+  res.status(401).json({
+    success: false,
+    message: "Unauthorized",
+  });
+  return; // ✅ important
 }
