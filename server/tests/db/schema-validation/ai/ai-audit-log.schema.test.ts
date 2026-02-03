@@ -18,6 +18,8 @@ describe("AI Audit Log Schema", () => {
     const log = await AIAuditLogModel.create({
       hospitalId: new Types.ObjectId(),
       actorRole: "system",
+      aiMode: "mock",
+      actionType: "SYSTEM",
       action: "SESSION_CREATED",
     });
 
@@ -28,6 +30,8 @@ describe("AI Audit Log Schema", () => {
     const log = await AIAuditLogModel.create({
       hospitalId: new Types.ObjectId(),
       actorRole: "system",
+      aiMode: "mock",
+      actionType: "SYSTEM",
       action: "SESSION_CREATED",
     });
 

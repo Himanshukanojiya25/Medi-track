@@ -1,5 +1,3 @@
-// src/models/ai/ai-audit-log/ai-audit-log.types.ts
-
 import { Types } from "mongoose";
 
 export type AIAuditActorRole =
@@ -9,6 +7,19 @@ export type AIAuditActorRole =
   | "patient"
   | "system";
 
+/**
+ * High-level audit category
+ * (Phase-1 governance alignment)
+ */
+export type AIAuditActionType =
+  | "CHAT"
+  | "USAGE"
+  | "LIMIT"
+  | "SYSTEM";
+
+/**
+ * Fine-grained action
+ */
 export type AIAuditAction =
   | "SESSION_CREATED"
   | "SESSION_CLOSED"
@@ -17,13 +28,21 @@ export type AIAuditAction =
   | "PROMPT_ACTIVATED"
   | "PROMPT_ARCHIVED"
   | "AI_RESPONSE_GENERATED"
-  | "AI_RESPONSE_FAILED";
+  | "AI_RESPONSE_FAILED"
+  | "RATE_LIMIT_BLOCKED"
+  | "USAGE_RECORDED";
 
 export interface AIAuditLogBase {
   hospitalId: Types.ObjectId;
 
-  actorId?: Types.ObjectId; // system events allowed
+  actorId?: Types.ObjectId;
   actorRole: AIAuditActorRole;
+
+  /**
+   * Governance metadata
+   */
+  aiMode: "mock" | "real";
+  actionType: AIAuditActionType;
 
   sessionId?: Types.ObjectId;
   messageId?: Types.ObjectId;

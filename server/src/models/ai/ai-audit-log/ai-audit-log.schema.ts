@@ -1,5 +1,3 @@
-// src/models/ai/ai-audit-log/ai-audit-log.schema.ts
-
 import { Schema } from "mongoose";
 
 export const AIAuditLogSchema = new Schema(
@@ -26,6 +24,23 @@ export const AIAuditLogSchema = new Schema(
         "patient",
         "system",
       ],
+      index: true,
+    },
+
+    /**
+     * Phase-1 governance fields
+     */
+    aiMode: {
+      type: String,
+      enum: ["mock", "real"],
+      required: true,
+      index: true,
+    },
+
+    actionType: {
+      type: String,
+      enum: ["CHAT", "USAGE", "LIMIT", "SYSTEM"],
+      required: true,
       index: true,
     },
 
@@ -74,52 +89,20 @@ export const AIAuditLogSchema = new Schema(
 
 /**
  * =========================
- * PHASE 3.1 — DB INDEXING
+ * INDEXES (SCALE SAFE)
  * =========================
  */
+AIAuditLogSchema.index({ hospitalId: 1, createdAt: -1 });
+AIAuditLogSchema.index({ sessionId: 1, createdAt: -1 });
+AIAuditLogSchema.index({ actorRole: 1, createdAt: -1 });
+AIAuditLogSchema.index({ actionType: 1, createdAt: -1 });
+AIAuditLogSchema.index({ action: 1, createdAt: -1 });
+AIAuditLogSchema.index({ actorId: 1, createdAt: -1 });
 
 /**
- * Hospital-level audit trail (admin / compliance)
- */
-AIAuditLogSchema.index({
-  hospitalId: 1,
-  createdAt: -1,
-});
-
-/**
- * Session-wise AI trace (debug / replay)
- */
-AIAuditLogSchema.index({
-  sessionId: 1,
-  createdAt: -1,
-});
-
-/**
- * Role-based activity analysis
- */
-AIAuditLogSchema.index({
-  actorRole: 1,
-  createdAt: -1,
-});
-
-/**
- * Action-based filtering (security / monitoring)
- */
-AIAuditLogSchema.index({
-  action: 1,
-  createdAt: -1,
-});
-
-/**
- * Actor activity timeline
- */
-AIAuditLogSchema.index({
-  actorId: 1,
-  createdAt: -1,
-});
-
-/**
+ * =========================
  * IMMUTABILITY GUARDS
+ * =========================
  */
 AIAuditLogSchema.pre("updateOne", () => {
   throw new Error("AI Audit Logs are immutable");
