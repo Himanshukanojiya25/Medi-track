@@ -1,16 +1,14 @@
-import { Routes, Route } from "react-router-dom";
-import { PublicRoutes } from "./public.routes";
+import { PublicRoutes } from './public.routes';
 
-export function AppRoutes() {
-  return (
-    <Routes>
-      {/* Public website */}
-      <Route path="/*" element={<PublicRoutes />} />
+/**
+ * AppRoutes
+ * ----------
+ * Composes all route groups.
+ * BrowserRouter is mounted at root (main.tsx).
+ */
 
-      {/* Future */}
-      {/* <Route path="/patient/*" element={<PatientRoutes />} /> */}
-      {/* <Route path="/doctor/*" element={<DoctorRoutes />} /> */}
-      {/* <Route path="/admin/*" element={<AdminRoutes />} /> */}
-    </Routes>
-  );
-}
+export const AppRoutes = () => {
+  return <PublicRoutes />;
+};
+
+export default AppRoutes;

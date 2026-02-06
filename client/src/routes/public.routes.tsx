@@ -1,32 +1,47 @@
-import { Routes, Route } from "react-router-dom";
-import { WebsiteLayout } from "../../layouts/website/website.layout";
+import { Routes, Route } from 'react-router-dom';
+
+import {
+  HomePage,
+  AboutPage,
+  ContactPage,
+  FaqPage,
+  DoctorsListPage,
+  HospitalsListPage,
+  DoctorProfilePage,
+  HospitalProfilePage,
+  AISymptomPage,
+} from '../pages';
 
 /**
- * TEMP PAGE — only to verify layout
+ * PublicRoutes
+ * -------------
+ * Handles all public / website routes.
+ * - No authentication
+ * - No role guards
+ * - SEO-friendly pages
  */
-function TempHomePage() {
-  return (
-    <div className="text-center py-20">
-      <h1 className="text-4xl font-bold text-slate-800">
-        MediTrack Public Website
-      </h1>
-      <p className="mt-4 text-slate-600">
-        Layout, header, footer, emergency banner are working ✅
-      </p>
-    </div>
-  );
-}
 
-export function PublicRoutes() {
+export const PublicRoutes = () => {
   return (
-    <WebsiteLayout>
-      <Routes>
-        <Route path="/" element={<TempHomePage />} />
+    <Routes>
+      {/* LANDING & INFO */}
+      <Route path="/" element={<HomePage />} />
+      <Route path="/about" element={<AboutPage />} />
+      <Route path="/contact" element={<ContactPage />} />
+      <Route path="/faq" element={<FaqPage />} />
 
-        {/* Phase-1 me baad me add honge */}
-        {/* <Route path="/about" element={<AboutPage />} /> */}
-        {/* <Route path="/faq" element={<FaqPage />} /> */}
-      </Routes>
-    </WebsiteLayout>
+      {/* DISCOVERY */}
+      <Route path="/doctors" element={<DoctorsListPage />} />
+      <Route path="/hospitals" element={<HospitalsListPage />} />
+
+      {/* PROFILES */}
+      <Route path="/doctor-profile" element={<DoctorProfilePage />} />
+      <Route path="/hospital-profile" element={<HospitalProfilePage />} />
+
+      {/* AI */}
+      <Route path="/ai-symptom" element={<AISymptomPage />} />
+    </Routes>
   );
-}
+};
+
+export default PublicRoutes;
