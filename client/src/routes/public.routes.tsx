@@ -1,11 +1,32 @@
-import { Route } from 'react-router-dom';
-import { LoginPage } from '../pages/auth';
+import { Routes, Route } from "react-router-dom";
+import { WebsiteLayout } from "../../layouts/website/website.layout";
 
-const ForbiddenPage = () => <div>403 — Forbidden</div>;
+/**
+ * TEMP PAGE — only to verify layout
+ */
+function TempHomePage() {
+  return (
+    <div className="text-center py-20">
+      <h1 className="text-4xl font-bold text-slate-800">
+        MediTrack Public Website
+      </h1>
+      <p className="mt-4 text-slate-600">
+        Layout, header, footer, emergency banner are working ✅
+      </p>
+    </div>
+  );
+}
 
-export const publicRoutes = (
-  <>
-    <Route path="/login" element={<LoginPage />} />
-    <Route path="/403" element={<ForbiddenPage />} />
-  </>
-);
+export function PublicRoutes() {
+  return (
+    <WebsiteLayout>
+      <Routes>
+        <Route path="/" element={<TempHomePage />} />
+
+        {/* Phase-1 me baad me add honge */}
+        {/* <Route path="/about" element={<AboutPage />} /> */}
+        {/* <Route path="/faq" element={<FaqPage />} /> */}
+      </Routes>
+    </WebsiteLayout>
+  );
+}
