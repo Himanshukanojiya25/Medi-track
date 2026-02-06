@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===============================
+   Global CSS Reset / Base
+   =============================== */
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+/* ===============================
+   Design Tokens (Initial)
+   =============================== */
+
+:root {
+  --color-background: #ffffff;
+  --color-foreground: #0f172a;
+}
+
+/* ===============================
+   Base Theme Mapping
+   =============================== */
+
+.bg-background {
+  background-color: var(--color-background);
+}
+
+.text-foreground {
+  color: var(--color-foreground);
+}
