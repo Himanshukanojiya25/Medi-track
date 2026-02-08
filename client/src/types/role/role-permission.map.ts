@@ -1,12 +1,15 @@
-import { Permission, UserRole } from "../../types";
+import { UserRole } from "./role.types";
+import { Permission } from "./permission.types";
 
 /**
- * Central permission mapping (frontend-side)
- * Backend remains source of truth
+ * Central RBAC mapping
+ * Single source of truth for UI gating & guards
  */
-export const PERMISSIONS_CONFIG: Readonly<
+export type RolePermissionMap = Readonly<
   Record<UserRole, readonly Permission[]>
-> = {
+>;
+
+export const DEFAULT_ROLE_PERMISSIONS: RolePermissionMap = {
   [UserRole.SUPER_ADMIN]: Object.values(Permission),
 
   [UserRole.HOSPITAL_ADMIN]: [
