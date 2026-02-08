@@ -1,0 +1,18 @@
+/* src/styles/utilities/flex.css */
+
+.flex { display: flex; }
+
+.flex-col { flex-direction: column; }
+.flex-row { flex-direction: row; }
+
+.items-center { align-items: center; }
+.items-start { align-items: flex-start; }
+.items-end { align-items: flex-end; }
+
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-end { justify-content: flex-end; }
+
+.gap-sm { gap: 8px; }
+.gap-md { gap: 16px; }
+.gap-lg { gap: 24px; }

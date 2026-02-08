@@ -1,0 +1,33 @@
+/* src/styles/layouts/auth.layout.css */
+
+.auth-layout {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr;
+  background: linear-gradient(
+    135deg,
+    var(--bg-page),
+    var(--bg-surface)
+  );
+}
+
+.auth-container {
+  max-width: 420px;
+  margin: auto;
+  padding: 32px;
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.auth-header {
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.auth-footer {
+  margin-top: 24px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+}

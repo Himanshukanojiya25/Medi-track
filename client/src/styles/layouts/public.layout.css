@@ -1,0 +1,28 @@
+/* src/styles/layouts/public.layout.css */
+
+.public-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-page);
+}
+
+.public-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.public-main {
+  flex: 1;
+  padding: clamp(24px, 4vw, 64px);
+}
+
+.public-footer {
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-subtle);
+  padding: 32px 24px;
+  color: var(--text-muted);
+}

@@ -1,0 +1,40 @@
+/* src/styles/animations/transitions.css */
+
+.transition {
+  transition-property: background-color, color, box-shadow, transform, opacity;
+  transition-duration: 180ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Motion helpers */
+.motion-fade-in {
+  animation: fade-in 180ms cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+.motion-slide-up {
+  animation: slide-up 180ms cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+.motion-scale-in {
+  animation: scale-in 180ms cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+/* Hover micro-interaction */
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* src/styles/animations/transitions.css */
+
+/* Reduced motion — accessibility first */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}

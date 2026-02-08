@@ -1,0 +1,13 @@
+/* src/styles/components/tooltip.css */
+
+.tooltip {
+  position: absolute;
+  padding: 6px 10px;
+  font-size: 12px;
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  white-space: nowrap;
+  z-index: 70;
+}

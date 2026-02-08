@@ -1,0 +1,13 @@
+/* src/styles/accessibility/contrast.css */
+
+[data-contrast="high"] {
+  --text-primary: #ffffff;
+  --text-secondary: #e5e7eb;
+  --bg-page: #000000;
+  --bg-surface: #000000;
+  --border-default: #ffffff;
+}
+
+[data-contrast="high"] a {
+  text-decoration: underline;
+}

@@ -1,0 +1,18 @@
+/* src/styles/accessibility/focus.css */
+
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.45);
+  border-radius: var(--radius-sm);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: none;
+}

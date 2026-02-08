@@ -1,0 +1,32 @@
+/* src/styles/components/modal.css */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-overlay, rgba(0,0,0,0.5));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 40;
+}
+
+.modal {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  max-width: 520px;
+  width: 100%;
+  padding: 24px;
+}
+
+.modal-header {
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.modal-footer {
+  margin-top: 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}

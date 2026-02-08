@@ -1,0 +1,1 @@
+export { HospitalAdminLayout } from './HospitalAdminLayout';

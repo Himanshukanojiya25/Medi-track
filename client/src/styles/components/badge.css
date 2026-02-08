@@ -1,0 +1,25 @@
+/* src/styles/components/badge.css */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-success {
+  background: rgba(34, 197, 94, 0.15);
+  color: var(--status-success, #22c55e);
+}
+
+.badge-warning {
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--status-warning, #f59e0b);
+}
+
+.badge-error {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--status-error, #ef4444);
+}

@@ -1,0 +1,20 @@
+/* src/styles/components/input.css */
+
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-default);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.input::placeholder {
+  color: var(--text-muted);
+}
+
+.input:focus-visible {
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-focus, 0 0 0 3px rgba(37, 99, 235, 0.3));
+}

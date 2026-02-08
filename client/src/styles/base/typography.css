@@ -1,0 +1,31 @@
+/* src/styles/base/typography.css */
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0 0 0.5em 0;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--text-primary);
+}
+
+p {
+  margin: 0 0 1em 0;
+  color: var(--text-secondary);
+}
+
+small {
+  color: var(--text-muted);
+}
+
+code, pre {
+  font-family: 'JetBrains Mono', monospace;
+  background: var(--bg-surface);
+  border-radius: var(--radius-sm);
+}
+
+a {
+  color: var(--brand-primary);
+}
+
+a:hover {
+  color: var(--brand-primary-hover);
+}

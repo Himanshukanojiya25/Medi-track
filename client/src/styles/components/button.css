@@ -1,0 +1,43 @@
+/* src/styles/components/button.css */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 150ms ease, box-shadow 150ms ease, transform 120ms ease;
+}
+
+.btn-primary {
+  background: var(--brand-primary);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background: var(--brand-primary-hover);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:active {
+  transform: translateY(1px);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--brand-primary);
+  border-color: var(--border-default);
+}
+
+.btn-secondary:hover {
+  background: var(--bg-surface);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
