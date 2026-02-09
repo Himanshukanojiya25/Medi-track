@@ -1,2 +1,4 @@
-export { PublicLayout } from './PublicLayout';
-export { AuthLayout } from './AuthLayout';
+// src/layouts/public/index.ts
+
+export * from "./PublicLayout";
+export * from "./AuthLayout";

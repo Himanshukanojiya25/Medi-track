@@ -1,46 +1,20 @@
-import { Outlet } from 'react-router-dom';
+// src/layouts/public/PublicLayout.tsx
 
-/**
- * PublicLayout
- * -------------
- * Used for:
- * - Home page
- * - Search / Listing pages
- * - Public marketing pages
- *
- * Responsibilities:
- * - Page-level structure
- * - SEO-safe wrapper
- * - Header / Footer placeholders
- *
- * NOT responsible for:
- * - Navigation logic
- * - Auth checks
- * - Data fetching
- */
+import { Outlet } from "react-router-dom";
+import { Header } from "./components/Header";
+import { Footer } from "./components/Footer";
+import { SeoShell } from "./components/SeoShell";
+
 export function PublicLayout() {
   return (
-    <div className="public-layout">
-      {/* =========================
-          HEADER PLACEHOLDER
-         ========================= */}
-      <header className="public-header">
-        {/* Public Header component will be mounted here */}
-      </header>
+    <SeoShell>
+      <Header />
 
-      {/* =========================
-          MAIN CONTENT
-         ========================= */}
-      <main className="public-main">
+      <main role="main" className="public-layout__content">
         <Outlet />
       </main>
 
-      {/* =========================
-          FOOTER PLACEHOLDER
-         ========================= */}
-      <footer className="public-footer">
-        {/* Public Footer component will be mounted here */}
-      </footer>
-    </div>
+      <Footer />
+    </SeoShell>
   );
 }
