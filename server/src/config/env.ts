@@ -2,8 +2,8 @@ import dotenv from "dotenv";
 
 /**
  * Load environment variables
- * - Local: loads from .env
- * - Railway / Prod: uses platform-injected env vars
+ * - Local: loads from server/.env
+ * - Production (Railway): uses injected env vars
  */
 dotenv.config();
 
@@ -24,7 +24,7 @@ function getEnv(key: string, required = true): string | undefined {
 
 /**
  * Centralized, validated env config
- * ONLY export from here – never use process.env directly
+ * ❗ ONLY use ENV, never process.env directly
  */
 export const ENV = {
   // ===============================
@@ -58,15 +58,22 @@ export const ENV = {
   ),
 
   // ===============================
+  // REDIS (OPTIONAL – FREE MODE SAFE)
+  // ===============================
+  REDIS_HOST: getEnv("REDIS_HOST", false),
+  REDIS_PORT: Number(getEnv("REDIS_PORT", false) ?? 6379),
+  REDIS_PASSWORD: getEnv("REDIS_PASSWORD", false),
+  REDIS_DB: Number(getEnv("REDIS_DB", false) ?? 0),
+
+  // ===============================
   // AI (OPTIONAL – FREE MODE SAFE)
   // ===============================
   OPENAI_API_KEY: getEnv("OPENAI_API_KEY", false),
-  OPENAI_API_BASE_URL: getEnv("OPENAI_API_BASE_URL", false),
   OPENAI_MODEL:
     getEnv("OPENAI_MODEL", false) ?? "gpt-4o-mini",
 };
 
 /**
- * Freeze to avoid runtime mutation
+ * Prevent runtime mutation
  */
 Object.freeze(ENV);
