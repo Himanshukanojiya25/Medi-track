@@ -1,0 +1,223 @@
+/* =====================================================
+   FAQ PAGE — PHASE 1.5
+   Ultra Premium, Color-rich Enterprise UI
+   Inspired by: Practo, Linear, Apple Health
+===================================================== */
+
+/* =====================================================
+   PAGE WRAPPER
+===================================================== */
+
+.faq-page {
+  position: relative;
+  padding-bottom: 6rem;
+}
+
+/* Soft gradient backdrop */
+.faq-page::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 420px;
+  background:
+    radial-gradient(
+      circle at top center,
+      rgba(37, 99, 235, 0.18),
+      transparent 70%
+    ),
+    linear-gradient(
+      180deg,
+      #f8fafc 0%,
+      #ffffff 100%
+    );
+  z-index: -1;
+}
+
+/* =====================================================
+   HERO
+===================================================== */
+
+.faq-hero {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 5rem 1.5rem 3.5rem;
+}
+
+.faq-hero__content {
+  text-align: center;
+}
+
+.faq-hero__badge {
+  display: inline-block;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  background: linear-gradient(
+    135deg,
+    rgba(37, 99, 235, 0.15),
+    rgba(29, 78, 216, 0.15)
+  );
+  color: #1d4ed8;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin-bottom: 1.2rem;
+}
+
+.faq-hero h1 {
+  font-size: clamp(2.4rem, 5vw, 3rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: #020617;
+  margin-bottom: 1rem;
+}
+
+.faq-hero p {
+  max-width: 620px;
+  margin: 0 auto;
+  font-size: 1.1rem;
+  line-height: 1.65;
+  color: #475569;
+}
+
+/* =====================================================
+   CONTENT WRAPPER
+===================================================== */
+
+.faq-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+/* =====================================================
+   FAQ LIST
+===================================================== */
+
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* =====================================================
+   FAQ ITEM
+===================================================== */
+
+.faq-item {
+  border-radius: 20px;
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff,
+      #f9fafb
+    );
+  box-shadow:
+    0 12px 30px rgba(15, 23, 42, 0.08),
+    0 4px 10px rgba(15, 23, 42, 0.05);
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.faq-item:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 20px 45px rgba(15, 23, 42, 0.12),
+    0 8px 18px rgba(15, 23, 42, 0.08);
+}
+
+/* =====================================================
+   QUESTION BUTTON
+===================================================== */
+
+.faq-question {
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 1.4rem 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.faq-question__text {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.4;
+}
+
+.faq-question__icon {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #2563eb;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(37, 99, 235, 0.15),
+      rgba(29, 78, 216, 0.15)
+    );
+  transition: transform 0.25s ease;
+}
+
+/* Rotate icon when open (CSS-only trick) */
+.faq-item:has(.faq-answer:not([hidden])) .faq-question__icon {
+  transform: rotate(180deg);
+}
+
+/* =====================================================
+   ANSWER PANEL
+===================================================== */
+
+.faq-answer {
+  padding: 0 1.6rem 1.5rem;
+  animation: faq-expand 0.25s ease-out;
+}
+
+.faq-answer p {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: #475569;
+  max-width: 760px;
+}
+
+/* =====================================================
+   ANIMATION
+===================================================== */
+
+@keyframes faq-expand {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 640px) {
+  .faq-question {
+    padding: 1.2rem 1.25rem;
+  }
+
+  .faq-answer {
+    padding: 0 1.25rem 1.25rem;
+  }
+
+  .faq-question__text {
+    font-size: 0.95rem;
+  }
+}

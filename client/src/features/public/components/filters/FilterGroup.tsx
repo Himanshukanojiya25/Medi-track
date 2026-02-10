@@ -1,16 +1,28 @@
-// src/features/public/components/filters/FilterGroup.tsx
-
 import { ReactNode } from "react";
 
-type FilterGroupProps = {
+interface FilterGroupProps {
   label: string;
+  description?: string; // ✅ ADD THIS
   children: ReactNode;
-};
+}
 
-export function FilterGroup({ label, children }: FilterGroupProps) {
+export function FilterGroup({
+  label,
+  description,
+  children,
+}: FilterGroupProps) {
   return (
     <div className="filter-group">
-      <label className="filter-group__label">{label}</label>
+      <div className="filter-group__header">
+        <span className="filter-group__label">{label}</span>
+
+        {description && (
+          <span className="filter-group__description">
+            {description}
+          </span>
+        )}
+      </div>
+
       <div className="filter-group__content">{children}</div>
     </div>
   );

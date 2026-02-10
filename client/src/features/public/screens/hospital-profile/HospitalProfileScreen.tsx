@@ -2,15 +2,15 @@
 
 import { SeoShell } from "../../../../layouts/public/components/SeoShell";
 import { HospitalProfileHeader } from "./HospitalProfileHeader";
-import { HospitalProfileDetails } from "./HospitalProfileDetails";
 import { HospitalProfileActions } from "./HospitalProfileActions";
+import { HospitalProfileDetails } from "./HospitalProfileDetails";
 
 export function HospitalProfileScreen() {
   return (
     <>
       <SeoShell
-        title="Hospital Profile"
-        description="View hospital details, departments, doctors, ratings and facilities."
+        title="City Care Hospital | Multi-Speciality Hospital in Mumbai"
+        description="Explore City Care Hospital profile — departments, doctors, emergency services, patient reviews, and appointment booking."
       />
 
       <main className="hospital-profile-page">

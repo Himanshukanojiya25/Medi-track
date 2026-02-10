@@ -1,0 +1,134 @@
+/* =====================================================
+   HOSPITALS LISTING — PHASE 1.2 / 1.3
+   Uses shared search layout system
+   ===================================================== */
+
+/* ---------- PAGE WRAPPER ---------- */
+
+.public-hospitals-page {
+  width: 100%;
+}
+
+/* ---------- HEADER ---------- */
+
+.search-header {
+  margin-bottom: 32px;
+}
+
+.search-title {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.search-subtitle {
+  margin-top: 8px;
+  max-width: 720px;
+  font-size: 16px;
+  color: var(--text-secondary);
+}
+
+/* ---------- RESULTS LAYOUT ---------- */
+
+.search-results {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+/* ---------- LIST AREA ---------- */
+
+.search-list {
+  min-height: 360px;
+}
+
+/* ---------- EMPTY STATE ---------- */
+
+.search-list .empty-state {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px dashed var(--border-default);
+  padding: 64px 24px;
+  text-align: center;
+}
+
+.search-list .empty-state h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.search-list .empty-state p {
+  margin-top: 8px;
+  font-size: 15px;
+  color: var(--text-muted);
+}
+
+/* ---------- SIDEBAR ---------- */
+
+.search-sidebar {
+  position: sticky;
+  top: 96px;
+
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  padding: 20px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ---------- FILTER GROUP ---------- */
+
+.search-sidebar h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.search-sidebar label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.search-sidebar input,
+.search-sidebar select {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-default);
+  font-size: 14px;
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+.search-sidebar input:focus,
+.search-sidebar select:focus {
+  outline: none;
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-focus);
+}
+
+/* ---------- RESPONSIVE ---------- */
+
+@media (max-width: 1024px) {
+  .search-results {
+    grid-template-columns: 1fr;
+  }
+
+  .search-sidebar {
+    position: static;
+    order: -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .search-title {
+    font-size: 26px;
+  }
+}

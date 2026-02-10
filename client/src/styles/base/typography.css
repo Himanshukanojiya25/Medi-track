@@ -1,29 +1,59 @@
-/* src/styles/base/typography.css */
+/* =====================================================
+   TYPOGRAPHY SYSTEM
+   ===================================================== */
 
-h1, h2, h3, h4, h5, h6 {
-  margin: 0 0 0.5em 0;
+h1 {
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: 0.6em;
+}
+
+h2 {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 0.6em;
+}
+
+h3 {
+  font-size: 30px;
   font-weight: 600;
   line-height: 1.25;
-  color: var(--text-primary);
+  margin-bottom: 0.5em;
+}
+
+h4 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 0.5em;
+}
+
+h5 {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+h6 {
+  font-size: 16px;
+  font-weight: 600;
 }
 
 p {
-  margin: 0 0 1em 0;
+  font-size: 16px;
   color: var(--text-secondary);
+  margin-bottom: 1em;
 }
 
 small {
+  font-size: 13px;
   color: var(--text-muted);
-}
-
-code, pre {
-  font-family: 'JetBrains Mono', monospace;
-  background: var(--bg-surface);
-  border-radius: var(--radius-sm);
 }
 
 a {
   color: var(--brand-primary);
+  font-weight: 500;
+  transition: color 0.15s ease;
 }
 
 a:hover {

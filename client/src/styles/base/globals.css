@@ -1,41 +1,71 @@
-/* src/styles/base/globals.css */
-
+/* =====================================================
+   GLOBAL DESIGN TOKENS (RUNTIME CSS VARIABLES)
+   ===================================================== */
 :root {
-  /* These get overridden by theme vars at runtime */
-  --bg-page: #ffffff;
+  /* ---------------- BACKGROUNDS ---------------- */
+  --bg-page: #f9fafb;
   --bg-surface: #ffffff;
   --bg-elevated: #ffffff;
 
+  /* ---------------- TEXT ---------------- */
   --text-primary: #111827;
   --text-secondary: #4b5563;
   --text-muted: #6b7280;
+  --text-inverse: #ffffff;
 
+  /* ---------------- BRAND ---------------- */
   --brand-primary: #2563eb;
   --brand-primary-hover: #1d4ed8;
+  --brand-primary-active: #1e40af;
   --brand-accent: #22c55e;
 
+  /* ---------------- BORDERS ---------------- */
   --border-subtle: #e5e7eb;
   --border-default: #d1d5db;
   --border-strong: #9ca3af;
   --border-focus: #2563eb;
 
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
-  --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-  --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+  /* ---------------- SHADOWS ---------------- */
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 12px 24px rgba(0,0,0,0.12);
 
+  /* ---------------- RADII ---------------- */
+  --radius-xs: 4px;
   --radius-sm: 6px;
   --radius-md: 8px;
   --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* ---------------- SPACING ---------------- */
+  --space-xxs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-section: 80px;
+
+  /* ---------------- TYPOGRAPHY ---------------- */
+  --font-sans: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 }
 
 body {
+  margin: 0;
   background: var(--bg-page);
   color: var(--text-primary);
+  font-family: var(--font-sans);
   line-height: 1.5;
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 ::selection {
   background: var(--brand-primary);
-  color: #ffffff;
+  color: var(--text-inverse);
 }

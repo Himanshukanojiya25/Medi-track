@@ -1,0 +1,190 @@
+/* ================================
+   PROFILE PAGE BASE
+================================ */
+
+.doctor-profile-page,
+.hospital-profile-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: clamp(24px, 4vw, 64px) 24px;
+  display: grid;
+  gap: 48px;
+}
+
+@media (max-width: 768px) {
+  .doctor-profile-page,
+  .hospital-profile-page {
+    padding: 24px 16px;
+    gap: 32px;
+  }
+}
+
+/* ================================
+   PROFILE HEADER
+================================ */
+
+.doctor-profile-header,
+.hospital-profile-header {
+  display: grid;
+  gap: 12px;
+}
+
+.doctor-profile-header h1,
+.hospital-profile-header h1 {
+  font-size: clamp(28px, 4vw, 40px);
+  line-height: 1.1;
+}
+
+.doctor-profile-header p,
+.hospital-profile-header p {
+  color: var(--text-secondary);
+  font-size: 16px;
+}
+
+/* ================================
+   PROFILE ACTIONS
+================================ */
+
+.doctor-profile-actions,
+.hospital-profile-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 24px;
+  background: linear-gradient(
+    180deg,
+    var(--bg-surface),
+    var(--bg-page)
+  );
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+}
+
+.doctor-profile-actions button,
+.hospital-profile-actions button {
+  padding: 12px 18px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.doctor-profile-actions button:hover,
+.hospital-profile-actions button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ================================
+   PROFILE DETAILS
+================================ */
+
+.doctor-profile-details,
+.hospital-profile-details {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  border: 1px solid var(--border-subtle);
+  display: grid;
+  gap: 24px;
+}
+
+.doctor-profile-details h2,
+.hospital-profile-details h2 {
+  font-size: 22px;
+}
+
+.doctor-profile-details h3,
+.hospital-profile-details h3 {
+  margin-top: 16px;
+  font-size: 18px;
+}
+
+.doctor-profile-details ul,
+.hospital-profile-details ul {
+  padding-left: 18px;
+  display: grid;
+  gap: 8px;
+}
+
+.doctor-profile-details li,
+.hospital-profile-details li {
+  color: var(--text-secondary);
+}
+
+/* ================================
+   HOSPITAL DEPARTMENTS
+================================ */
+
+.hospital-profile-departments {
+  display: grid;
+  gap: 24px;
+}
+
+.department-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.department-card {
+  padding: 20px;
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  transition: box-shadow 120ms ease;
+}
+
+.department-card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* ================================
+   HOSPITAL DOCTORS
+================================ */
+
+.hospital-profile-doctors {
+  display: grid;
+  gap: 24px;
+}
+
+.hospital-doctors-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+/* ================================
+   REVIEWS
+================================ */
+
+.hospital-profile-reviews {
+  background: var(--bg-surface);
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+}
+
+.hospital-review-list {
+  display: grid;
+  gap: 16px;
+}
+
+.hospital-review-card {
+  padding: 16px;
+  border-radius: var(--radius-md);
+  background: var(--bg-page);
+  border: 1px solid var(--border-subtle);
+}
+
+.hospital-review-card__header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+}
+
+.hospital-review-note {
+  margin-top: 16px;
+  font-size: 14px;
+  color: var(--text-muted);
+}

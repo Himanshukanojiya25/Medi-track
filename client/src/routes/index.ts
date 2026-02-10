@@ -1,1 +1,3 @@
-export { appRouter } from './app.router';
+// src/routes/index.ts
+
+export { AppRouter } from "./app.router";

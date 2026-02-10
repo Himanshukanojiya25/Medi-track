@@ -1,0 +1,60 @@
+/* ===============================
+   SPECIALITY PAGE
+================================ */
+
+.speciality-header {
+  margin-bottom: 40px;
+}
+
+.speciality-title {
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.speciality-subtitle {
+  margin-top: 8px;
+  color: var(--text-muted);
+  max-width: 640px;
+}
+
+/* ===============================
+   SPECIALITY LIST
+================================ */
+
+.speciality-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 24px;
+}
+
+.speciality-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  transition: box-shadow 160ms ease, transform 120ms ease;
+  cursor: pointer;
+}
+
+.speciality-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.speciality-card__title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.speciality-card__description {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+
+.speciality-card__cta {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary);
+}

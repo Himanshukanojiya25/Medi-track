@@ -1,5 +1,4 @@
-// src/features/public/screens/doctors/DoctorsFilters.tsx
-
+import { useState } from "react";
 import {
   FilterGroup,
   LocationFilter,
@@ -7,21 +6,29 @@ import {
   AvailabilityFilter,
   RatingFilter,
 } from "../../components/filters";
-import { useState } from "react";
 
 export function DoctorsFilters() {
   const [location, setLocation] = useState("");
   const [speciality, setSpeciality] = useState("");
-  const [availability, setAvailability] = useState<"today" | "any">("any");
+  const [availability, setAvailability] =
+    useState<"today" | "any">("any");
   const [rating, setRating] = useState(0);
 
   return (
     <section className="doctors-filters">
-      <FilterGroup label="Location">
+      <h3 style={{ marginBottom: "16px" }}>Refine results</h3>
+
+      <FilterGroup
+        label="Location"
+        description="City or area"
+      >
         <LocationFilter value={location} onChange={setLocation} />
       </FilterGroup>
 
-      <FilterGroup label="Speciality">
+      <FilterGroup
+        label="Speciality"
+        description="Type of doctor"
+      >
         <SpecialityFilter
           value={speciality}
           options={[
@@ -29,19 +36,26 @@ export function DoctorsFilters() {
             "Dermatology",
             "Orthopedics",
             "Neurology",
+            "Pediatrics",
           ]}
           onChange={setSpeciality}
         />
       </FilterGroup>
 
-      <FilterGroup label="Availability">
+      <FilterGroup
+        label="Availability"
+        description="Appointment timing"
+      >
         <AvailabilityFilter
           value={availability}
           onChange={setAvailability}
         />
       </FilterGroup>
 
-      <FilterGroup label="Rating">
+      <FilterGroup
+        label="Patient rating"
+        description="Minimum rating"
+      >
         <RatingFilter value={rating} onChange={setRating} />
       </FilterGroup>
     </section>

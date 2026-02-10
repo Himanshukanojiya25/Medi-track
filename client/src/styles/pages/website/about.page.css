@@ -1,0 +1,182 @@
+/* =====================================================
+   ABOUT PAGE — PHASE 1.5
+   Ultra-Premium Enterprise UI
+===================================================== */
+
+.about-page {
+  position: relative;
+  padding-bottom: 6rem;
+}
+
+/* Hero gradient backdrop */
+.about-page::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 460px;
+  background:
+    radial-gradient(
+      circle at top center,
+      rgba(34, 197, 94, 0.18),
+      transparent 70%
+    ),
+    linear-gradient(
+      180deg,
+      #f8fafc 0%,
+      #ffffff 100%
+    );
+  z-index: -1;
+}
+
+/* =====================================================
+   HERO
+===================================================== */
+
+.about-hero {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 5.5rem 1.5rem 3.5rem;
+  text-align: center;
+}
+
+.about-hero h1 {
+  font-size: clamp(2.4rem, 5vw, 3.1rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: #020617;
+  margin-bottom: 1.2rem;
+}
+
+.about-hero p {
+  max-width: 680px;
+  margin: 0 auto;
+  font-size: 1.15rem;
+  line-height: 1.7;
+  color: #475569;
+}
+
+/* =====================================================
+   SECTIONS
+===================================================== */
+
+.about-section {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 3.5rem 1.5rem;
+}
+
+.about-section h2 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+  margin-bottom: 1rem;
+}
+
+.about-section p {
+  font-size: 1rem;
+  line-height: 1.7;
+  color: #475569;
+  max-width: 760px;
+}
+
+/* =====================================================
+   SOLUTION CARD
+===================================================== */
+
+.about-solution {
+  background:
+    linear-gradient(
+      135deg,
+      #ecfdf5,
+      #ffffff
+    );
+  border-radius: 28px;
+  border: 1px solid #d1fae5;
+  box-shadow:
+    0 20px 40px rgba(15, 23, 42, 0.08);
+}
+
+.about-solution ul {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.about-solution li {
+  position: relative;
+  padding-left: 1.8rem;
+  font-size: 0.95rem;
+  color: #065f46;
+}
+
+.about-solution li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #16a34a;
+  font-weight: 700;
+}
+
+/* =====================================================
+   DIFFERENTIATION GRID
+===================================================== */
+
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.about-grid > div {
+  padding: 1.8rem;
+  border-radius: 22px;
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff,
+      #f8fafc
+    );
+  border: 1px solid #e5e7eb;
+  box-shadow:
+    0 12px 26px rgba(15, 23, 42, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.about-grid > div:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 22px 44px rgba(15, 23, 42, 0.14);
+}
+
+.about-grid h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+  color: #020617;
+}
+
+.about-grid p {
+  font-size: 0.95rem;
+  color: #475569;
+}
+
+/* =====================================================
+   TRUST / VISION
+===================================================== */
+
+.about-trust,
+.about-vision {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(37, 99, 235, 0.08),
+      rgba(99, 102, 241, 0.06)
+    );
+  border-radius: 28px;
+  border: 1px solid rgba(37, 99, 235, 0.15);
+}

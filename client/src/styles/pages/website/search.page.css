@@ -63,3 +63,89 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ===============================
+   FILTER GROUP (Doctors / Hospitals)
+================================ */
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.filter-group:last-child {
+  border-bottom: none;
+}
+
+.filter-group__label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.filter-group__description {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.filter-group__content {
+  margin-top: 4px;
+}
+
+/* ===============================
+   SEARCH HEADER
+================================ */
+
+.search-header {
+  margin-bottom: 32px;
+}
+
+.search-title {
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.search-subtitle {
+  margin-top: 8px;
+  color: var(--text-muted);
+  max-width: 600px;
+}
+
+/* ===============================
+   FILTER PANEL
+================================ */
+
+.filters-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.filters-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+/* ===============================
+   EMPTY STATE
+================================ */
+
+.empty-state {
+  padding: 64px 24px;
+  text-align: center;
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border-subtle);
+}
+
+.empty-state h3 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.empty-state p {
+  color: var(--text-muted);
+}

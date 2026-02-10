@@ -1,28 +1,122 @@
-/* src/styles/layouts/public.layout.css */
+/* =====================================================
+   PUBLIC LAYOUT — ENTERPRISE SaaS FOUNDATION
+   ===================================================== */
 
 .public-layout {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   background: var(--bg-page);
+  color: var(--text-primary);
 }
+
+/* ---------------- HEADER ---------------- */
 
 .public-header {
   position: sticky;
   top: 0;
-  z-index: 20;
-  background: var(--bg-surface);
+  z-index: 50;
+
+  background: color-mix(
+    in srgb,
+    var(--bg-surface) 85%,
+    transparent
+  );
+
   border-bottom: 1px solid var(--border-subtle);
+
+  backdrop-filter: saturate(180%) blur(10px);
+  -webkit-backdrop-filter: saturate(180%) blur(10px);
 }
+
+.public-header__container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--space-md) clamp(16px, 4vw, 32px);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.public-header nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+/* ---------------- MAIN ---------------- */
 
 .public-main {
   flex: 1;
-  padding: clamp(24px, 4vw, 64px);
+  padding: var(--space-section) 0;
 }
+
+.public-page {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 clamp(16px, 4vw, 32px);
+}
+
+/* Section rhythm (CRITICAL) */
+.public-section {
+  margin-bottom: var(--space-section);
+}
+
+.public-section:last-child {
+  margin-bottom: 0;
+}
+
+/* ---------------- FOOTER ---------------- */
 
 .public-footer {
   background: var(--bg-surface);
   border-top: 1px solid var(--border-subtle);
-  padding: 32px 24px;
+  padding: var(--space-2xl) clamp(16px, 4vw, 32px);
+}
+
+.public-footer__container {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.footer__nav {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-xl);
+}
+
+.footer__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.footer__nav a {
+  display: block;
+  font-size: 14px;
   color: var(--text-muted);
+  margin-bottom: var(--space-xs);
+}
+
+.footer__nav a:hover {
+  color: var(--text-primary);
+}
+
+.footer__meta {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ---------------- RESPONSIVE ---------------- */
+
+@media (max-width: 768px) {
+  .public-header__container {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
 }

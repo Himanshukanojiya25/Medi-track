@@ -1,22 +1,29 @@
-// src/features/public/screens/home/HomeScreen.tsx
-
-import { PublicHero } from "../../components/hero";
-import { TrustBanner } from "../../components/banners";
-import { EmergencyBanner } from "../../components/banners";
 import { SeoShell } from "../../../../layouts/public/components/SeoShell";
+
+/* =========================
+   HOME SECTIONS
+========================= */
+import { HomeHero } from "./HomeHero";
+import { HomeFeatures } from "./HomeFeatures";
+import { HomeHowItWorks } from "./HomeHowItWorks";
+import { HomeTrust } from "./HomeTrust";
+import { HomeEmergency } from "./HomeEmergency";
 
 export function HomeScreen() {
   return (
     <>
       <SeoShell
-        title="Find Doctors & Hospitals Near You"
-        description="Discover trusted doctors, hospitals, and AI-powered health guidance near you."
+        title="Find Doctors & Hospitals Near You | MediTrack"
+        description="Discover trusted doctors, hospitals, and AI-powered health guidance to make better healthcare decisions."
       />
 
-      <main>
-        <PublicHero />
-        <TrustBanner />
-        <EmergencyBanner phoneNumber="108" />
+      {/* IMPORTANT: class fix */}
+      <main className="home public-page">
+        <HomeHero />
+        <HomeFeatures />
+        <HomeHowItWorks />
+        <HomeTrust />
+        <HomeEmergency />
       </main>
     </>
   );

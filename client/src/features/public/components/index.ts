@@ -3,3 +3,4 @@ export * from "./cards";
 export * from "./filters";
 export * from "./banners";
 export * from "./ratings";
+export * from './ai-symptom';

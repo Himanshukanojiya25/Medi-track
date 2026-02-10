@@ -12,12 +12,18 @@ export function HospitalsFilters() {
   const [rating, setRating] = useState(0);
 
   return (
-    <section className="hospitals-filters">
-      <FilterGroup label="Location">
+    <section className="filters-panel">
+      <h3 className="filters-title">Filter Hospitals</h3>
+
+      <FilterGroup
+        label="Location"
+      >
         <LocationFilter value={location} onChange={setLocation} />
       </FilterGroup>
 
-      <FilterGroup label="Rating">
+      <FilterGroup
+        label="Minimum Rating"
+      >
         <RatingFilter value={rating} onChange={setRating} />
       </FilterGroup>
     </section>

@@ -3,28 +3,45 @@
 export function HospitalProfileDetails() {
   return (
     <section className="hospital-profile-details">
-      <h2>About Hospital</h2>
-      <p>
-        City Care Hospital is a leading multi-speciality healthcare center
-        offering advanced treatments, experienced doctors, and modern
-        infrastructure.
-      </p>
+      {/* ABOUT */}
+      <article className="hospital-profile-section">
+        <h2>About City Care Hospital</h2>
+        <p>
+          City Care Hospital is a leading multi-speciality healthcare institution
+          delivering advanced medical care with state-of-the-art infrastructure,
+          experienced specialists, and patient-centric services.
+        </p>
+      </article>
 
-      <h3>Departments</h3>
-      <ul>
-        <li>Cardiology</li>
-        <li>Neurology</li>
-        <li>Orthopedics</li>
-        <li>Emergency & Trauma</li>
-      </ul>
+      {/* DEPARTMENTS */}
+      <article className="hospital-profile-section">
+        <h3>Departments & Specialities</h3>
+        <ul className="hospital-profile-list">
+          <li>Cardiology</li>
+          <li>Neurology</li>
+          <li>Orthopedics</li>
+          <li>General Surgery</li>
+          <li>Emergency & Trauma Care</li>
+        </ul>
+      </article>
 
-      <h3>Facilities</h3>
-      <ul>
-        <li>24x7 Emergency</li>
-        <li>ICU & NICU</li>
-        <li>Pharmacy</li>
-        <li>Ambulance Service</li>
-      </ul>
+      {/* FACILITIES */}
+      <article className="hospital-profile-section">
+        <h3>Facilities & Infrastructure</h3>
+        <ul className="hospital-profile-list">
+          <li>24×7 Emergency Services</li>
+          <li>ICU & NICU</li>
+          <li>Advanced Diagnostic Labs</li>
+          <li>In-house Pharmacy</li>
+          <li>Ambulance & Trauma Support</li>
+        </ul>
+      </article>
+
+      {/* LOCATION */}
+      <article className="hospital-profile-section">
+        <h3>Location</h3>
+        <p>Mumbai, Maharashtra, India</p>
+      </article>
     </section>
   );
 }

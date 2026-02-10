@@ -4,13 +4,26 @@ import { RatingSummary } from "../../components/ratings";
 
 export function HospitalProfileHeader() {
   return (
-    <section className="hospital-profile-header">
-      <div>
-        <h1>City Care Hospital</h1>
-        <p>Multi-speciality • 24x7 Emergency</p>
+    <header className="hospital-profile-header">
+      <div className="hospital-profile-header__content">
+        <div className="hospital-profile-header__meta">
+          <h1 className="hospital-profile-header__title">
+            City Care Hospital
+          </h1>
 
-        <RatingSummary rating={4.4} reviewsCount={1240} />
+          <p className="hospital-profile-header__subtitle">
+            Multi-speciality Hospital • Mumbai • 24×7 Emergency
+          </p>
+
+          <RatingSummary rating={4.4} reviewsCount={1240} />
+
+          <div className="hospital-profile-header__badges">
+            <span className="badge badge--success">NABH Accredited</span>
+            <span className="badge badge--info">ISO Certified</span>
+            <span className="badge badge--warning">Emergency Ready</span>
+          </div>
+        </div>
       </div>
-    </section>
+    </header>
   );
 }

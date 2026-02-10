@@ -1,9 +1,8 @@
 // src/features/public/screens/home/HomeSections.tsx
 
-// Phase 1.1+
-// Featured doctors
-// Featured hospitals
-// Specialities
-// Testimonials
+/**
+ * RESERVED FOR FUTURE (Phase 1.2+)
+ * Aggregated discovery sections (featured doctors, hospitals, etc.)
+ */
 
 export {};

@@ -1,7 +1,6 @@
 // src/features/public/screens/hospitals/HospitalsList.tsx
 
-import { HospitalCard } from "../../components/cards";
-import { CardSkeleton } from "../../components/cards";
+import { HospitalCard, CardSkeleton } from "../../components/cards";
 import { usePublicHospitals } from "../../hooks/usePublicHospitals";
 
 export function HospitalsList() {
@@ -9,7 +8,7 @@ export function HospitalsList() {
 
   if (isLoading) {
     return (
-      <div className="hospitals-list">
+      <div className="search-list">
         <CardSkeleton />
         <CardSkeleton />
         <CardSkeleton />
@@ -18,11 +17,16 @@ export function HospitalsList() {
   }
 
   if (hospitals.length === 0) {
-    return <p>No hospitals found.</p>;
+    return (
+      <div className="empty-state">
+        <h3>No hospitals found</h3>
+        <p>Try changing filters or search a nearby location.</p>
+      </div>
+    );
   }
 
   return (
-    <section className="hospitals-list">
+    <section className="search-list">
       {hospitals.map((hospital) => (
         <HospitalCard
           key={hospital.id}
