@@ -1,7 +1,7 @@
 import { Types } from "mongoose";
 import { AppointmentModel } from "../../models/appointment";
 import { AppointmentStatus } from "../../constants/status";
-import { HttpError } from "../../utils/response/http-error";
+// import { HttpError } from "../../utils/response/http-error";
 
 interface ListAppointmentsInput {
   hospitalId: Types.ObjectId;
