@@ -1,21 +1,37 @@
 // src/features/public/components/filters/RatingFilter.tsx
+import { Star } from "lucide-react";
 
-type RatingFilterProps = {
-  value?: number;
+interface RatingFilterProps {
+  value: number;
   onChange: (value: number) => void;
-};
+}
 
-export function RatingFilter({ value = 0, onChange }: RatingFilterProps) {
+export function RatingFilter({ value, onChange }: RatingFilterProps) {
+  const ratings = [4, 3, 2, 1];
+
   return (
-    <select
-      value={value}
-      onChange={(e) => onChange(Number(e.target.value))}
-      aria-label="Filter by rating"
-    >
-      <option value={0}>All Ratings</option>
-      <option value={3}>3★ & above</option>
-      <option value={4}>4★ & above</option>
-      <option value={5}>5★</option>
-    </select>
+    <div className="rating-filter">
+      {ratings.map((rating) => (
+        <label key={rating} className="rating-filter__option">
+          <input
+            type="radio"
+            name="rating"
+            value={rating}
+            checked={value === rating}
+            onChange={() => onChange(rating)}
+          />
+          <div className="rating-filter__stars">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Star
+                key={i}
+                size={14}
+                className={i < rating ? 'filled' : ''}
+              />
+            ))}
+            <span>& up</span>
+          </div>
+        </label>
+      ))}
+    </div>
   );
 }

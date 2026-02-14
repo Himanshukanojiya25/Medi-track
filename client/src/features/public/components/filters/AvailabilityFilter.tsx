@@ -1,32 +1,32 @@
 // src/features/public/components/filters/AvailabilityFilter.tsx
-
-type AvailabilityFilterProps = {
-  value?: "today" | "any";
+interface AvailabilityFilterProps {
+  value: "today" | "any";
   onChange: (value: "today" | "any") => void;
-};
+}
 
-export function AvailabilityFilter({
-  value = "any",
-  onChange,
-}: AvailabilityFilterProps) {
+export function AvailabilityFilter({ value, onChange }: AvailabilityFilterProps) {
   return (
     <div className="availability-filter">
-      <label>
+      <label className="availability-filter__option">
         <input
           type="radio"
+          name="availability"
+          value="any"
           checked={value === "any"}
           onChange={() => onChange("any")}
         />
-        Any day
+        <span>Any time</span>
       </label>
-
-      <label>
+      
+      <label className="availability-filter__option">
         <input
           type="radio"
+          name="availability"
+          value="today"
           checked={value === "today"}
           onChange={() => onChange("today")}
         />
-        Available today
+        <span>Available today</span>
       </label>
     </div>
   );

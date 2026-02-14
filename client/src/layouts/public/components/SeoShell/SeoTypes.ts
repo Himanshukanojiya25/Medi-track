@@ -5,6 +5,7 @@ export interface SeoMeta {
   description?: string;
   keywords?: string;
   canonical?: string;
+  image?: string;
   noIndex?: boolean;
 }
 

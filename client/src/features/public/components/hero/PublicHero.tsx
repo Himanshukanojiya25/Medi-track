@@ -1,33 +1,82 @@
-export function PublicHero() {
+import { PublicHeroSearch } from "./PublicHeroSearch";
+import { Stethoscope, Building2, Brain, Shield } from "lucide-react";
+
+interface PublicHeroProps {
+  title?: string;
+  subtitle?: string;
+  showSearch?: boolean;
+  variant?: "default" | "doctors" | "hospitals" | "ai" | "emergency";
+  badge?: string;
+  showBadge?: boolean; // ✅ New prop to control badge visibility
+}
+
+const variantConfig = {
+  default: {
+    badge: "Trusted Healthcare Platform",
+    icon: Shield,
+  },
+  doctors: {
+    badge: "500+ Verified Specialists",
+    icon: Stethoscope,
+  },
+  hospitals: {
+    badge: "120+ Partner Hospitals",
+    icon: Building2,
+  },
+  ai: {
+    badge: "AI-Powered Symptom Checker",
+    icon: Brain,
+  },
+  emergency: {
+    badge: "24/7 Emergency Care",
+    icon: Shield,
+  },
+};
+
+export function PublicHero({
+  title = "Find Trusted Doctors & Hospitals Near You",
+  subtitle = "Book appointments, discover hospitals, and get AI-powered health guidance — fast and reliable.",
+  showSearch = true,
+  variant = "default",
+  badge,
+  showBadge = false, // ✅ Default false — hero clean rahega
+}: PublicHeroProps) {
+  const config = variantConfig[variant];
+  const BadgeIcon = config.icon;
+
   return (
-    <div className="home-hero__container">
-      <div>
-        <h1 className="home-hero__title">
-          Find Trusted Doctors & Hospitals Near You
-        </h1>
+    <section className={`public-hero public-hero--${variant}`}>
+      {/* Background elements */}
+      <div className="public-hero__gradient" />
+      <div className="public-hero__pattern" />
+      <div className="public-hero__particles" />
+      
+      <div className="public-hero__container">
+        <div className="public-hero__content">
+          
+          {/* ✅ Badge - only when explicitly needed */}
+          {showBadge && (
+            <div className="public-hero__badge">
+              <BadgeIcon size={14} aria-hidden="true" />
+              <span>{badge || config.badge}</span>
+            </div>
+          )}
 
-        <p className="home-hero__subtitle">
-          Book appointments, discover hospitals, and get AI-powered health
-          guidance — fast and reliable.
-        </p>
+          {/* Title & Subtitle */}
+          <h1 className="public-hero__title">{title}</h1>
+          <p className="public-hero__subtitle">{subtitle}</p>
 
-        <div className="home-hero__actions">
-          <input
-            className="input"
-            placeholder="Search doctors, hospitals"
-          />
+          {/* ✅ ONLY SEARCH - No stats here */}
+          {showSearch && (
+            <div className="public-hero__search-wrapper">
+              <PublicHeroSearch variant={variant} />
+            </div>
+          )}
 
-          <button className="btn btn-primary">
-            Search
-          </button>
-        </div>
-
-        <div className="home-hero__stats">
-          <span><strong>5,000+</strong> Doctors</span>
-          <span><strong>1,200+</strong> Hospitals</span>
-          <span><strong>300+</strong> Cities</span>
+          {/* ❌ STATS COMPLETELY REMOVED FROM HERO */}
+          
         </div>
       </div>
-    </div>
+    </section>
   );
 }

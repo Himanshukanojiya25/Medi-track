@@ -1,13 +1,54 @@
 /* src/styles/accessibility/contrast.css */
 
 [data-contrast="high"] {
-  --text-primary: #ffffff;
-  --text-secondary: #e5e7eb;
-  --bg-page: #000000;
-  --bg-surface: #000000;
-  --border-default: #ffffff;
+  /* Dark theme - High contrast */
+  --bg-page: #000000 !important;
+  --bg-surface: #000000 !important;
+  --text-primary: #FFFFFF !important;
+  --text-secondary: #FFFFFF !important;
+  --text-muted: #E5E7EB !important;
+  --border-default: #FFFFFF !important;
+}
+
+[data-contrast="high"] .public-footer {
+  background: #000000 !important;
+  border-top-color: #FFFFFF !important;
+}
+
+[data-contrast="high"] .footer__nav-link,
+[data-contrast="high"] .footer__contact-link,
+[data-contrast="high"] .footer__legal-link {
+  color: #FFFFFF !important;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+[data-contrast="high"] .footer__brand-badge,
+[data-contrast="high"] .footer__nav-badge,
+[data-contrast="high"] .footer__trust-badge {
+  background: #FFFFFF !important;
+  color: #000000 !important;
+  border: 2px solid #FFFFFF;
+}
+
+[data-contrast="high"] .footer__emergency {
+  background: #FFFFFF !important;
+  border-left: 6px solid #000000;
+}
+
+[data-contrast="high"] .footer__emergency-number {
+  color: #000000 !important;
+}
+
+[data-contrast="high"] .footer__emergency-label {
+  color: #000000 !important;
 }
 
 [data-contrast="high"] a {
   text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+[data-contrast="high"] a:hover {
+  text-decoration: none;
 }

@@ -28,6 +28,9 @@ export * from "./response";
 // ===== Browser Storage =====
 export * from "./storage";
 
+// ===== Logger - Root level (kyunki ye foundation hai) =====
+export * from "./logger/logger.util";           // ✅ Add this line
+
 // ❌ Intentionally NOT exporting
 // export * from "./ui";   // Design System ke baad
 // export * from "./ai";   // AI UX stable hone ke baad

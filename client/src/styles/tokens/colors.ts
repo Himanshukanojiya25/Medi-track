@@ -2,22 +2,76 @@
 
 export const colors = {
   // =========================
-  // BRAND COLORS
+  // BRAND COLORS - CONSISTENT
   // =========================
   brand: {
-    primary: '#2563EB',      // Trust blue (healthcare + SaaS)
+    primary: '#2563EB',      // ✅ Consistent - Footer & Header
     primaryHover: '#1D4ED8',
     primaryActive: '#1E40AF',
 
-    secondary: '#0EA5E9',
-    secondaryHover: '#0284C7',
+    secondary: '#7209b7',    // ✅ Updated to match footer
+    secondaryHover: '#5b0892',
 
-    accent: '#22C55E',       // Success / positive actions
-    accentHover: '#16A34A',
+    accent: '#4cc9f0',       // ✅ Updated
+    accentHover: '#3aa8c7',
+    
+    success: '#06d6a0',
+    successHover: '#05b588',
+
+    danger: '#ef476f',
+    dangerHover: '#d43b5e',
+    
+    warning: '#ffd166',
+    emergency: '#EF4444',
   },
 
   // =========================
-  // NEUTRALS (UI BACKBONE)
+  // DARK THEME COLORS - FOR FOOTER
+  // =========================
+  dark: {
+    bg: '#0A0C10',
+    bgLighter: '#1A1E24',
+    bgLight: '#2D2D2D',
+    surface: '#1E1E2E',
+    surfaceLighter: '#2D3748',
+    
+    text: {
+      primary: '#FFFFFF',
+      secondary: '#E5E7EB',
+      muted: '#D1D5DB',
+      disabled: '#9CA3AF',
+    },
+    
+    border: {
+      subtle: '#2D3748',
+      default: '#4A5568',
+      strong: '#718096',
+    }
+  },
+
+  // =========================
+  // LIGHT THEME COLORS
+  // =========================
+  light: {
+    bg: '#FFFFFF',
+    bgSoft: '#F9FAFB',
+    surface: '#FFFFFF',
+    
+    text: {
+      primary: '#111827',
+      secondary: '#4B5563',
+      muted: '#6B7280',
+    },
+    
+    border: {
+      subtle: '#E5E7EB',
+      default: '#D1D5DB',
+      strong: '#9CA3AF',
+    }
+  },
+
+  // =========================
+  // NEUTRALS (COMMON)
   // =========================
   neutral: {
     0: '#FFFFFF',
@@ -35,44 +89,26 @@ export const colors = {
   },
 
   // =========================
-  // TEXT COLORS
-  // =========================
-  text: {
-    primary: '#111827',
-    secondary: '#4B5563',
-    muted: '#6B7280',
-    inverse: '#FFFFFF',
-    disabled: '#9CA3AF',
-  },
-
-  // =========================
-  // BACKGROUND COLORS
-  // =========================
-  background: {
-    page: '#F9FAFB',
-    surface: '#FFFFFF',
-    elevated: '#FFFFFF',
-    overlay: 'rgba(17, 24, 39, 0.6)',
-  },
-
-  // =========================
-  // FEEDBACK / STATUS
+  // STATUS COLORS
   // =========================
   status: {
-    success: '#22C55E',
-    warning: '#F59E0B',
-    error: '#EF4444',
-    info: '#3B82F6',
+    success: '#06d6a0',
+    warning: '#ffd166',
+    error: '#ef476f',
+    info: '#4cc9f0',
+    emergency: '#EF4444',
   },
 
   // =========================
-  // BORDERS & DIVIDERS
+  // ACCENT COLORS
   // =========================
-  border: {
-    subtle: '#E5E7EB',
-    default: '#D1D5DB',
-    strong: '#9CA3AF',
-    focus: '#2563EB',
+  accent: {
+    blue: '#4361ee',
+    purple: '#7209b7',
+    teal: '#4cc9f0',
+    green: '#06d6a0',
+    red: '#ef476f',
+    yellow: '#ffd166',
   },
 } as const;
 

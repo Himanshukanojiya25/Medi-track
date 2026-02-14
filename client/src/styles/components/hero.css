@@ -1,0 +1,715 @@
+/* ==============================================================================
+   PUBLIC HERO — ULTRA PREMIUM • VIBRANT • ENTERPRISE HEALTHCARE
+   COLORFUL GRADIENTS • RECTANGULAR SEARCH • SOLID DROPDOWN • WORLD-CLASS
+   EXACT MATCH for PublicHero.tsx • PublicHeroSearch.tsx
+   ============================================================================== */
+
+/* ------------------------------------------------------------------------------
+   BASE HERO — VIBRANT COLORFUL FOUNDATION
+   ------------------------------------------------------------------------------ */
+
+.public-hero {
+  position: relative;
+  padding: clamp(70px, 10vw, 120px) 0;
+  background: linear-gradient(145deg, #f5f9ff 0%, #e8f2fe 100%);
+  overflow: hidden;
+  isolation: isolate;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* ----- VIBRANT COLORFUL GRADIENTS — 7 LAYERS DEEP ----- */
+.public-hero__gradient {
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(0, 153, 153, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 90% 30%, rgba(255, 107, 107, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 30% 70%, rgba(255, 169, 77, 0.09) 0%, transparent 55%),
+    radial-gradient(circle at 70% 80%, rgba(72, 149, 239, 0.11) 0%, transparent 50%),
+    radial-gradient(circle at 50% 40%, rgba(147, 112, 219, 0.08) 0%, transparent 60%),
+    radial-gradient(circle at 80% 15%, rgba(255, 99, 132, 0.07) 0%, transparent 55%),
+    radial-gradient(circle at 20% 90%, rgba(46, 204, 113, 0.09) 0%, transparent 50%);
+  opacity: 1;
+  pointer-events: none;
+  z-index: 0;
+  animation: gradientShift 25s ease infinite alternate;
+}
+
+@keyframes gradientShift {
+  0% { opacity: 0.8; transform: scale(1); }
+  100% { opacity: 1; transform: scale(1.05); }
+}
+
+/* ----- SUBTLE PATTERN — LUXURY TEXTURE ----- */
+.public-hero__pattern {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    repeating-linear-gradient(45deg, rgba(0, 153, 153, 0.03) 0px, rgba(0, 153, 153, 0.03) 2px, transparent 2px, transparent 20px),
+    repeating-linear-gradient(135deg, rgba(255, 107, 107, 0.02) 0px, rgba(255, 107, 107, 0.02) 2px, transparent 2px, transparent 25px);
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ----- FLOATING ENERGY PARTICLES — COLORFUL ----- */
+.public-hero__particles {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    radial-gradient(8px 8px at 15% 25%, rgba(0, 153, 153, 0.15) 50%, transparent 100%),
+    radial-gradient(6px 6px at 82% 43%, rgba(255, 107, 107, 0.12) 50%, transparent 100%),
+    radial-gradient(7px 7px at 35% 78%, rgba(255, 169, 77, 0.13) 50%, transparent 100%),
+    radial-gradient(5px 5px at 68% 15%, rgba(72, 149, 239, 0.14) 50%, transparent 100%),
+    radial-gradient(9px 9px at 92% 60%, rgba(147, 112, 219, 0.11) 50%, transparent 100%),
+    radial-gradient(6px 6px at 45% 35%, rgba(46, 204, 113, 0.12) 50%, transparent 100%),
+    radial-gradient(7px 7px at 5% 90%, rgba(255, 99, 132, 0.1) 50%, transparent 100%);
+  background-size: 500px 500px, 450px 450px, 400px 400px, 550px 550px, 480px 480px, 520px 520px, 600px 600px;
+  opacity: 0.4;
+  animation: floatParticles 200s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes floatParticles {
+  0% { background-position: 0 0, 0 0, 0 0, 0 0, 0 0, 0 0, 0 0; }
+  100% { background-position: 800px 600px, -600px 500px, 500px -400px, -300px 700px, 200px -200px, -500px 300px, 700px -600px; }
+}
+
+.public-hero__container {
+  position: relative;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 clamp(24px, 5vw, 48px);
+  z-index: 20;
+}
+
+.public-hero__content {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* ------------------------------------------------------------------------------
+   PREMIUM BADGE — COLORFUL GLASS — OPTIONAL
+   ------------------------------------------------------------------------------ */
+
+.public-hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 2rem 0.7rem 1.75rem;
+  background: linear-gradient(145deg, rgba(0, 153, 153, 0.1), rgba(72, 149, 239, 0.1));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(0, 153, 153, 0.3);
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0a4b4b;
+  margin-bottom: 2.5rem;
+  box-shadow: 0 10px 25px -8px rgba(0, 153, 153, 0.2);
+  animation: slideInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+.public-hero__badge:hover {
+  background: linear-gradient(145deg, rgba(0, 153, 153, 0.15), rgba(72, 149, 239, 0.15));
+  border-color: rgba(0, 153, 153, 0.6);
+  transform: translateY(-3px);
+  box-shadow: 0 20px 30px -10px rgba(0, 153, 153, 0.3);
+}
+
+.public-hero__badge svg {
+  width: 18px;
+  height: 18px;
+  color: #009999;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.public-hero__badge:hover svg {
+  transform: rotate(-8deg) scale(1.15);
+  color: #006666;
+}
+
+/* ------------------------------------------------------------------------------
+   TYPOGRAPHY — BOLD • VIBRANT • COLORFUL
+   ------------------------------------------------------------------------------ */
+
+.public-hero__title {
+  font-size: clamp(2.8rem, 7vw, 4.8rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  color: #0a2a3a;
+  margin-bottom: 1.5rem;
+  animation: fadeInUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+  text-wrap: balance;
+  text-shadow: 0 10px 20px rgba(0, 153, 153, 0.1);
+}
+
+.public-hero__title span {
+  background: linear-gradient(145deg, #009999, #0066cc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+  display: inline-block;
+}
+
+.public-hero__title span::after {
+  content: '';
+  position: absolute;
+  bottom: 12px;
+  left: 0;
+  width: 100%;
+  height: 14px;
+  background: linear-gradient(90deg, rgba(0, 153, 153, 0.2), rgba(0, 102, 204, 0.2));
+  border-radius: 30px;
+  z-index: -1;
+  filter: blur(4px);
+}
+
+.public-hero__subtitle {
+  max-width: 720px;
+  margin: 0 auto 3rem;
+  font-size: clamp(1.2rem, 2.8vw, 1.4rem);
+  line-height: 1.7;
+  color: #1e4a5e;
+  font-weight: 450;
+  animation: fadeInUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+  text-wrap: pretty;
+  opacity: 0.95;
+}
+
+/* ------------------------------------------------------------------------------
+   SEARCH WRAPPER
+   ------------------------------------------------------------------------------ */
+
+.public-hero__search-wrapper {
+  max-width: 920px;
+  margin: 0 auto;
+  animation: fadeInUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+}
+
+/* ==============================================================================
+   PUBLIC HERO SEARCH — RECTANGULAR • SOLID • PREMIUM
+   NO OVAL — ONLY SLIGHT ROUNDED CORNERS
+   ============================================================================== */
+
+.public-hero-search {
+  width: 100%;
+}
+
+/* ----- MAIN CONTAINER — RECTANGULAR, SOLID, SHADOW ----- */
+.public-hero-search__container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem;
+  background: white;
+  border-radius: 16px; /* ✅ SLIGHTLY ROUNDED — NOT OVAL */
+  box-shadow: 0 20px 40px -12px rgba(0, 153, 153, 0.25), 0 4px 18px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 153, 153, 0.2);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.public-hero-search__container:focus-within {
+  box-shadow: 0 25px 50px -12px rgba(0, 153, 153, 0.35), 0 0 0 3px rgba(0, 153, 153, 0.2);
+  border-color: transparent;
+  transform: scale(1.002);
+}
+
+/* ----- SEARCH INPUT — SOLID, CLEAN ----- */
+.public-hero-search__input-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.6rem 0.875rem 0.6rem 1.5rem;
+  background: #f8faff;
+  border-radius: 12px; /* ✅ SLIGHTLY ROUNDED */
+  transition: all 0.25s ease;
+  border: 1px solid transparent;
+}
+
+.public-hero-search__input-wrapper:focus-within {
+  background: white;
+  border-color: #009999;
+  box-shadow: 0 0 0 3px rgba(0, 153, 153, 0.1);
+}
+
+.public-hero-search__icon {
+  color: #009999;
+  width: 22px;
+  height: 22px;
+  transition: all 0.25s ease;
+}
+
+.public-hero-search__input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 1.05rem;
+  padding: 0.7rem 0;
+  outline: none;
+  color: #0a2a3a;
+  font-weight: 480;
+}
+
+.public-hero-search__input::placeholder {
+  color: #7f9fae;
+  font-weight: 400;
+}
+
+/* ----- LOCATION SELECTOR — SOLID, PREMIUM DROPDOWN ANCHOR ----- */
+.public-hero-search__location-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.6rem 1.25rem;
+  background: #f8faff;
+  border-radius: 12px; /* ✅ SLIGHTLY ROUNDED */
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  min-width: 170px;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.public-hero-search__location-wrapper:hover {
+  background: #f0f5ff;
+  border-color: rgba(0, 153, 153, 0.3);
+}
+
+.public-hero-search__location-wrapper:focus-within {
+  background: white;
+  border-color: #009999;
+  box-shadow: 0 0 0 3px rgba(0, 153, 153, 0.1);
+}
+
+.public-hero-search__location-icon {
+  color: #009999;
+  width: 20px;
+  height: 20px;
+  transition: all 0.25s ease;
+}
+
+.public-hero-search__location-input {
+  width: 120px;
+  border: none;
+  background: transparent;
+  font-size: 1rem;
+  padding: 0.7rem 0;
+  outline: none;
+  color: #0a2a3a;
+  cursor: pointer;
+  font-weight: 480;
+}
+
+.public-hero-search__location-input::placeholder {
+  color: #7f9fae;
+  font-weight: 400;
+}
+
+/* ----- ✦ DROPDOWN — SOLID, PREMIUM, NO TRANSPARENCY ✦ ----- */
+.public-hero-search__suggestions {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  width: 260px;
+  max-height: 320px;
+  overflow-y: auto;
+  background: white; /* ✅ SOLID WHITE — NO TRANSPARENCY */
+  border: 1px solid rgba(0, 153, 153, 0.2);
+  border-radius: 16px;
+  box-shadow: 0 25px 50px -12px rgba(0, 153, 153, 0.3), 0 10px 20px -8px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  padding: 0.5rem 0;
+  animation: dropdownReveal 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes dropdownReveal {
+  0% { opacity: 0; transform: translateY(-10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Custom scrollbar */
+.public-hero-search__suggestions::-webkit-scrollbar {
+  width: 6px;
+}
+
+.public-hero-search__suggestions::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.public-hero-search__suggestions::-webkit-scrollbar-thumb {
+  background: #009999;
+  border-radius: 10px;
+}
+
+.public-hero-search__suggestions::-webkit-scrollbar-thumb:hover {
+  background: #006666;
+}
+
+.public-hero-search__suggestion {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 1rem 1.5rem;
+  background: white;
+  border: none;
+  border-bottom: 1px solid rgba(0, 153, 153, 0.1);
+  font-size: 0.95rem;
+  color: #1a3b4a;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 550;
+}
+
+.public-hero-search__suggestion:last-child {
+  border-bottom: none;
+}
+
+.public-hero-search__suggestion:hover {
+  background: linear-gradient(90deg, rgba(0, 153, 153, 0.08), white);
+  color: #009999;
+  padding-left: 1.75rem;
+}
+
+.public-hero-search__suggestion svg {
+  color: #009999;
+  width: 16px;
+  height: 16px;
+  transition: all 0.2s ease;
+}
+
+.public-hero-search__suggestion:hover svg {
+  transform: scale(1.15);
+  color: #006666;
+}
+
+/* ----- SEARCH BUTTON — COLORFUL, GRADIENT, PREMIUM ----- */
+.public-hero-search__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.9rem 2.5rem;
+  background: linear-gradient(145deg, #009999, #0066cc);
+  color: white;
+  font-weight: 700;
+  font-size: 1.05rem;
+  border: none;
+  border-radius: 12px; /* ✅ SLIGHTLY ROUNDED — NOT OVAL */
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 12px 25px -8px rgba(0, 153, 153, 0.4);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.public-hero-search__button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.6s ease;
+}
+
+.public-hero-search__button:hover {
+  background: linear-gradient(145deg, #008080, #0052a3);
+  transform: translateY(-3px);
+  box-shadow: 0 20px 35px -8px rgba(0, 153, 153, 0.5);
+}
+
+.public-hero-search__button:hover::before {
+  left: 100%;
+}
+
+.public-hero-search__button svg {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.public-hero-search__button:hover svg {
+  transform: translateX(6px);
+}
+
+/* ----- POPULAR CITIES — COLORFUL PILLS ----- */
+.public-hero-search__popular {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+  margin-top: 2rem;
+  padding: 0.5rem 0.5rem 0 0.5rem;
+  animation: fadeInUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+}
+
+.public-hero-search__popular-label {
+  font-size: 0.7rem;
+  font-weight: 750;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: #009999;
+  background: rgba(0, 153, 153, 0.1);
+  padding: 0.35rem 1rem;
+  border-radius: 30px;
+  border: 1px solid rgba(0, 153, 153, 0.2);
+}
+
+.public-hero-search__popular-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.875rem;
+}
+
+.public-hero-search__popular-pill {
+  padding: 0.6rem 1.75rem;
+  background: white;
+  border: 1px solid rgba(0, 153, 153, 0.2);
+  border-radius: 30px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1d3e4e;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 10px -4px rgba(0, 0, 0, 0.05);
+}
+
+.public-hero-search__popular-pill:hover {
+  background: linear-gradient(145deg, #009999, #0066cc);
+  border-color: transparent;
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 15px 25px -8px rgba(0, 153, 153, 0.4);
+}
+
+/* ==============================================================================
+   VARIANT SPECIFIC — COLORFUL THEMES
+   ============================================================================== */
+
+/* DOCTORS — PURPLE THEME */
+.public-hero--doctors .public-hero__gradient {
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 45%),
+    radial-gradient(circle at 90% 30%, rgba(124, 58, 237, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 30% 70%, rgba(167, 139, 250, 0.1) 0%, transparent 55%);
+}
+
+.public-hero--doctors .public-hero-search__button {
+  background: linear-gradient(145deg, #8b5cf6, #6d28d9);
+}
+
+.public-hero--doctors .public-hero-search__button:hover {
+  background: linear-gradient(145deg, #7c3aed, #5b21b6);
+}
+
+.public-hero--doctors .public-hero-search__popular-pill:hover {
+  background: linear-gradient(145deg, #8b5cf6, #6d28d9);
+}
+
+/* HOSPITALS — GREEN THEME */
+.public-hero--hospitals .public-hero__gradient {
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(16, 185, 129, 0.15) 0%, transparent 45%),
+    radial-gradient(circle at 90% 30%, rgba(5, 150, 105, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 30% 70%, rgba(52, 211, 153, 0.1) 0%, transparent 55%);
+}
+
+.public-hero--hospitals .public-hero-search__button {
+  background: linear-gradient(145deg, #10b981, #059669);
+}
+
+.public-hero--hospitals .public-hero-search__button:hover {
+  background: linear-gradient(145deg, #059669, #047857);
+}
+
+.public-hero--hospitals .public-hero-search__popular-pill:hover {
+  background: linear-gradient(145deg, #10b981, #059669);
+}
+
+/* AI — INDIGO THEME */
+.public-hero--ai .public-hero__gradient {
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 45%),
+    radial-gradient(circle at 90% 30%, rgba(79, 70, 229, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 30% 70%, rgba(129, 140, 248, 0.1) 0%, transparent 55%);
+}
+
+.public-hero--ai .public-hero-search__button {
+  background: linear-gradient(145deg, #6366f1, #4f46e5);
+}
+
+.public-hero--ai .public-hero-search__button:hover {
+  background: linear-gradient(145deg, #4f46e5, #4338ca);
+}
+
+.public-hero--ai .public-hero-search__popular-pill:hover {
+  background: linear-gradient(145deg, #6366f1, #4f46e5);
+}
+
+/* EMERGENCY — RED THEME */
+.public-hero--emergency .public-hero__gradient {
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(239, 68, 68, 0.15) 0%, transparent 45%),
+    radial-gradient(circle at 90% 30%, rgba(220, 38, 38, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 30% 70%, rgba(248, 113, 113, 0.1) 0%, transparent 55%);
+}
+
+.public-hero--emergency .public-hero-search__button {
+  background: linear-gradient(145deg, #ef4444, #dc2626);
+}
+
+.public-hero--emergency .public-hero-search__button:hover {
+  background: linear-gradient(145deg, #dc2626, #b91c1c);
+}
+
+.public-hero--emergency .public-hero-search__popular-pill:hover {
+  background: linear-gradient(145deg, #ef4444, #dc2626);
+}
+
+/* ==============================================================================
+   RESPONSIVE — FLAWLESS
+   ============================================================================== */
+
+@media (max-width: 1024px) {
+  .public-hero-search__container {
+    flex-direction: column;
+    border-radius: 16px;
+    padding: 0.75rem;
+  }
+  
+  .public-hero-search__input-wrapper,
+  .public-hero-search__location-wrapper,
+  .public-hero-search__button {
+    width: 100%;
+    border-radius: 12px;
+  }
+  
+  .public-hero-search__location-input {
+    width: 100%;
+  }
+  
+  .public-hero-search__suggestions {
+    width: 100%;
+    left: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .public-hero {
+    padding: 60px 0;
+  }
+  
+  .public-hero__title {
+    font-size: 2.5rem;
+  }
+  
+  .public-hero__subtitle {
+    font-size: 1.15rem;
+    margin-bottom: 2.25rem;
+  }
+  
+  .public-hero-search__popular {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .public-hero {
+    padding: 50px 0;
+  }
+  
+  .public-hero__title {
+    font-size: 2.2rem;
+  }
+  
+  .public-hero__subtitle {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .public-hero-search__button {
+    padding: 0.8rem 2rem;
+    justify-content: center;
+  }
+  
+  .public-hero-search__popular-pill {
+    padding: 0.5rem 1.25rem;
+    font-size: 0.8rem;
+  }
+}
+
+/* ==============================================================================
+   ANIMATIONS — SMOOTH
+   ============================================================================== */
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ==============================================================================
+   ACCESSIBILITY
+   ============================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .public-hero__gradient,
+  .public-hero__particles,
+  .public-hero__badge,
+  .public-hero__title,
+  .public-hero__subtitle,
+  .public-hero-search__button,
+  .public-hero-search__popular-pill,
+  .public-hero-search__suggestions {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .public-hero__particles {
+    background-image: none;
+  }
+  
+  .public-hero-search__button:hover,
+  .public-hero-search__popular-pill:hover {
+    transform: none !important;
+  }
+}
+
+.public-hero-search__input:focus-visible,
+.public-hero-search__location-input:focus-visible,
+.public-hero-search__button:focus-visible,
+.public-hero-search__popular-pill:focus-visible,
+.public-hero__badge:focus-visible {
+  outline: 4px solid #009999;
+  outline-offset: 4px;
+  border-radius: 12px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
