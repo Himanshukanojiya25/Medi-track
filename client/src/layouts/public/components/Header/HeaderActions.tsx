@@ -1,119 +1,176 @@
-import { Link } from "react-router-dom";
-import { User, Sparkles, Shield, Stethoscope, Building2, HelpCircle } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  User,
+  Sparkles,
+  Shield,
+  Stethoscope,
+  Building2,
+  HelpCircle,
+  ChevronDown,
+  LogOut,
+  LayoutDashboard,
+} from "lucide-react";
+import AuthService from "../../../../services/auth/auth.service";
 
 export function HeaderActions() {
-  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+
+  const currentUser = AuthService.getCurrentUser();
+  const isAuthenticated = AuthService.isAuthenticated();
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsUserDropdownOpen(false);
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsDropdownOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleLogout = async () => {
+    await AuthService.logout();
+    navigate("/");
+    setIsDropdownOpen(false);
+  };
+
+  const handleLoginClick = (role?: string) => {
+    // Navigate to login page with role param
+    if (role) {
+      navigate(`/login?role=${role}`);
+    } else {
+      navigate("/login");
+    }
+    setIsDropdownOpen(false);
+  };
+
+  const getDropdownLinks = () => {
+    if (isAuthenticated) {
+      const dashboardPath = 
+        currentUser?.role === "PATIENT" ? "/patient/dashboard" :
+        currentUser?.role === "DOCTOR" ? "/doctor/dashboard" :
+        currentUser?.role === "HOSPITAL_ADMIN" ? "/hospital-admin/dashboard" :
+        "/super-admin/dashboard";
+      
+      return [
+        {
+          to: dashboardPath,
+          icon: <LayoutDashboard size={15} />,
+          label: "Dashboard",
+          onClick: () => navigate(dashboardPath)
+        },
+        {
+          to: "#",
+          icon: <LogOut size={15} />,
+          label: "Logout",
+          onClick: handleLogout
+        },
+      ];
+    }
+    
+    return [
+      {
+        to: "#",
+        icon: <User size={15} />,
+        label: "Patient Sign In",
+        onClick: () => handleLoginClick("patient")
+      },
+      {
+        to: "#",
+        icon: <Stethoscope size={15} />,
+        label: "Doctor Portal",
+        onClick: () => handleLoginClick("doctor")
+      },
+      {
+        to: "#",
+        icon: <Building2 size={15} />,
+        label: "Hospital Portal",
+        onClick: () => handleLoginClick("hospital")
+      },
+    ];
+  };
+
   return (
     <div className="header__actions">
-      <div className="header__premium-badge">
-        <Sparkles className="header__premium-icon" size={14} aria-hidden="true" />
-        <span className="header__premium-text">AI-Powered</span>
+      {/* AI Badge */}
+      <div className="header__ai-badge" aria-hidden="true">
+        <Sparkles size={13} />
+        <span>AI-Powered</span>
       </div>
 
-      <div className="header__user-container" ref={dropdownRef}>
-        {/* ✅ HARDCODED "false" - NO EXPRESSION */}
+      {/* Account Dropdown */}
+      <div className="header__account" ref={dropdownRef}>
         <button
           type="button"
-          className="header__user-toggle"
-          aria-label="User menu"
-          aria-expanded="false"
-          aria-haspopup="dialog"
-          onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+          className="header__account-toggle"
+          aria-label="Open account menu"
+          aria-expanded={isDropdownOpen}
+          onClick={() => setIsDropdownOpen(prev => !prev)}
         >
-          <div className="header__user-avatar">
-            <User className="header__user-icon" size={18} aria-hidden="true" />
+          <div className="header__account-avatar">
+            <User size={17} aria-hidden="true" />
           </div>
-          <span className="header__user-text">Account</span>
-          <div className="header__user-chevron" aria-hidden="true" />
+          <span className="header__account-label">
+            {isAuthenticated ? (currentUser?.name || currentUser?.role || 'Account') : 'Account'}
+          </span>
+          <ChevronDown
+            size={14}
+            className={`header__account-chevron${isDropdownOpen ? " open" : ""}`}
+          />
         </button>
 
-        {isUserDropdownOpen && (
-          <div 
-            className="header__dropdown-menu" 
-            role="region" 
-            aria-label="Account menu options"
-          >
+        {isDropdownOpen && (
+          <div className="header__dropdown" role="menu">
             <div className="header__dropdown-header">
-              <Shield className="header__dropdown-shield" size={16} aria-hidden="true" />
-              <span className="header__dropdown-title">Secure Login</span>
+              <Shield size={14} aria-hidden="true" />
+              <span>{isAuthenticated ? 'My Account' : 'Secure Login'}</span>
             </div>
-            
-            <div className="header__dropdown-content">
-              <Link 
-                to="/login" 
-                className="header__dropdown-link" 
-                onClick={() => setIsUserDropdownOpen(false)}
-              >
-                <User size={16} aria-hidden="true" />
-                <span>Sign In</span>
-              </Link>
-              
-              <Link 
-                to="/doctor/login" 
-                className="header__dropdown-link" 
-                onClick={() => setIsUserDropdownOpen(false)}
-              >
-                <Stethoscope size={16} aria-hidden="true" />
-                <span>Doctor Portal</span>
-              </Link>
-              
-              <Link 
-                to="/hospital/login" 
-                className="header__dropdown-link" 
-                onClick={() => setIsUserDropdownOpen(false)}
-              >
-                <Building2 size={16} aria-hidden="true" />
-                <span>Hospital Portal</span>
-              </Link>
-              
-              <div 
-                className="header__dropdown-divider" 
-                role="separator" 
-                aria-hidden="true" 
-              />
-              
-              <Link 
-                to="/help" 
-                className="header__dropdown-link" 
-                onClick={() => setIsUserDropdownOpen(false)}
-              >
-                <HelpCircle size={16} aria-hidden="true" />
-                <span>Need Help?</span>
-              </Link>
+
+            <div className="header__dropdown-links">
+              {getDropdownLinks().map((link) => (
+                <button
+                  key={link.label}
+                  onClick={link.onClick}
+                  className="header__dropdown-link"
+                  role="menuitem"
+                >
+                  {link.icon}
+                  <span>{link.label}</span>
+                </button>
+              ))}
             </div>
+
+            <div className="header__dropdown-divider" />
+
+            <Link
+              to="/help"
+              className="header__dropdown-link"
+              onClick={() => setIsDropdownOpen(false)}
+            >
+              <HelpCircle size={15} aria-hidden="true" />
+              <span>Need Help?</span>
+            </Link>
           </div>
         )}
       </div>
 
+      {/* Auth Buttons */}
       <div className="header__auth-buttons">
-        <Link 
-          to="/login" 
-          className="header__auth-button header__auth-button--secondary"
+        <button
+          onClick={() => handleLoginClick()}
+          className="header__btn header__btn--secondary"
         >
-          <span className="header__auth-button-text">Sign In</span>
-          <div className="header__auth-button-glow" aria-hidden="true" />
-        </Link>
-        
-        <Link 
-          to="/signup" 
-          className="header__auth-button header__auth-button--primary"
+          <span>Sign In</span>
+        </button>
+        <Link
+          to="/signup"
+          className="header__btn header__btn--primary"
         >
-          <Sparkles className="header__auth-button-icon" size={16} aria-hidden="true" />
-          <span className="header__auth-button-text">Get Started Free</span>
-          <div className="header__auth-button-shine" aria-hidden="true" />
+          <Sparkles size={14} aria-hidden="true" />
+          <span>Get Started</span>
         </Link>
       </div>
     </div>

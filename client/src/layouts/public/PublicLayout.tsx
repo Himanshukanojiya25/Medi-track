@@ -56,35 +56,6 @@ export function PublicLayout() {
         </main>
 
         <Footer />
-
-        {/* Scroll to top button */}
-        {showScrollTop && (
-          <button
-            type="button"
-            className="scroll-top-button"
-            onClick={handleScrollTop}
-            aria-label="Scroll to top"
-            title="Back to top"
-          >
-            <ArrowUp size={20} />
-          </button>
-        )}
-
-        {/* Emergency notification banner - if not on emergency page */}
-        {!isEmergency && (
-          <div className="emergency-banner" role="complementary" aria-label="Emergency notification">
-            <div className="emergency-banner__content">
-              <span className="emergency-banner__icon">🚨</span>
-              <span className="emergency-banner__text">
-                Medical emergency? Call{" "}
-                <a href="tel:108" className="emergency-banner__link">
-                  108
-                </a>{" "}
-                immediately
-              </span>
-            </div>
-          </div>
-        )}
       </div>
     </SeoShell>
   );

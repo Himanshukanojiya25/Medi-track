@@ -5,63 +5,62 @@ interface NavItem {
   label: string;
   to: string;
   icon: React.ReactNode;
-  description?: string;
+  description: string;
   badge?: string;
+  urgent?: boolean;
 }
 
 const NAV_ITEMS: NavItem[] = [
   {
     label: "Doctors",
     to: "/doctors",
-    icon: <Stethoscope size={16} aria-hidden="true" />,
-    description: "Verified specialists",
+    icon: <Stethoscope size={15} aria-hidden="true" />,
+    description: "500+ verified specialists",
   },
   {
     label: "Hospitals",
     to: "/hospitals",
-    icon: <Building2 size={16} aria-hidden="true" />,
-    description: "Top facilities",
+    icon: <Building2 size={15} aria-hidden="true" />,
+    description: "Top accredited facilities",
   },
   {
     label: "AI Symptom",
     to: "/ai-symptom",
-    icon: <Brain size={16} aria-hidden="true" />,
-    description: "Smart diagnosis",
+    icon: <Brain size={15} aria-hidden="true" />,
+    description: "Smart diagnosis instantly",
     badge: "AI",
   },
   {
     label: "Emergency",
     to: "/emergency",
-    icon: <AlertTriangle size={16} aria-hidden="true" />,
-    description: "Immediate help",
+    icon: <AlertTriangle size={15} aria-hidden="true" />,
+    description: "24/7 immediate care",
+    urgent: true,
   },
 ];
 
 export function HeaderNav() {
   return (
     <nav className="header__nav" aria-label="Primary navigation">
-      <ul className="header__nav-list">
+      <ul className="header__nav-list" role="list">
         {NAV_ITEMS.map((item) => (
           <li key={item.to} className="header__nav-item">
             <NavLink
               to={item.to}
-              className={({ isActive }) => `header__nav-link ${isActive ? "active" : ""}`}
+              className={({ isActive }) =>
+                `header__nav-link${isActive ? " active" : ""}${item.urgent ? " urgent" : ""}`
+              }
             >
-              <div className="header__nav-link-content">
-                <div className="header__nav-link-icon" aria-hidden="true">
-                  {item.icon}
-                </div>
-                <div className="header__nav-link-text">
-                  <span className="header__nav-link-label">{item.label}</span>
-                  <span className="sr-only">{item.description}</span>
-                </div>
-                {item.badge && (
-                  <span className="header__nav-badge" aria-hidden="true">
-                    {item.badge}
-                  </span>
-                )}
-              </div>
-              <div className="header__nav-indicator" aria-hidden="true" />
+              <span className="header__nav-icon" aria-hidden="true">
+                {item.icon}
+              </span>
+              <span className="header__nav-label">{item.label}</span>
+              {item.badge && (
+                <span className="header__nav-badge" aria-label="AI feature">
+                  {item.badge}
+                </span>
+              )}
+              <span className="header__nav-indicator" aria-hidden="true" />
             </NavLink>
           </li>
         ))}

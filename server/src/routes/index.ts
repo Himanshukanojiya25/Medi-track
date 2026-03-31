@@ -23,6 +23,7 @@ import aiRoutes from "./ai";
 import notificationRoutes from "./notification/notification.routes";
 import doctorLeaveRoutes from "./doctor-leave/doctor-leave.routes";
 import doctorAvailabilityRoutes from "./doctor-availability/doctor-availability.routes";
+import publicRoutes from "./public";  // 👈 ADD THIS
 
 /**
  * 🔥 NEW: DEPARTMENT ROUTES
@@ -137,6 +138,13 @@ router.use("/doctor-availability", doctorAvailabilityRoutes);
  * BASE: /api/v1/departments
  */
 router.use("/departments", departmentRoutes);
+
+/**
+ * ============================
+ * 🕒 Public
+ * ============================
+ */
+router.use("/public", publicRoutes);  // 👈 ADD THIS
 
 /**
  * ============================

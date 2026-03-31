@@ -1,14 +1,15 @@
-// src/routes/router.config.ts
+// client/src/routes/router.config.tsx
 
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
+import { Suspense } from "react";
+import { ProtectedRoute } from "../components/auth/role-guard/ProtectedRoute"; // ✅ Correct import path
+import { ROLES } from "../app/constants/role.constants";
 
 /* =========================
    LAYOUTS
 ========================= */
 import { PublicLayout } from "../layouts/public/PublicLayout";
 import { AuthLayout as PublicAuthLayout } from "../layouts/public/AuthLayout";
-// ✅ Remove this line - it's not being used
-// import { AuthLayout } from "../layouts/auth/AuthLayout";
 import { PatientLayout } from "../layouts/patient/PatientLayout";
 import { DoctorLayout } from "../layouts/doctor/DoctorLayout";
 import { HospitalAdminLayout } from "../layouts/hospital-admin/HospitalAdminLayout";
@@ -34,17 +35,32 @@ import { AiSymptomScreen } from "../features/public/screens/ai-symptom";
 import { EmergencyScreen } from "../features/public/screens/emergency";
 
 /* =========================
-   PLACEHOLDER
+   AUTH SCREENS
 ========================= */
-const Placeholder = ({ title }: { title: string }) => (
-  <div className="page-placeholder">{title}</div>
+import { LoginScreen } from "../features/auth/login/screens";
+
+/* =========================
+   PATIENT SCREENS
+========================= */
+import { PatientDashboardScreen } from "../features/patient/dashboard/PatientDashboardScreen";
+
+/* =========================
+   LOADING FALLBACK
+========================= */
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="text-center">
+      <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+      <p className="text-gray-600">Loading...</p>
+    </div>
+  </div>
 );
 
 /* =========================
-   ROUTER CONFIG - React Router v6 (No Future Flags)
+   ROUTER CONFIG
 ========================= */
 export const appRouter = createBrowserRouter([
-  // PUBLIC ROUTES
+  // PUBLIC ROUTES (No auth required)
   {
     path: "/",
     element: <PublicLayout />,
@@ -61,6 +77,7 @@ export const appRouter = createBrowserRouter([
       { path: "contact", element: <ContactScreen /> },
       { path: "ai-symptom", element: <AiSymptomScreen /> },
       { path: "emergency", element: <EmergencyScreen /> },
+      { path: "login", element: <LoginScreen /> },
     ],
   },
 
@@ -69,85 +86,129 @@ export const appRouter = createBrowserRouter([
     path: "/auth",
     element: <PublicAuthLayout />,
     children: [
-      { path: "login", element: <Placeholder title="Login" /> },
-      { path: "register", element: <Placeholder title="Register" /> },
-      { path: "forgot-password", element: <Placeholder title="Forgot Password" /> },
-      { path: "reset-password", element: <Placeholder title="Reset Password" /> },
+      { path: "login", element: <LoginScreen /> },
+      { path: "register", element: <div>Register Page</div> },
+      { path: "forgot-password", element: <div>Forgot Password</div> },
+      { path: "reset-password", element: <div>Reset Password</div> },
     ],
   },
 
-  // PATIENT ROUTES
+  // PATIENT ROUTES (Protected + Role based)
   {
     path: "/patient",
-    element: <PatientLayout />,
+    element: (
+      <Suspense fallback={<LoadingFallback />}>
+        <ProtectedRoute allowedRoles={[ROLES.PATIENT]} />
+      </Suspense>
+    ),
     children: [
-      { index: true, element: <Placeholder title="Patient Dashboard" /> },
-      { path: "appointments", element: <Placeholder title="My Appointments" /> },
-      { path: "appointments/book", element: <Placeholder title="Book Appointment" /> },
-      { path: "appointments/:id", element: <Placeholder title="Appointment Details" /> },
-      { path: "doctors", element: <Placeholder title="My Doctors" /> },
-      { path: "hospitals", element: <Placeholder title="My Hospitals" /> },
-      { path: "prescriptions", element: <Placeholder title="Prescriptions" /> },
-      { path: "prescriptions/:id", element: <Placeholder title="Prescription Details" /> },
-      { path: "medical-records", element: <Placeholder title="Medical Records" /> },
-      { path: "profile", element: <Placeholder title="Profile" /> },
-      { path: "settings", element: <Placeholder title="Settings" /> },
+      {
+        path: "",
+        element: <PatientLayout />,
+        children: [
+          { index: true, element: <Navigate to="dashboard" replace /> },
+          { path: "dashboard", element: <PatientDashboardScreen /> },
+          { path: "appointments", element: <div>My Appointments</div> },
+          { path: "appointments/book", element: <div>Book Appointment</div> },
+          { path: "appointments/:id", element: <div>Appointment Details</div> },
+          { path: "doctors", element: <div>My Doctors</div> },
+          { path: "hospitals", element: <div>My Hospitals</div> },
+          { path: "prescriptions", element: <div>Prescriptions</div> },
+          { path: "prescriptions/:id", element: <div>Prescription Details</div> },
+          { path: "medical-records", element: <div>Medical Records</div> },
+          { path: "profile", element: <div>Profile</div> },
+          { path: "settings", element: <div>Settings</div> },
+        ],
+      },
     ],
   },
 
-  // DOCTOR ROUTES
+  // DOCTOR ROUTES (Protected + Role based)
   {
     path: "/doctor",
-    element: <DoctorLayout />,
+    element: (
+      <Suspense fallback={<LoadingFallback />}>
+        <ProtectedRoute allowedRoles={[ROLES.DOCTOR]} />
+      </Suspense>
+    ),
     children: [
-      { index: true, element: <Placeholder title="Doctor Dashboard" /> },
-      { path: "appointments", element: <Placeholder title="Appointments" /> },
-      { path: "appointments/today", element: <Placeholder title="Today's Appointments" /> },
-      { path: "appointments/:id", element: <Placeholder title="Appointment Details" /> },
-      { path: "patients", element: <Placeholder title="Patients" /> },
-      { path: "patients/:id", element: <Placeholder title="Patient Details" /> },
-      { path: "prescriptions/new", element: <Placeholder title="New Prescription" /> },
-      { path: "prescriptions", element: <Placeholder title="Prescription History" /> },
-      { path: "availability", element: <Placeholder title="Manage Availability" /> },
-      { path: "earnings", element: <Placeholder title="Earnings" /> },
-      { path: "profile", element: <Placeholder title="Profile" /> },
-      { path: "settings", element: <Placeholder title="Settings" /> },
+      {
+        path: "",
+        element: <DoctorLayout />,
+        children: [
+          { index: true, element: <Navigate to="dashboard" replace /> },
+          { path: "dashboard", element: <div>Doctor Dashboard</div> },
+          { path: "appointments", element: <div>Appointments</div> },
+          { path: "appointments/today", element: <div>Today's Appointments</div> },
+          { path: "appointments/:id", element: <div>Appointment Details</div> },
+          { path: "patients", element: <div>Patients</div> },
+          { path: "patients/:id", element: <div>Patient Details</div> },
+          { path: "prescriptions/new", element: <div>New Prescription</div> },
+          { path: "prescriptions", element: <div>Prescription History</div> },
+          { path: "availability", element: <div>Manage Availability</div> },
+          { path: "earnings", element: <div>Earnings</div> },
+          { path: "profile", element: <div>Profile</div> },
+          { path: "settings", element: <div>Settings</div> },
+        ],
+      },
     ],
   },
 
-  // HOSPITAL ADMIN ROUTES
+  // HOSPITAL ADMIN ROUTES (Protected + Role based)
   {
     path: "/hospital-admin",
-    element: <HospitalAdminLayout />,
+    element: (
+      <Suspense fallback={<LoadingFallback />}>
+        <ProtectedRoute allowedRoles={[ROLES.HOSPITAL_ADMIN]} />
+      </Suspense>
+    ),
     children: [
-      { index: true, element: <Placeholder title="Hospital Dashboard" /> },
-      { path: "doctors", element: <Placeholder title="Manage Doctors" /> },
-      { path: "doctors/add", element: <Placeholder title="Add Doctor" /> },
-      { path: "doctors/:id", element: <Placeholder title="Doctor Details" /> },
-      { path: "departments", element: <Placeholder title="Departments" /> },
-      { path: "appointments", element: <Placeholder title="All Appointments" /> },
-      { path: "patients", element: <Placeholder title="Patients" /> },
-      { path: "billing", element: <Placeholder title="Billing" /> },
-      { path: "reports", element: <Placeholder title="Reports" /> },
-      { path: "staff", element: <Placeholder title="Staff Management" /> },
-      { path: "settings", element: <Placeholder title="Settings" /> },
+      {
+        path: "",
+        element: <HospitalAdminLayout />,
+        children: [
+          { index: true, element: <Navigate to="dashboard" replace /> },
+          { path: "dashboard", element: <div>Hospital Dashboard</div> },
+          { path: "doctors", element: <div>Manage Doctors</div> },
+          { path: "doctors/add", element: <div>Add Doctor</div> },
+          { path: "doctors/:id", element: <div>Doctor Details</div> },
+          { path: "departments", element: <div>Departments</div> },
+          { path: "appointments", element: <div>All Appointments</div> },
+          { path: "patients", element: <div>Patients</div> },
+          { path: "billing", element: <div>Billing</div> },
+          { path: "reports", element: <div>Reports</div> },
+          { path: "staff", element: <div>Staff Management</div> },
+          { path: "settings", element: <div>Settings</div> },
+        ],
+      },
     ],
   },
 
-  // SUPER ADMIN ROUTES
+  // SUPER ADMIN ROUTES (Protected + Role based)
   {
     path: "/super-admin",
-    element: <SuperAdminLayout />,
+    element: (
+      <Suspense fallback={<LoadingFallback />}>
+        <ProtectedRoute allowedRoles={[ROLES.SUPER_ADMIN]} />
+      </Suspense>
+    ),
     children: [
-      { index: true, element: <Placeholder title="Super Admin Dashboard" /> },
-      { path: "hospitals", element: <Placeholder title="Hospitals" /> },
-      { path: "hospitals/approvals", element: <Placeholder title="Hospital Approvals" /> },
-      { path: "doctors", element: <Placeholder title="All Doctors" /> },
-      { path: "users", element: <Placeholder title="Users" /> },
-      { path: "analytics", element: <Placeholder title="Analytics" /> },
-      { path: "revenue", element: <Placeholder title="Revenue" /> },
-      { path: "system-health", element: <Placeholder title="System Health" /> },
-      { path: "settings", element: <Placeholder title="Settings" /> },
+      {
+        path: "",
+        element: <SuperAdminLayout />,
+        children: [
+          { index: true, element: <Navigate to="dashboard" replace /> },
+          { path: "dashboard", element: <div>Super Admin Dashboard</div> },
+          { path: "hospitals", element: <div>Hospitals</div> },
+          { path: "hospitals/approvals", element: <div>Hospital Approvals</div> },
+          { path: "doctors", element: <div>All Doctors</div> },
+          { path: "users", element: <div>Users</div> },
+          { path: "analytics", element: <div>Analytics</div> },
+          { path: "revenue", element: <div>Revenue</div> },
+          { path: "system-health", element: <div>System Health</div> },
+          { path: "settings", element: <div>Settings</div> },
+        ],
+      },
     ],
   },
 
@@ -156,11 +217,11 @@ export const appRouter = createBrowserRouter([
     path: "/billing",
     element: <BillingLayout />,
     children: [
-      { index: true, element: <Placeholder title="Billing Dashboard" /> },
-      { path: "invoices", element: <Placeholder title="Invoices" /> },
-      { path: "invoices/:id", element: <Placeholder title="Invoice Details" /> },
-      { path: "payments", element: <Placeholder title="Payments" /> },
-      { path: "subscriptions", element: <Placeholder title="Subscriptions" /> },
+      { index: true, element: <div>Billing Dashboard</div> },
+      { path: "invoices", element: <div>Invoices</div> },
+      { path: "invoices/:id", element: <div>Invoice Details</div> },
+      { path: "payments", element: <div>Payments</div> },
+      { path: "subscriptions", element: <div>Subscriptions</div> },
     ],
   },
 
@@ -170,9 +231,9 @@ export const appRouter = createBrowserRouter([
     element: <AILayout />,
     children: [
       { index: true, element: <AiSymptomScreen /> },
-      { path: "chat", element: <Placeholder title="AI Chat" /> },
-      { path: "history", element: <Placeholder title="Chat History" /> },
-      { path: "insights", element: <Placeholder title="AI Insights" /> },
+      { path: "chat", element: <div>AI Chat</div> },
+      { path: "history", element: <div>Chat History</div> },
+      { path: "insights", element: <div>AI Insights</div> },
     ],
   },
 
@@ -183,5 +244,4 @@ export const appRouter = createBrowserRouter([
   },
 ]);
 
-// Export for use in main.tsx
 export default appRouter;
