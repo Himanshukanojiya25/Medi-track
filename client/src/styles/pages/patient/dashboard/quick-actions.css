@@ -1,0 +1,170 @@
+/* client/src/styles/pages/patient/dashboard/quick-actions.css */
+
+/* Quick Actions Section */
+.quick-actions {
+  background: white;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.quick-actions__header {
+  padding: 1.25rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.quick-actions__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.quick-actions__subtitle {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+}
+
+.quick-actions__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  padding: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .quick-actions__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Quick Action Button */
+.quick-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  width: 100%;
+}
+
+.quick-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  background: #f8fafc;
+}
+
+.quick-action:active {
+  transform: translateY(0);
+}
+
+.quick-action__icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+}
+
+.quick-action__icon--blue {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.quick-action__icon--purple {
+  background: #f3e8ff;
+  color: #9333ea;
+}
+
+.quick-action__icon--green {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.quick-action__icon--orange {
+  background: #ffedd5;
+  color: #ea580c;
+}
+
+.quick-action__icon--red {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.quick-action__icon--teal {
+  background: #ccfbf1;
+  color: #0d9488;
+}
+
+.quick-action__title {
+  font-weight: 600;
+  color: #0f172a;
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.quick-action__description {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+/* Emergency Card */
+.emergency-card {
+  margin: 0 1.25rem 1.25rem 1.25rem;
+  padding: 0.75rem;
+  background: #fef2f2;
+  border: 1px solid #fee2e2;
+  border-radius: 0.75rem;
+}
+
+.emergency-card__content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.emergency-card__info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.emergency-card__icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: #dc2626;
+}
+
+.emergency-card__title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #991b1b;
+}
+
+.emergency-card__subtitle {
+  font-size: 0.75rem;
+  color: #b91c1c;
+  margin-top: 0.125rem;
+}
+
+.emergency-card__button {
+  background: #dc2626;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.emergency-card__button:hover {
+  background: #b91c1c;
+  transform: scale(0.98);
+}

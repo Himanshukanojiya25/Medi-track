@@ -2,7 +2,7 @@
 
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import { Suspense } from "react";
-import { ProtectedRoute } from "../components/auth/role-guard/ProtectedRoute"; // ✅ Correct import path
+import { ProtectedRoute } from "../components/auth/role-guard/ProtectedRoute";
 import { ROLES } from "../app/constants/role.constants";
 
 /* =========================
@@ -43,6 +43,7 @@ import { LoginScreen } from "../features/auth/login/screens";
    PATIENT SCREENS
 ========================= */
 import { PatientDashboardScreen } from "../features/patient/dashboard/PatientDashboardScreen";
+import { ProfileScreen } from "../features/patient/profile/ProfileScreen";  // ✅ ADD THIS IMPORT
 
 /* =========================
    LOADING FALLBACK
@@ -60,7 +61,7 @@ const LoadingFallback = () => (
    ROUTER CONFIG
 ========================= */
 export const appRouter = createBrowserRouter([
-  // PUBLIC ROUTES (No auth required)
+  // PUBLIC ROUTES
   {
     path: "/",
     element: <PublicLayout />,
@@ -93,7 +94,7 @@ export const appRouter = createBrowserRouter([
     ],
   },
 
-  // PATIENT ROUTES (Protected + Role based)
+  // PATIENT ROUTES
   {
     path: "/patient",
     element: (
@@ -116,14 +117,14 @@ export const appRouter = createBrowserRouter([
           { path: "prescriptions", element: <div>Prescriptions</div> },
           { path: "prescriptions/:id", element: <div>Prescription Details</div> },
           { path: "medical-records", element: <div>Medical Records</div> },
-          { path: "profile", element: <div>Profile</div> },
+          { path: "profile", element: <ProfileScreen /> },  // ✅ FIXED: Ab ProfileScreen use hoga
           { path: "settings", element: <div>Settings</div> },
         ],
       },
     ],
   },
 
-  // DOCTOR ROUTES (Protected + Role based)
+  // DOCTOR ROUTES
   {
     path: "/doctor",
     element: (
@@ -154,7 +155,7 @@ export const appRouter = createBrowserRouter([
     ],
   },
 
-  // HOSPITAL ADMIN ROUTES (Protected + Role based)
+  // HOSPITAL ADMIN ROUTES
   {
     path: "/hospital-admin",
     element: (
@@ -184,7 +185,7 @@ export const appRouter = createBrowserRouter([
     ],
   },
 
-  // SUPER ADMIN ROUTES (Protected + Role based)
+  // SUPER ADMIN ROUTES
   {
     path: "/super-admin",
     element: (

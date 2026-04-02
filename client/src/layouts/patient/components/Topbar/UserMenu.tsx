@@ -1,8 +1,8 @@
-// client/src/layouts/patient/components/Topbar/UserMenu.tsx
-
 import React, { useState, useRef, useEffect } from 'react';
 import { User, Settings, Heart, FileText, LogOut, ChevronDown, Activity, Calendar, Award } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import AuthService from '../../../../services/auth/auth.service';
+import { useAuthStore } from '../../../../stores/useAuthStore';
 
 interface UserInfo {
   name: string;
@@ -21,8 +21,10 @@ const mockUser: UserInfo = {
 
 export const UserMenu: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const { logout: clearStore } = useAuthStore();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -35,20 +37,44 @@ export const UserMenu: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    
+    try {
+      // 1. Call logout API to invalidate token on server
+      await AuthService.logout();
+      
+      // 2. Clear Zustand store
+      clearStore();
+      
+      // 3. Navigate to home page
+      navigate('/', { replace: true });
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Even if API fails, clear local state
+      clearStore();
+      navigate('/', { replace: true });
+    } finally {
+      setIsLoggingOut(false);
+      setIsOpen(false);
+    }
   };
 
   const menuItems = [
     { icon: <User size={16} />, label: 'My Profile', path: '/patient/profile', divider: false },
-    { icon: <Settings size={16} />, label: 'Settings', path: '/patient/profile', divider: false },
+    { icon: <Settings size={16} />, label: 'Settings', path: '/patient/settings', divider: false },
     { icon: <Heart size={16} />, label: 'Favorites', path: '/patient/favorites', divider: false },
     { icon: <FileText size={16} />, label: 'Medical Records', path: '/patient/medical-history', divider: false },
     { icon: <Award size={16} />, label: 'Health Rewards', path: '/patient/rewards', divider: false },
     { icon: <Activity size={16} />, label: 'Health Analytics', path: '/patient/analytics', divider: true },
-    { icon: <LogOut size={16} />, label: 'Logout', path: '#', divider: false, onClick: handleLogout },
+    { 
+      icon: <LogOut size={16} />, 
+      label: isLoggingOut ? 'Logging out...' : 'Logout', 
+      path: '#', 
+      divider: false, 
+      onClick: handleLogout,
+      disabled: isLoggingOut
+    },
   ];
 
   const getInitials = (name: string) => {
@@ -118,7 +144,12 @@ export const UserMenu: React.FC = () => {
                       setIsOpen(false);
                     }
                   }}
-                  className="w-full flex items-center space-x-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 transition-colors"
+                  disabled={item.disabled}
+                  className={`
+                    w-full flex items-center space-x-3 px-4 py-2.5 text-gray-700 
+                    hover:bg-gray-50 transition-colors
+                    ${item.disabled ? 'opacity-50 cursor-not-allowed' : ''}
+                  `}
                 >
                   <span className="text-gray-400">{item.icon}</span>
                   <span className="text-sm">{item.label}</span>

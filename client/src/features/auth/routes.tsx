@@ -1,5 +1,6 @@
 import { RouteObject } from 'react-router-dom';
 import { LoginScreen } from './login/screens';
+import { RegisterScreen } from './register/screens'; // Import RegisterScreen
 
 /**
  * Auth Routes
@@ -12,11 +13,11 @@ export const authRoutes: RouteObject[] = [
   },
   {
     path: 'signup',
-    element: <div>Signup Page - Coming Soon</div>,
+    element: <RegisterScreen />, // Signup and register both go to RegisterScreen
   },
   {
     path: 'register',
-    element: <div>Register Page - Coming Soon</div>,
+    element: <RegisterScreen />, // Register page
   },
   {
     path: 'forgot-password',
@@ -42,11 +43,11 @@ export const publicAuthRoutes: RouteObject[] = [
   },
   {
     path: 'signup',
-    element: <div>Signup Page - Coming Soon</div>,
+    element: <RegisterScreen />,
   },
   {
     path: 'register',
-    element: <div>Register Page - Coming Soon</div>,
+    element: <RegisterScreen />,
   },
   {
     path: 'forgot-password',

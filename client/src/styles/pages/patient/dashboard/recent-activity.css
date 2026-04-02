@@ -1,0 +1,131 @@
+/* client/src/styles/pages/patient/dashboard/recent-activity.css */
+
+/* Recent Activity Section */
+.recent-activity {
+  background: white;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.recent-activity__header {
+  padding: 1.25rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.recent-activity__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.recent-activity__subtitle {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+}
+
+/* Activity Item */
+.activity-item {
+  padding: 1rem;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.activity-item:hover {
+  background-color: #f8fafc;
+}
+
+.activity-item__icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.activity-item__icon--appointment {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.activity-item__icon--prescription {
+  background: #f3e8ff;
+  color: #9333ea;
+}
+
+.activity-item__icon--report {
+  background: #ffedd5;
+  color: #ea580c;
+}
+
+.activity-item__icon--profile {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.activity-item__icon--feedback {
+  background: #ccfbf1;
+  color: #0d9488;
+}
+
+.activity-item__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.activity-item__title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.activity-item__description {
+  font-size: 0.875rem;
+  color: #475569;
+  margin-top: 0.25rem;
+}
+
+.activity-item__timestamp {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.activity-item__status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-top: 0.5rem;
+}
+
+.activity-item__status-badge--pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.activity-item__status-badge--completed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.activity-item__empty {
+  padding: 2rem;
+  text-align: center;
+}
+
+.activity-item__empty-icon {
+  width: 3rem;
+  height: 3rem;
+  color: #cbd5e1;
+  margin: 0 auto 0.75rem;
+}
+
+.activity-item__empty-text {
+  color: #64748b;
+}

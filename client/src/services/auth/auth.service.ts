@@ -1,3 +1,4 @@
+// client/src/services/auth/auth.service.ts
 import { createApiClient } from '../../lib/api/http.client';
 
 // Create auth API client
@@ -6,6 +7,15 @@ const authClient = createApiClient(import.meta.env.VITE_API_URL || 'http://local
 export interface LoginRequest {
   email: string;
   password: string;
+}
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  name: string;
+  phone: string;
+  dateOfBirth: string;
+  role: 'PATIENT' | 'DOCTOR' | 'HOSPITAL_ADMIN';
 }
 
 export interface LoginResponseData {
@@ -47,15 +57,12 @@ class AuthService {
       
       console.log('Login response:', response);
       
-      // 🔥 FIX: Access response.data.data
       const { accessToken, refreshToken, user } = response.data.data;
       
-      // Store tokens
       this.setAccessToken(accessToken);
       this.setRefreshToken(refreshToken);
       this.setUser(user);
       
-      // Sync token with HTTP client
       authClient.setAuthToken(accessToken);
       
       console.log('Login successful for:', user.email);
@@ -63,6 +70,38 @@ class AuthService {
       return user;
     } catch (error: any) {
       console.error('Login service error:', error);
+      console.error('Error response:', error.response);
+      throw error;
+    }
+  }
+
+  /**
+   * Register new user
+   */
+  static async register(data: RegisterRequest): Promise<AuthUser> {
+    try {
+      console.log('Register attempt:', data.email);
+      
+      const response = await authClient.post<{ success: boolean; data: LoginResponseData }>(
+        '/auth/register',
+        data
+      );
+      
+      console.log('Register response:', response);
+      
+      const { accessToken, refreshToken, user } = response.data.data;
+      
+      this.setAccessToken(accessToken);
+      this.setRefreshToken(refreshToken);
+      this.setUser(user);
+      
+      authClient.setAuthToken(accessToken);
+      
+      console.log('Registration successful for:', user.email);
+      
+      return user;
+    } catch (error: any) {
+      console.error('Register service error:', error);
       console.error('Error response:', error.response);
       throw error;
     }
@@ -100,7 +139,6 @@ class AuthService {
         { refreshToken }
       );
       
-      // 🔥 FIX: Access response.data.data
       const { accessToken, refreshToken: newRefreshToken } = response.data.data;
       this.setAccessToken(accessToken);
       this.setRefreshToken(newRefreshToken);
@@ -185,6 +223,44 @@ class AuthService {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.REFRESH_KEY);
     localStorage.removeItem(this.USER_KEY);
+  }
+
+  // ============================================================================
+  // ADDED METHODS FOR useAuth HOOK
+  // ============================================================================
+
+  /**
+   * Set token (alias for setAccessToken)
+   */
+  static setToken(token: string): void {
+    this.setAccessToken(token);
+    authClient.setAuthToken(token);
+  }
+
+  /**
+   * Get token (alias for getAccessToken)
+   */
+  static getToken(): string | null {
+    return this.getAccessToken();
+  }
+
+  /**
+   * Clear token (alias for clearAuth)
+   */
+  static clearToken(): void {
+    this.clearAuth();
+    authClient.removeAuthToken();
+  }
+
+  /**
+   * Update current user in storage
+   */
+  static updateUser(updatedUser: Partial<AuthUser>): void {
+    const currentUser = this.getCurrentUser();
+    if (currentUser) {
+      const newUser = { ...currentUser, ...updatedUser };
+      localStorage.setItem(this.USER_KEY, JSON.stringify(newUser));
+    }
   }
 }
 

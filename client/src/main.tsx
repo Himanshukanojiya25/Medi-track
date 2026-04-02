@@ -1,9 +1,9 @@
+// src/main.tsx
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
-
 import App from "./App";
-import "./styles"; // ✅ SINGLE SOURCE OF TRUTH
+import "./index.css";  // ← CHANGE THIS: Directly import index.css, NOT "./styles"
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

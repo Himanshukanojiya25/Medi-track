@@ -1806,3 +1806,77 @@ body {
     display: none;
   }
 }
+
+/* =====================================================
+   FORCE ALL PUBLIC STYLES - HIGHEST PRIORITY
+   Override any Tailwind interference
+===================================================== */
+
+/* Force home page hero styles */
+.home-hero,
+.home-hero__container,
+.home-hero__badge,
+.home-hero__title,
+.home-hero__title-highlight,
+.home-hero__subtitle,
+.home-hero__search-container,
+.home-hero__search-wrapper,
+.home-hero__search-input,
+.home-hero__location-wrapper,
+.home-hero__location-select,
+.home-hero__search-button,
+.home-hero__quick-actions,
+.home-hero__quick-action {
+  all: revert !important;
+}
+
+/* Re-apply hero background and layout */
+.home-hero {
+  position: relative !important;
+  padding: clamp(80px, 10vw, 120px) 0 !important;
+  background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 50%, #f0fdf4 100%) !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+}
+
+.home-hero__title {
+  font-size: clamp(2.5rem, 6vw, 4rem) !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.03em !important;
+  line-height: 1.1 !important;
+  color: #020617 !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.home-hero__subtitle {
+  font-size: clamp(1.125rem, 2.5vw, 1.25rem) !important;
+  line-height: 1.7 !important;
+  color: #475569 !important;
+  margin-bottom: 2.5rem !important;
+}
+
+.home-hero__search-container {
+  display: flex !important;
+  align-items: center !important;
+  gap: 1rem !important;
+  max-width: 900px !important;
+  padding: 0.5rem !important;
+  background: white !important;
+  border-radius: 100px !important;
+  box-shadow: 0 20px 32px -12px rgba(15, 59, 94, 0.12) !important;
+}
+
+.home-hero__search-button {
+  background: linear-gradient(145deg, #0f3b5e, #2a9d8f) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  padding: 0.875rem 2rem !important;
+  border-radius: 100px !important;
+}
+
+.home-hero__quick-action {
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  color: #334155 !important;
+}

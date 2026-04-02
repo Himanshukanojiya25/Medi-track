@@ -1,0 +1,190 @@
+/* client/src/styles/pages/patient/dashboard/overview.css */
+
+/* Dashboard Overview Card */
+.dashboard-overview {
+  position: relative;
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  border-radius: 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dashboard-overview:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 25px 30px -12px rgba(0, 0, 0, 0.2);
+}
+
+.dashboard-overview__bg-decoration {
+  position: absolute;
+  inset: 0;
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+.dashboard-overview__bg-blob {
+  position: absolute;
+  width: 16rem;
+  height: 16rem;
+  background: white;
+  border-radius: 50%;
+  filter: blur(3rem);
+}
+
+.dashboard-overview__bg-blob--top-right {
+  top: -6rem;
+  right: -6rem;
+}
+
+.dashboard-overview__bg-blob--bottom-left {
+  bottom: -8rem;
+  left: -8rem;
+  width: 24rem;
+  height: 24rem;
+}
+
+.dashboard-overview__content {
+  position: relative;
+  z-index: 10;
+  padding: 1.5rem 2rem;
+}
+
+@media (min-width: 768px) {
+  .dashboard-overview__content {
+    padding: 2rem;
+  }
+}
+
+.dashboard-overview__greeting {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .dashboard-overview__greeting {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.dashboard-overview__greeting-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  line-height: 1.2;
+}
+
+@media (min-width: 768px) {
+  .dashboard-overview__greeting-text {
+    font-size: 2rem;
+  }
+}
+
+.dashboard-overview__greeting-subtext {
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.dashboard-overview__health-score {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(4px);
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+}
+
+.dashboard-overview__next-appointment {
+  margin-top: 1.5rem;
+  background: white;
+  border-radius: 1rem;
+  padding: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.2s ease;
+}
+
+.dashboard-overview__next-appointment:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-overview__appointment-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.dashboard-overview__appointment-badge {
+  font-size: 0.75rem;
+  background: #dcfce7;
+  color: #166534;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-weight: 500;
+}
+
+.dashboard-overview__doctor-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.dashboard-overview__doctor-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: #dbeafe;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dashboard-overview__doctor-name {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.dashboard-overview__doctor-specialty {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.dashboard-overview__datetime {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.dashboard-overview__datetime-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  background: #f3e8ff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9333ea;
+}
+
+.dashboard-overview__view-details {
+  margin-top: 0.75rem;
+  width: 100%;
+  background: #eff6ff;
+  color: #2563eb;
+  font-weight: 500;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.dashboard-overview__view-details:hover {
+  background: #dbeafe;
+  transform: translateY(-1px);
+}

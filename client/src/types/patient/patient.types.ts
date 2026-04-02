@@ -1,15 +1,11 @@
 // client/src/types/patient/patient.types.ts
 
-import type { ID, ISODateString, Timestamps } from "../shared";
-import type { PaginationParams } from "./index";
+import type { ID, ISODateString, Timestamps } from '../shared';
 
 // ============================================================================
 // ENUMS
 // ============================================================================
 
-/**
- * Patient account status - Comprehensive status workflow
- */
 export enum PatientStatus {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",
@@ -22,9 +18,6 @@ export enum PatientStatus {
   ARCHIVED = "ARCHIVED",
 }
 
-/**
- * Blood group enum
- */
 export enum BloodGroup {
   A_POSITIVE = "A+",
   A_NEGATIVE = "A-",
@@ -37,9 +30,6 @@ export enum BloodGroup {
   UNKNOWN = "UNKNOWN",
 }
 
-/**
- * Gender enum
- */
 export enum Gender {
   MALE = "MALE",
   FEMALE = "FEMALE",
@@ -47,9 +37,6 @@ export enum Gender {
   PREFER_NOT_TO_SAY = "PREFER_NOT_TO_SAY",
 }
 
-/**
- * Marital status enum
- */
 export enum MaritalStatus {
   SINGLE = "SINGLE",
   MARRIED = "MARRIED",
@@ -59,9 +46,6 @@ export enum MaritalStatus {
   DOMESTIC_PARTNERSHIP = "DOMESTIC_PARTNERSHIP",
 }
 
-/**
- * Patient type classification
- */
 export enum PatientType {
   REGULAR = "REGULAR",
   VIP = "VIP",
@@ -74,9 +58,6 @@ export enum PatientType {
   TELEMEDICINE = "TELEMEDICINE",
 }
 
-/**
- * Patient loyalty tier
- */
 export enum LoyaltyTier {
   BRONZE = "BRONZE",
   SILVER = "SILVER",
@@ -85,9 +66,6 @@ export enum LoyaltyTier {
   DIAMOND = "DIAMOND",
 }
 
-/**
- * Communication preference
- */
 export enum CommunicationPreference {
   EMAIL = "EMAIL",
   SMS = "SMS",
@@ -102,9 +80,6 @@ export enum CommunicationPreference {
 // INTERFACES
 // ============================================================================
 
-/**
- * Address interface - Enhanced
- */
 export interface Address {
   street: string;
   city: string;
@@ -121,9 +96,6 @@ export interface Address {
   type?: "home" | "work" | "other";
 }
 
-/**
- * Emergency contact - Enhanced
- */
 export interface EmergencyContact {
   name: string;
   relationship: string;
@@ -136,9 +108,6 @@ export interface EmergencyContact {
   consentToContact?: boolean;
 }
 
-/**
- * Insurance information - Enhanced
- */
 export interface InsuranceInfo {
   provider: string;
   policyNumber: string;
@@ -160,9 +129,6 @@ export interface InsuranceInfo {
   status?: "active" | "expired" | "pending" | "cancelled";
 }
 
-/**
- * Medical history summary
- */
 export interface MedicalHistorySummary {
   chronicConditions?: string[];
   allergies?: string[];
@@ -178,9 +144,6 @@ export interface MedicalHistorySummary {
   lastUpdated?: ISODateString;
 }
 
-/**
- * Patient preferences
- */
 export interface PatientPreferences {
   language?: string;
   timezone?: string;
@@ -208,9 +171,6 @@ export interface PatientPreferences {
   };
 }
 
-/**
- * Patient metrics and health data
- */
 export interface PatientMetrics {
   height?: number;
   weight?: number;
@@ -234,9 +194,6 @@ export interface PatientMetrics {
   riskFactors?: string[];
 }
 
-/**
- * Patient documents
- */
 export interface PatientDocument {
   id: ID;
   type: "id_card" | "insurance_card" | "medical_report" | "prescription" | "consent_form" | "other";
@@ -247,22 +204,6 @@ export interface PatientDocument {
   notes?: string;
 }
 
-/**
- * Audit log entry for patient
- */
-export interface PatientAuditLog {
-  action: string;
-  performedBy: ID;
-  performedByRole: string;
-  timestamp: ISODateString;
-  ipAddress?: string;
-  userAgent?: string;
-  changes?: Record<string, any>;
-}
-
-/**
- * Patient consent records
- */
 export interface PatientConsent {
   type: "terms_of_service" | "privacy_policy" | "hipaa" | "marketing" | "data_sharing";
   version: string;
@@ -271,31 +212,15 @@ export interface PatientConsent {
   ipAddress?: string;
 }
 
-/**
- * Patient referral information
- */
-export interface PatientReferral {
-  referredBy?: ID;
-  referralCode?: string;
-  referralSource?: string;
-  referralDate?: ISODateString;
-  referredTo?: ID;
-}
-
 // ============================================================================
-// MAIN PATIENT ENTITY - ENTERPRISE VERSION
+// MAIN PATIENT ENTITY
 // ============================================================================
 
-/**
- * Core Patient entity - Enhanced Enterprise Version
- * Linked to a User record
- */
 export interface Patient extends Timestamps {
   readonly id: ID;
   readonly userId: ID;
   readonly tenantId?: ID;
 
-  // Basic Information
   readonly name: string;
   readonly email: string;
   readonly phone: string;
@@ -309,26 +234,21 @@ export interface Patient extends Timestamps {
   readonly nationality?: string;
   readonly religion?: string;
   
-  // Contact Information
   readonly address?: Address;
   readonly alternateAddress?: Address;
   readonly emergencyContacts: EmergencyContact[];
   
-  // Medical Information
   readonly medicalHistory?: MedicalHistorySummary;
   readonly metrics?: PatientMetrics;
   readonly documents?: PatientDocument[];
   
-  // Insurance
   readonly insurance?: InsuranceInfo[];
   
-  // Preferences & Settings
   readonly preferences: PatientPreferences;
   readonly preferredLanguage?: string;
   readonly preferredDoctorIds?: ID[];
   readonly preferredHospitalIds?: ID[];
   
-  // Status & Verification
   readonly status: PatientStatus;
   readonly type: PatientType;
   readonly loyaltyTier: LoyaltyTier;
@@ -338,22 +258,13 @@ export interface Patient extends Timestamps {
   readonly isIdentityVerified: boolean;
   readonly verificationDocuments?: PatientDocument[];
   
-  // Financial
   readonly totalSpent: number;
   readonly outstandingBalance: number;
   readonly creditLimit?: number;
-  readonly paymentMethods?: {
-    id: string;
-    type: string;
-    last4: string;
-    isDefault: boolean;
-  }[];
   
-  // Relationships
   readonly familyMembers?: PatientFamilyMember[];
   readonly primaryCarePhysician?: ID;
   
-  // Consent & Legal
   readonly consents: PatientConsent[];
   readonly termsAcceptedVersion?: string;
   readonly privacyAcceptedVersion?: string;
@@ -361,7 +272,6 @@ export interface Patient extends Timestamps {
   readonly dataDeletionRequested?: boolean;
   readonly dataDeletionRequestedAt?: ISODateString;
   
-  // Analytics
   readonly lastVisit?: ISODateString;
   readonly totalAppointments: number;
   readonly upcomingAppointments: number;
@@ -373,19 +283,6 @@ export interface Patient extends Timestamps {
   readonly favoriteDoctors: number;
   readonly favoriteHospitals: number;
   
-  // Referral
-  readonly referral?: PatientReferral;
-  readonly referredPatients?: ID[];
-  
-  // Audit
-  readonly auditLog?: PatientAuditLog[];
-  
-  // Metadata
-  readonly metadata?: Record<string, any>;
-  readonly tags?: string[];
-  readonly notes?: string;
-  
-  // System Fields
   readonly version: number;
   readonly isActive: boolean;
   readonly isDeleted: boolean;
@@ -395,9 +292,6 @@ export interface Patient extends Timestamps {
   readonly lastIpAddress?: string;
 }
 
-/**
- * Patient family member
- */
 export interface PatientFamilyMember {
   id: ID;
   name: string;
@@ -412,9 +306,6 @@ export interface PatientFamilyMember {
 // PAYLOAD TYPES
 // ============================================================================
 
-/**
- * Patient profile update payload - Enhanced
- */
 export interface UpdatePatientProfilePayload {
   name?: string;
   phone?: string;
@@ -432,9 +323,6 @@ export interface UpdatePatientProfilePayload {
   metrics?: Partial<PatientMetrics>;
 }
 
-/**
- * Patient profile picture upload response
- */
 export interface ProfilePictureUploadResponse {
   success: boolean;
   data: {
@@ -444,9 +332,6 @@ export interface ProfilePictureUploadResponse {
   message?: string;
 }
 
-/**
- * Patient statistics - Enhanced
- */
 export interface PatientStatistics {
   totalAppointments: number;
   completedAppointments: number;
@@ -466,104 +351,4 @@ export interface PatientStatistics {
   healthScore: number;
   thisYearVisits: number;
   lastYearVisits: number;
-}
-
-// ============================================================================
-// STORE & API TYPES
-// ============================================================================
-
-/**
- * Patient state for Redux store
- */
-export interface PatientState {
-  profile: Patient | null;
-  statistics: PatientStatistics | null;
-  isLoading: boolean;
-  error: string | null;
-  isUpdating: boolean;
-  isFetchingStats: boolean;
-  updateSuccess: boolean;
-  documents: PatientDocument[];
-  consents: PatientConsent[];
-}
-
-/**
- * Patient API response types
- */
-export interface PatientApiResponse {
-  success: boolean;
-  data: Patient;
-  message?: string;
-  timestamp?: ISODateString;
-}
-
-export interface PatientListApiResponse {
-  success: boolean;
-  data: Patient[];
-  pagination: {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
-    hasNext: boolean;
-    hasPrev: boolean;
-  };
-}
-
-/**
- * Patient filters for listing - Enhanced
- */
-export interface PatientFilters extends PaginationParams {
-  status?: PatientStatus | PatientStatus[];
-  type?: PatientType | PatientType[];
-  loyaltyTier?: LoyaltyTier | LoyaltyTier[];
-  search?: string;
-  fromDate?: ISODateString;
-  toDate?: ISODateString;
-  gender?: Gender | Gender[];
-  bloodGroup?: BloodGroup | BloodGroup[];
-  ageRange?: {
-    min: number;
-    max: number;
-  };
-  lastVisitFrom?: ISODateString;
-  lastVisitTo?: ISODateString;
-  isEmailVerified?: boolean;
-  isPhoneVerified?: boolean;
-  hasInsurance?: boolean;
-  hospitalId?: ID;
-  doctorId?: ID;
-  sortBy?: keyof Patient;
-  sortOrder?: "asc" | "desc";
-}
-
-// ============================================================================
-// WEBHOOK & EVENT TYPES
-// ============================================================================
-
-/**
- * Patient webhook events
- */
-export type PatientWebhookEvent = 
-  | "patient.created"
-  | "patient.updated"
-  | "patient.deactivated"
-  | "patient.activated"
-  | "patient.merged"
-  | "patient.consent.updated"
-  | "patient.document.uploaded"
-  | "patient.insurance.added"
-  | "patient.insurance.expired"
-  | "patient.loyalty.tier.changed";
-
-/**
- * Patient webhook payload
- */
-export interface PatientWebhookPayload {
-  event: PatientWebhookEvent;
-  patientId: ID;
-  patient: Patient;
-  timestamp: ISODateString;
-  triggeredBy: ID;
-  changes?: Partial<Patient>;
 }

@@ -12,6 +12,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@reduxjs/toolkit": "^2.11.2",
     "@tanstack/react-query": "^5.90.20",
     "axios": "^1.13.5",
@@ -21,10 +22,13 @@
     "react-countup": "^6.5.3",
     "react-dom": "^18.3.0",
     "react-helmet-async": "^2.0.5",
+    "react-hook-form": "^7.72.0",
+    "react-i18next": "^17.0.2",
     "react-intersection-observer": "^10.0.2",
     "react-redux": "^9.2.0",
     "react-router-dom": "^6.22.0",
     "redux-persist": "^6.0.0",
+    "sonner": "^2.0.7",
     "zod": "^4.3.6",
     "zustand": "^5.0.12"
   },

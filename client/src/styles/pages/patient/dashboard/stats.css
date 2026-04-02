@@ -1,0 +1,126 @@
+/* client/src/styles/pages/patient/dashboard/stats.css */
+
+/* Dashboard Stats Grid */
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .dashboard-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .dashboard-stats {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Stat Card */
+.stat-card {
+  background: white;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  border-color: #e2e8f0;
+}
+
+.stat-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.stat-card__title {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+.stat-card__value {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+.stat-card__trend {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.stat-card__trend--positive {
+  color: #16a34a;
+}
+
+.stat-card__trend--negative {
+  color: #dc2626;
+}
+
+.stat-card__trend--neutral {
+  color: #94a3b8;
+}
+
+.stat-card__icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-card__icon--blue {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.stat-card__icon--green {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.stat-card__icon--purple {
+  background: #f3e8ff;
+  color: #9333ea;
+}
+
+.stat-card__icon--red {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.stat-card__icon--indigo {
+  background: #e0e7ff;
+  color: #4f46e5;
+}
+
+.stat-card__icon--orange {
+  background: #ffedd5;
+  color: #ea580c;
+}
+
+.stat-card__icon--pink {
+  background: #fce7f3;
+  color: #db2777;
+}
+
+.stat-card__icon--emerald {
+  background: #d1fae5;
+  color: #059669;
+}

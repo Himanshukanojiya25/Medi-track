@@ -17,10 +17,17 @@
 /* ---------- PLACEHOLDERS ---------- */
 @import "./styles/pages/website/placeholders.css";
 
-/* ---------- PAGE (PHASE 1.1 ONLY) ---------- */
+/* ---------- ALL PUBLIC PAGE STYLES ---------- */
 @import "./styles/pages/website/home.page.css";
+@import "./styles/pages/website/ai-symptom.page.css";
+@import "./styles/pages/website/about.page.css";
+@import "./styles/pages/website/contact.page.css";
+@import "./styles/pages/website/doctor-profile.css";
+@import "./styles/pages/website/doctors.page.css";
+@import "./styles/pages/website/hospitals.page.css";
+@import "./styles/pages/website/faq.page.css";        /* ← ADD THIS */
 
-/* ---------- TAILWIND (LAST) ---------- */
+/* ---------- TAILWIND (LAST - ONLY FOR PATIENT MODULE) ---------- */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

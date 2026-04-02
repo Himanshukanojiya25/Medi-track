@@ -1,0 +1,186 @@
+/* client/src/styles/pages/patient/dashboard/health-summary.css */
+
+/* Health Summary Section */
+.health-summary {
+  background: white;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.health-summary__header {
+  padding: 1.25rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.health-summary__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #0f172a; /* Dark color for visibility */
+}
+
+.health-summary__subtitle {
+  font-size: 0.875rem;
+  color: #475569; /* Darker gray for better visibility */
+  margin-top: 0.25rem;
+}
+
+.health-summary__view-all {
+  color: #2563eb;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: gap 0.2s ease;
+}
+
+.health-summary__view-all:hover {
+  gap: 0.5rem;
+}
+
+.health-summary__metrics {
+  padding: 1.25rem;
+}
+
+.health-summary__grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .health-summary__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Health Metric Item */
+.health-metric {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  transition: background-color 0.2s ease;
+}
+
+.health-metric:hover {
+  background-color: #f8fafc;
+}
+
+.health-metric__info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.health-metric__icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.health-metric__icon--blue {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.health-metric__icon--red {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.health-metric__icon--purple {
+  background: #f3e8ff;
+  color: #9333ea;
+}
+
+.health-metric__icon--orange {
+  background: #ffedd5;
+  color: #ea580c;
+}
+
+.health-metric__name {
+  font-size: 0.875rem;
+  font-weight: 600; /* Made bold for better visibility */
+  color: #1e293b; /* Darker color */
+}
+
+.health-metric__value {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #0f172a; /* Very dark for visibility */
+  line-height: 1.2;
+}
+
+.health-metric__unit {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: #475569; /* Darker gray */
+}
+
+.health-metric__normal-range {
+  font-size: 0.75rem;
+  color: #475569; /* Darker gray for better visibility */
+  margin-top: 0.125rem;
+}
+
+.health-metric__status {
+  text-align: right;
+}
+
+.health-metric__trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600; /* Made bold */
+}
+
+.health-metric__trend--normal {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.health-metric__trend--high {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.health-metric__trend--low {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.health-metric__status-text {
+  font-size: 0.75rem;
+  color: #475569; /* Darker gray */
+  margin-top: 0.25rem;
+  text-transform: capitalize;
+  font-weight: 500; /* Added medium weight */
+}
+
+/* Health Tips */
+.health-tips {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #eff6ff;
+  border-radius: 0.75rem;
+}
+
+.health-tips__text {
+  font-size: 0.875rem;
+  color: #1e3a8a; /* Darker blue for better visibility */
+  line-height: 1.5;
+}
+
+.health-tips__text strong {
+  font-weight: 700;
+  color: #1e40af;
+}

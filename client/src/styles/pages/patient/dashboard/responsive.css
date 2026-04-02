@@ -1,0 +1,156 @@
+/* client/src/styles/pages/patient/dashboard/responsive.css */
+
+/* Responsive Design */
+@media (max-width: 640px) {
+  .dashboard-stats {
+    gap: 0.75rem;
+  }
+
+  .stat-card {
+    padding: 1rem;
+  }
+
+  .stat-card__value {
+    font-size: 1.5rem;
+  }
+
+  .upcoming-appointments__header,
+  .recent-activity__header,
+  .quick-actions__header,
+  .health-summary__header {
+    padding: 1rem;
+  }
+
+  .appointment-item {
+    padding: 1rem;
+  }
+
+  .appointment-item__doctor {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .activity-item {
+    padding: 0.75rem;
+  }
+
+  .quick-actions__grid {
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+
+  .quick-action {
+    padding: 0.75rem;
+  }
+
+  .quick-action__icon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .health-metric {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .health-metric__status {
+    text-align: left;
+    width: 100%;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .patient-dashboard {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  }
+
+  .dashboard-header {
+    background: rgba(15, 23, 42, 0.98);
+    border-bottom-color: rgba(255, 255, 255, 0.05);
+  }
+
+  .dashboard-header__title {
+    background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  .stat-card,
+  .upcoming-appointments,
+  .recent-activity,
+  .quick-actions,
+  .health-summary {
+    background: #1e293b;
+  }
+
+  .stat-card__title,
+  .upcoming-appointments__subtitle,
+  .recent-activity__subtitle,
+  .quick-actions__subtitle,
+  .health-summary__subtitle {
+    color: #94a3b8;
+  }
+
+  .stat-card__value,
+  .upcoming-appointments__title,
+  .recent-activity__title,
+  .quick-actions__title,
+  .health-summary__title,
+  .appointment-item__doctor-name,
+  .quick-action__title,
+  .health-metric__name,
+  .health-metric__value {
+    color: #f1f5f9;
+  }
+
+  .appointment-item:hover,
+  .activity-item:hover,
+  .health-metric:hover {
+    background-color: #334155;
+  }
+
+  .appointment-item__detail,
+  .activity-item__description,
+  .health-metric__normal-range,
+  .health-metric__status-text {
+    color: #94a3b8;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus Styles */
+*:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+/* Print Styles */
+@media print {
+  .dashboard-header,
+  .quick-actions,
+  .emergency-card {
+    display: none;
+  }
+
+  .stat-card,
+  .upcoming-appointments,
+  .recent-activity,
+  .health-summary {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #e2e8f0;
+  }
+}
