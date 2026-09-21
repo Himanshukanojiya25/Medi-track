@@ -16,14 +16,15 @@ import {
   UserCircle
 } from 'lucide-react';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../components/ui/tabs';
-import { Button } from '../../../components/ui/button';
-import { Separator } from '../../../components/ui/separator';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../../../components/ui/card/Card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../components/ui/tabs/Tabs';
+import { Button } from '../../../components/ui/button/Button';
+import { Separator } from '../../../components/ui/separator/Separator';
 import { useAuth } from '../../../hooks/auth/useAuth';
 import { usePatientProfile } from '../hooks/usePatientProfile';
 
 import { PersonalInfoForm } from './PersonalInfoForm';
+import type { PersonalInfoFormData } from './PersonalInfoForm';
 import { ProfilePictureUpload } from './ProfilePictureUpload';
 import { ChangePasswordForm } from './ChangePasswordForm';
 import { EmergencyContactForm } from './EmergencyContactForm';
@@ -38,21 +39,46 @@ interface ProfileScreenProps {
   className?: string;
 }
 
-// Helper functions
-const formatBloodGroupForForm = (bloodGroup?: string): string => {
+// Type definitions for form data
+type GenderType = 'male' | 'female' | 'other' | 'prefer_not_to_say';
+type BloodGroupType = 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
+
+// Helper functions with proper return types
+const formatBloodGroupForForm = (bloodGroup?: string): BloodGroupType => {
   if (!bloodGroup) return 'O+';
-  const mapping: Record<string, string> = {
-    'A_POSITIVE': 'A+', 'A_NEGATIVE': 'A-', 'B_POSITIVE': 'B+', 'B_NEGATIVE': 'B-',
-    'O_POSITIVE': 'O+', 'O_NEGATIVE': 'O-', 'AB_POSITIVE': 'AB+', 'AB_NEGATIVE': 'AB-',
-    'UNKNOWN': 'O+'
+  const mapping: Record<string, BloodGroupType> = {
+    'A_POSITIVE': 'A+', 
+    'A_NEGATIVE': 'A-', 
+    'B_POSITIVE': 'B+', 
+    'B_NEGATIVE': 'B-',
+    'O_POSITIVE': 'O+', 
+    'O_NEGATIVE': 'O-', 
+    'AB_POSITIVE': 'AB+', 
+    'AB_NEGATIVE': 'AB-',
+    'UNKNOWN': 'O+',
+    'A+': 'A+', 
+    'A-': 'A-', 
+    'B+': 'B+', 
+    'B-': 'B-',
+    'O+': 'O+', 
+    'O-': 'O-', 
+    'AB+': 'AB+', 
+    'AB-': 'AB-'
   };
   return mapping[bloodGroup] || 'O+';
 };
 
-const formatGenderForForm = (gender?: string): string => {
+const formatGenderForForm = (gender?: string): GenderType => {
   if (!gender) return 'prefer_not_to_say';
-  const mapping: Record<string, string> = {
-    'MALE': 'male', 'FEMALE': 'female', 'OTHER': 'other', 'PREFER_NOT_TO_SAY': 'prefer_not_to_say'
+  const mapping: Record<string, GenderType> = {
+    'MALE': 'male', 
+    'FEMALE': 'female', 
+    'OTHER': 'other', 
+    'PREFER_NOT_TO_SAY': 'prefer_not_to_say',
+    'male': 'male',
+    'female': 'female',
+    'other': 'other',
+    'prefer_not_to_say': 'prefer_not_to_say'
   };
   return mapping[gender] || 'prefer_not_to_say';
 };
@@ -102,23 +128,28 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ className }) => {
     queryClient.invalidateQueries({ queryKey: ['patient-profile'] });
   };
 
-  const personalInfoData = profile ? {
-    fullName: profile.name,
-    email: profile.email,
-    phone: profile.phone,
+  // Fixed: Properly typed personalInfoData
+  const personalInfoData: Partial<PersonalInfoFormData> | undefined = profile ? {
+    fullName: profile.name || '',
+    email: profile.email || '',
+    phone: profile.phone || '',
     dateOfBirth: profile.dateOfBirth ? new Date(profile.dateOfBirth) : new Date(),
     gender: formatGenderForForm(profile.gender),
     bloodGroup: formatBloodGroupForForm(profile.bloodGroup),
     address: profile.address ? {
-      street: profile.address.street,
-      city: profile.address.city,
-      state: profile.address.state,
-      zipCode: profile.address.postalCode,
-      country: profile.address.country,
+      street: profile.address.street || '',
+      city: profile.address.city || '',
+      state: profile.address.state || '',
+      zipCode: profile.address.postalCode || profile.address.zipCode || '',
+      country: profile.address.country || '',
     } : {
-      street: '', city: '', state: '', zipCode: '', country: '',
+      street: '', 
+      city: '', 
+      state: '', 
+      zipCode: '', 
+      country: '',
     },
-    bio: '',
+    bio: profile.bio || '',
   } : undefined;
 
   const primaryEmergencyContact = profile?.emergencyContacts?.find(contact => contact.isPrimary) || profile?.emergencyContacts?.[0];
@@ -268,7 +299,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({ className }) => {
                   <CardDescription>Change your password and manage security preferences</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ChangePasswordForm />
+                  <ChangePasswordForm onSuccess={handleProfileUpdate} />
                 </CardContent>
               </Card>
             </TabsContent>

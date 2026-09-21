@@ -5,9 +5,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Heart, Phone, Mail, User, Save, X, Plus } from 'lucide-react';
 
-import { Button } from '../../../components/ui/button';
-import { Input } from '../../../components/ui/input';
-import { Checkbox } from '../../../components/ui/checkbox';
+import { Button } from '../../../components/ui/button/Button';
+import { Input } from '../../../components/ui/input/Input';
+import { Checkbox } from '../../../components/ui/checkbox/Checkbox';
+import Select from '../../../components/ui/select/Select'; // ✅ Updated: only Select
 import {
   Form,
   FormControl,
@@ -16,14 +17,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../../../components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../../../components/ui/select';
+} from '../../../components/ui/form/Form';
 
 // Types
 interface EmergencyContact {
@@ -44,7 +38,7 @@ interface EmergencyContactFormProps {
   onSuccess?: () => void;
 }
 
-// Validation Schema - Fixed: all fields optional except required ones
+// Validation Schema
 const emergencyContactSchema = z.object({
   name: z.string()
     .min(2, 'Name must be at least 2 characters')
@@ -63,26 +57,26 @@ const emergencyContactSchema = z.object({
   alternatePhone: z.string()
     .regex(/^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,3}[)]?[-\s.]?[0-9]{3,4}[-\s.]?[0-9]{3,4}$/, 'Invalid phone number format')
     .optional()
-    .or(z.literal('')),
+    .default(''),
   
   email: z.string()
     .email('Invalid email address')
     .optional()
-    .or(z.literal('')),
+    .default(''),
   
   address: z.string()
     .max(200, 'Address must be less than 200 characters')
     .optional()
-    .or(z.literal('')),
+    .default(''),
   
-  isPrimary: z.boolean().optional().default(false),
-  consentToContact: z.boolean().optional().default(true),
+  isPrimary: z.boolean().default(false),
+  consentToContact: z.boolean().default(true),
 });
 
 type FormData = z.infer<typeof emergencyContactSchema>;
 
 // Relationship options
-const relationshipOptions = [
+const RELATIONSHIP_OPTIONS = [
   { value: 'parent', label: 'Parent' },
   { value: 'spouse', label: 'Spouse' },
   { value: 'partner', label: 'Partner' },
@@ -103,24 +97,24 @@ export const EmergencyContactForm: React.FC<EmergencyContactFormProps> = ({
   const [showEmail, setShowEmail] = useState<boolean>(!!initialData?.email);
   const [showAddress, setShowAddress] = useState<boolean>(!!initialData?.address);
 
-  const form = useForm({
+  const form = useForm<FormData>({
     resolver: zodResolver(emergencyContactSchema),
     defaultValues: {
-      name: initialData?.name || '',
-      relationship: initialData?.relationship || '',
-      phone: initialData?.phone || '',
-      alternatePhone: initialData?.alternatePhone || '',
-      email: initialData?.email || '',
-      address: initialData?.address || '',
-      isPrimary: initialData?.isPrimary || false,
-      consentToContact: initialData?.consentToContact !== undefined ? initialData.consentToContact : true,
+      name: initialData?.name ?? '',
+      relationship: initialData?.relationship ?? '',
+      phone: initialData?.phone ?? '',
+      alternatePhone: initialData?.alternatePhone ?? '',
+      email: initialData?.email ?? '',
+      address: initialData?.address ?? '',
+      isPrimary: initialData?.isPrimary ?? false,
+      consentToContact: initialData?.consentToContact ?? true,
     },
   });
 
   const onSubmit = async (data: FormData) => {
     setIsPending(true);
     try {
-      // API call will go here
+      // TODO: Replace with actual API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       console.log('Emergency Contact Data:', data);
@@ -158,7 +152,7 @@ export const EmergencyContactForm: React.FC<EmergencyContactFormProps> = ({
           <FormField
             control={form.control}
             name="name"
-            render={({ field }: { field: any }) => (
+            render={({ field }) => (
               <FormItem className="md:col-span-2">
                 <FormLabel className="text-gray-700 font-medium">
                   Full Name *
@@ -182,25 +176,19 @@ export const EmergencyContactForm: React.FC<EmergencyContactFormProps> = ({
           <FormField
             control={form.control}
             name="relationship"
-            render={({ field }: { field: any }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-gray-700 font-medium">
                   Relationship *
                 </FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select relationship" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {relationshipOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Select
+                  value={field.value}
+                  onChange={field.onChange}
+                  options={RELATIONSHIP_OPTIONS}
+                  placeholder="Select relationship"
+                  error={!!form.formState.errors.relationship}
+                  errorMessage={form.formState.errors.relationship?.message}
+                />
                 <FormMessage />
               </FormItem>
             )}
@@ -210,7 +198,7 @@ export const EmergencyContactForm: React.FC<EmergencyContactFormProps> = ({
           <FormField
             control={form.control}
             name="isPrimary"
-            render={({ field }: { field: any }) => (
+            render={({ field }) => (
               <FormItem className="flex items-center space-x-2 space-y-0 pt-8">
                 <FormControl>
                   <Checkbox
@@ -229,7 +217,7 @@ export const EmergencyContactForm: React.FC<EmergencyContactFormProps> = ({
           <FormField
             control={form.control}
             name="phone"
-            render={({ field }: { field: any }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-gray-700 font-medium">
                   Phone Number *
@@ -255,7 +243,7 @@ export const EmergencyContactForm: React.FC<EmergencyContactFormProps> = ({
             <FormField
               control={form.control}
               name="alternatePhone"
-              render={({ field }: { field: any }) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-gray-700 font-medium">
                     Alternate Phone
@@ -282,7 +270,7 @@ export const EmergencyContactForm: React.FC<EmergencyContactFormProps> = ({
             <FormField
               control={form.control}
               name="email"
-              render={({ field }: { field: any }) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel className="text-gray-700 font-medium">
                     Email Address
@@ -309,7 +297,7 @@ export const EmergencyContactForm: React.FC<EmergencyContactFormProps> = ({
             <FormField
               control={form.control}
               name="address"
-              render={({ field }: { field: any }) => (
+              render={({ field }) => (
                 <FormItem className="md:col-span-2">
                   <FormLabel className="text-gray-700 font-medium">
                     Address
@@ -371,7 +359,7 @@ export const EmergencyContactForm: React.FC<EmergencyContactFormProps> = ({
         <FormField
           control={form.control}
           name="consentToContact"
-          render={({ field }: { field: any }) => (
+          render={({ field }) => (
             <FormItem className="flex items-center space-x-2 space-y-0">
               <FormControl>
                 <Checkbox
@@ -379,7 +367,7 @@ export const EmergencyContactForm: React.FC<EmergencyContactFormProps> = ({
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
-              <div>
+              <div className="flex-1">
                 <FormLabel className="text-sm font-normal cursor-pointer">
                   I consent to contact this person in case of emergency
                 </FormLabel>

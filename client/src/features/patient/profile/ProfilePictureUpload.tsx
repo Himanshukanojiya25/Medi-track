@@ -2,7 +2,7 @@
 import React, { useState, useRef } from 'react';
 import { Camera, Upload, X, Loader2, UserCircle, CheckCircle, AlertCircle } from 'lucide-react';
 
-import { Button } from '../../../components/ui/button';
+import { Button } from '../../../components/ui/button/Button';
 
 interface ProfilePictureUploadProps {
   currentAvatar?: string;

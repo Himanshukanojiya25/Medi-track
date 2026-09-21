@@ -2,13 +2,16 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
+import { QueryProvider } from "./app/providers/query.provider";  // ✅ Add this import
 import App from "./App";
-import "./index.css";  // ← CHANGE THIS: Directly import index.css, NOT "./styles"
+import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <HelmetProvider>
-      <App />
+      <QueryProvider>  {/* ✅ Wrap App with QueryProvider */}
+        <App />
+      </QueryProvider>
     </HelmetProvider>
   </React.StrictMode>
 );

@@ -1,14 +1,14 @@
 // src/features/patient/profile/NotificationPreferences.tsx
 import React, { useState } from 'react';
-import { useForm, SubmitHandler, FieldValues, ControllerRenderProps } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Bell, Mail, Phone, Smartphone, Calendar, Heart, Megaphone, Save, X, MessageCircle } from 'lucide-react';
 
-import { Button } from '../../../components/ui/button';
-import { Switch } from '../../../components/ui/switch';
-import { Checkbox } from '../../../components/ui/checkbox';
-import { Input } from '../../../components/ui/input';
+import { Button } from '../../../components/ui/button/Button';
+import { Switch } from '../../../components/ui/switch/Switch';
+import { Checkbox } from '../../../components/ui/checkbox/Checkbox';
+import { Input } from '../../../components/ui/input/Input';
 import {
   Form,
   FormControl,
@@ -17,45 +17,23 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../../../components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../../../components/ui/select';
-import { RadioGroup, RadioGroupItem } from '../../../components/ui/radio-group';
+} from '../../../components/ui/form/Form';
+// ✅ Removed Select imports since they are not used in this file
 
 // Types
-interface NotificationPreferences {
-  email: boolean;
-  sms: boolean;
-  push: boolean;
-  whatsapp?: boolean;
-  appointmentReminders: boolean;
-  promotionalEmails: boolean;
-  newsletter: boolean;
-  healthTips: boolean;
-  paymentAlerts: boolean;
-  prescriptionUpdates: boolean;
-  medicalReportAlerts: boolean;
-  communication?: string[];
-  reminderTiming?: 'immediate' | '1hour' | '1day' | '2days';
-  quietHoursStart?: string;
-  quietHoursEnd?: string;
-}
-
 interface NotificationPreferencesProps {
   initialData?: {
     notifications?: {
-      email: boolean;
-      sms: boolean;
-      push: boolean;
-      appointmentReminders: boolean;
-      promotionalEmails: boolean;
-      newsletter: boolean;
-      healthTips: boolean;
+      email?: boolean;
+      sms?: boolean;
+      push?: boolean;
+      appointmentReminders?: boolean;
+      promotionalEmails?: boolean;
+      newsletter?: boolean;
+      healthTips?: boolean;
+      paymentAlerts?: boolean;
+      prescriptionUpdates?: boolean;
+      medicalReportAlerts?: boolean;
     };
     communication?: string[];
     reminderTiming?: string;
@@ -65,23 +43,23 @@ interface NotificationPreferencesProps {
   onSuccess?: () => void;
 }
 
-// Validation Schema
+// Validation Schema - All fields required with defaults
 const notificationSchema = z.object({
-  email: z.boolean().default(true),
-  sms: z.boolean().default(false),
-  push: z.boolean().default(true),
-  whatsapp: z.boolean().default(false),
-  appointmentReminders: z.boolean().default(true),
-  promotionalEmails: z.boolean().default(false),
-  newsletter: z.boolean().default(false),
-  healthTips: z.boolean().default(true),
-  paymentAlerts: z.boolean().default(true),
-  prescriptionUpdates: z.boolean().default(true),
-  medicalReportAlerts: z.boolean().default(true),
-  communication: z.array(z.string()).default(['email', 'push']),
-  reminderTiming: z.enum(['immediate', '1hour', '1day', '2days']).default('1day'),
-  quietHoursStart: z.string().optional().default(''),
-  quietHoursEnd: z.string().optional().default(''),
+  email: z.boolean(),
+  sms: z.boolean(),
+  push: z.boolean(),
+  whatsapp: z.boolean(),
+  appointmentReminders: z.boolean(),
+  promotionalEmails: z.boolean(),
+  newsletter: z.boolean(),
+  healthTips: z.boolean(),
+  paymentAlerts: z.boolean(),
+  prescriptionUpdates: z.boolean(),
+  medicalReportAlerts: z.boolean(),
+  communication: z.array(z.string()),
+  reminderTiming: z.enum(['immediate', '1hour', '1day', '2days']),
+  quietHoursStart: z.string(),
+  quietHoursEnd: z.string(),
 });
 
 type FormData = z.infer<typeof notificationSchema>;
@@ -105,32 +83,43 @@ export const NotificationPreferences: React.FC<NotificationPreferencesProps> = (
   onSuccess 
 }) => {
   const [isPending, setIsPending] = useState<boolean>(false);
-  const [showQuietHours, setShowQuietHours] = useState<boolean>(!!initialData?.quietHoursStart);
+  const [showQuietHours, setShowQuietHours] = useState<boolean>(
+    !!(initialData?.quietHoursStart || initialData?.quietHoursEnd)
+  );
 
-  const form = useForm({
-    resolver: zodResolver(notificationSchema),
-    defaultValues: {
-      email: initialData?.notifications?.email ?? true,
-      sms: initialData?.notifications?.sms ?? false,
-      push: initialData?.notifications?.push ?? true,
-      whatsapp: false,
-      appointmentReminders: initialData?.notifications?.appointmentReminders ?? true,
-      promotionalEmails: initialData?.notifications?.promotionalEmails ?? false,
-      newsletter: initialData?.notifications?.newsletter ?? false,
-      healthTips: initialData?.notifications?.healthTips ?? true,
-      paymentAlerts: true,
-      prescriptionUpdates: true,
-      medicalReportAlerts: true,
-      communication: initialData?.communication || ['email', 'push'],
-      reminderTiming: (initialData?.reminderTiming as any) || '1day',
-      quietHoursStart: initialData?.quietHoursStart || '',
-      quietHoursEnd: initialData?.quietHoursEnd || '',
-    },
+  // Create default values with proper types
+  const getDefaultValues = (): FormData => ({
+    email: initialData?.notifications?.email ?? true,
+    sms: initialData?.notifications?.sms ?? false,
+    push: initialData?.notifications?.push ?? true,
+    whatsapp: false,
+    appointmentReminders: initialData?.notifications?.appointmentReminders ?? true,
+    promotionalEmails: initialData?.notifications?.promotionalEmails ?? false,
+    newsletter: initialData?.notifications?.newsletter ?? false,
+    healthTips: initialData?.notifications?.healthTips ?? true,
+    paymentAlerts: initialData?.notifications?.paymentAlerts ?? true,
+    prescriptionUpdates: initialData?.notifications?.prescriptionUpdates ?? true,
+    medicalReportAlerts: initialData?.notifications?.medicalReportAlerts ?? true,
+    communication: initialData?.communication ?? ['email', 'push'],
+    reminderTiming: (initialData?.reminderTiming === 'immediate' || 
+                     initialData?.reminderTiming === '1hour' || 
+                     initialData?.reminderTiming === '1day' || 
+                     initialData?.reminderTiming === '2days') 
+                     ? initialData.reminderTiming 
+                     : '1day',
+    quietHoursStart: initialData?.quietHoursStart ?? '',
+    quietHoursEnd: initialData?.quietHoursEnd ?? '',
   });
 
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
+  const form = useForm<FormData>({
+    resolver: zodResolver(notificationSchema),
+    defaultValues: getDefaultValues(),
+  });
+
+  const onSubmit = async (data: FormData) => {
     setIsPending(true);
     try {
+      // TODO: Replace with actual API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       console.log('Notification Preferences:', data);
       onSuccess?.();
@@ -170,7 +159,7 @@ export const NotificationPreferences: React.FC<NotificationPreferencesProps> = (
           <FormField
             control={form.control}
             name="communication"
-            render={({ field }: { field: ControllerRenderProps<FormData, "communication"> }) => (
+            render={({ field }) => (
               <FormItem>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {communicationChannels.map((channel) => {
@@ -189,7 +178,7 @@ export const NotificationPreferences: React.FC<NotificationPreferencesProps> = (
                       >
                         <Checkbox
                           checked={isChecked}
-                          onCheckedChange={(checked : boolean) => {
+                          onCheckedChange={(checked: boolean) => {
                             if (checked) {
                               field.onChange([...field.value, channel.id]);
                             } else {
@@ -224,9 +213,9 @@ export const NotificationPreferences: React.FC<NotificationPreferencesProps> = (
             <FormField
               control={form.control}
               name="appointmentReminders"
-              render={({ field }: { field: ControllerRenderProps<FormData, "appointmentReminders"> }) => (
+              render={({ field }) => (
                 <FormItem className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
+                  <div className="flex-1">
                     <FormLabel className="font-medium">Appointment Reminders</FormLabel>
                     <FormDescription className="text-xs">
                       Get reminders about upcoming appointments
@@ -245,9 +234,9 @@ export const NotificationPreferences: React.FC<NotificationPreferencesProps> = (
             <FormField
               control={form.control}
               name="prescriptionUpdates"
-              render={({ field }: { field: ControllerRenderProps<FormData, "prescriptionUpdates"> }) => (
+              render={({ field }) => (
                 <FormItem className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
+                  <div className="flex-1">
                     <FormLabel className="font-medium">Prescription Updates</FormLabel>
                     <FormDescription className="text-xs">
                       Notify when prescriptions are ready or refill needed
@@ -266,9 +255,9 @@ export const NotificationPreferences: React.FC<NotificationPreferencesProps> = (
             <FormField
               control={form.control}
               name="medicalReportAlerts"
-              render={({ field }: { field: ControllerRenderProps<FormData, "medicalReportAlerts"> }) => (
+              render={({ field }) => (
                 <FormItem className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
+                  <div className="flex-1">
                     <FormLabel className="font-medium">Medical Reports</FormLabel>
                     <FormDescription className="text-xs">
                       Alert when new reports are available
@@ -287,9 +276,9 @@ export const NotificationPreferences: React.FC<NotificationPreferencesProps> = (
             <FormField
               control={form.control}
               name="paymentAlerts"
-              render={({ field }: { field: ControllerRenderProps<FormData, "paymentAlerts"> }) => (
+              render={({ field }) => (
                 <FormItem className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
+                  <div className="flex-1">
                     <FormLabel className="font-medium">Payment Alerts</FormLabel>
                     <FormDescription className="text-xs">
                       Notify about payments, invoices, and billing
@@ -317,9 +306,9 @@ export const NotificationPreferences: React.FC<NotificationPreferencesProps> = (
             <FormField
               control={form.control}
               name="promotionalEmails"
-              render={({ field }: { field: ControllerRenderProps<FormData, "promotionalEmails"> }) => (
+              render={({ field }) => (
                 <FormItem className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
+                  <div className="flex-1">
                     <FormLabel className="font-medium">Promotional Emails</FormLabel>
                     <FormDescription className="text-xs">
                       Special offers, discounts, and promotions
@@ -338,9 +327,9 @@ export const NotificationPreferences: React.FC<NotificationPreferencesProps> = (
             <FormField
               control={form.control}
               name="newsletter"
-              render={({ field }: { field: ControllerRenderProps<FormData, "newsletter"> }) => (
+              render={({ field }) => (
                 <FormItem className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
+                  <div className="flex-1">
                     <FormLabel className="font-medium">Newsletter</FormLabel>
                     <FormDescription className="text-xs">
                       Monthly newsletter with health tips and updates
@@ -359,9 +348,9 @@ export const NotificationPreferences: React.FC<NotificationPreferencesProps> = (
             <FormField
               control={form.control}
               name="healthTips"
-              render={({ field }: { field: ControllerRenderProps<FormData, "healthTips"> }) => (
+              render={({ field }) => (
                 <FormItem className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <div>
+                  <div className="flex-1">
                     <FormLabel className="font-medium">Health Tips</FormLabel>
                     <FormDescription className="text-xs">
                       Weekly health and wellness tips
@@ -379,7 +368,7 @@ export const NotificationPreferences: React.FC<NotificationPreferencesProps> = (
           </div>
         </div>
 
-        {/* Reminder Timing */}
+        {/* Reminder Timing - Using Radio buttons instead of Select for better UX */}
         <div className="space-y-4">
           <h4 className="text-md font-semibold text-gray-800 flex items-center gap-2">
             <Calendar className="w-4 h-4" />
@@ -388,22 +377,22 @@ export const NotificationPreferences: React.FC<NotificationPreferencesProps> = (
           <FormField
             control={form.control}
             name="reminderTiming"
-            render={({ field }: { field: ControllerRenderProps<FormData, "reminderTiming"> }) => (
+            render={({ field }) => (
               <FormItem>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger className="w-full md:w-64">
-                      <SelectValue placeholder="Select reminder timing" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {reminderTimingOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="flex flex-wrap gap-4">
+                  {reminderTimingOptions.map((option) => (
+                    <label key={option.value} className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        type="radio"
+                        value={option.value}
+                        checked={field.value === option.value}
+                        onChange={() => field.onChange(option.value)}
+                        className="w-4 h-4 text-blue-600"
+                      />
+                      <span className="text-sm text-gray-700">{option.label}</span>
+                    </label>
+                  ))}
+                </div>
                 <FormDescription>
                   When to send appointment reminders
                 </FormDescription>
@@ -435,7 +424,7 @@ export const NotificationPreferences: React.FC<NotificationPreferencesProps> = (
               <FormField
                 control={form.control}
                 name="quietHoursStart"
-                render={({ field }: { field: ControllerRenderProps<FormData, "quietHoursStart"> }) => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>Start Time</FormLabel>
                     <FormControl>
@@ -449,7 +438,7 @@ export const NotificationPreferences: React.FC<NotificationPreferencesProps> = (
               <FormField
                 control={form.control}
                 name="quietHoursEnd"
-                render={({ field }: { field: ControllerRenderProps<FormData, "quietHoursEnd"> }) => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>End Time</FormLabel>
                     <FormControl>

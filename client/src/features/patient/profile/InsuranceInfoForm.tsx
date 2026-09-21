@@ -1,13 +1,14 @@
 // src/features/patient/profile/InsuranceInfoForm.tsx
 import React, { useState } from 'react';
-import { useForm, SubmitHandler, FieldValues, ControllerRenderProps } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { CreditCard, Building2, Calendar, User, Save, X, Plus, Trash2 } from 'lucide-react';
 
-import { Button } from '../../../components/ui/button';
-import { Input } from '../../../components/ui/input';
-import { Checkbox } from '../../../components/ui/checkbox';
+import { Button } from '../../../components/ui/button/Button';
+import { Input } from '../../../components/ui/input/Input';
+import { Checkbox } from '../../../components/ui/checkbox/Checkbox';
+import Select from '../../../components/ui/select/Select'; // ✅ Updated: only Select
 import {
   Form,
   FormControl,
@@ -16,14 +17,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../../../components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../../../components/ui/select';
+} from '../../../components/ui/form/Form';
 
 // Types
 interface InsuranceInfo {
@@ -110,7 +104,7 @@ const insuranceInfoSchema = z.object({
     .optional()
     .default(''),
   
-  insuranceType: z.enum(['private', 'government', 'employer', 'family']).optional().default('private'),
+  insuranceType: z.enum(['private', 'government', 'employer', 'family']).default('private'),
   
   isPrimary: z.boolean().default(false),
   authorizationRequired: z.boolean().default(false),
@@ -120,32 +114,17 @@ const insuranceInfoSchema = z.object({
     .default(''),
 });
 
-type FormData = {
-  provider: string;
-  policyNumber: string;
-  isPrimary: boolean;
-  authorizationRequired: boolean;
-  groupNumber?: string;
-  validFrom?: string;
-  validUntil?: string;
-  coverageAmount?: number;
-  deductible?: number;
-  copay?: number;
-  coinsurance?: number;
-  primaryHolder?: string;
-  relationshipToHolder?: string;
-  insuranceType?: 'private' | 'government' | 'employer' | 'family';
-  authorizationCode?: string;
-};
+type FormData = z.infer<typeof insuranceInfoSchema>;
 
-const insuranceTypeOptions = [
+// Options for selects
+const INSURANCE_TYPE_OPTIONS = [
   { value: 'private', label: 'Private Insurance' },
   { value: 'government', label: 'Government Insurance' },
   { value: 'employer', label: 'Employer Provided' },
   { value: 'family', label: 'Family Plan' },
 ];
 
-const relationshipOptions = [
+const RELATIONSHIP_OPTIONS = [
   { value: 'self', label: 'Self' },
   { value: 'spouse', label: 'Spouse' },
   { value: 'parent', label: 'Parent' },
@@ -160,35 +139,36 @@ export const InsuranceInfoForm: React.FC<InsuranceInfoFormProps> = ({
   const [isPending, setIsPending] = useState<boolean>(false);
   const [showGroupNumber, setShowGroupNumber] = useState<boolean>(!!initialData?.groupNumber);
   const [showCoverageDetails, setShowCoverageDetails] = useState<boolean>(
-    !!initialData?.coverageAmount || !!initialData?.deductible || !!initialData?.copay || !!initialData?.coinsurance
+    !!(initialData?.coverageAmount || initialData?.deductible || initialData?.copay || initialData?.coinsurance)
   );
   const [showHolderDetails, setShowHolderDetails] = useState<boolean>(!!initialData?.primaryHolder);
   const [showAuthorization, setShowAuthorization] = useState<boolean>(!!initialData?.authorizationRequired);
 
-  const form = useForm({
+  const form = useForm<FormData>({
     resolver: zodResolver(insuranceInfoSchema),
     defaultValues: {
-      provider: initialData?.provider || '',
-      policyNumber: initialData?.policyNumber || '',
-      groupNumber: initialData?.groupNumber || '',
-      validFrom: initialData?.validFrom || '',
-      validUntil: initialData?.validUntil || '',
-      coverageAmount: initialData?.coverageAmount || 0,
-      deductible: initialData?.deductible || 0,
-      copay: initialData?.copay || 0,
-      coinsurance: initialData?.coinsurance || 0,
-      primaryHolder: initialData?.primaryHolder || '',
-      relationshipToHolder: initialData?.relationshipToHolder || '',
-      insuranceType: initialData?.insuranceType || 'private',
+      provider: initialData?.provider ?? '',
+      policyNumber: initialData?.policyNumber ?? '',
+      groupNumber: initialData?.groupNumber ?? '',
+      validFrom: initialData?.validFrom ?? '',
+      validUntil: initialData?.validUntil ?? '',
+      coverageAmount: initialData?.coverageAmount ?? 0,
+      deductible: initialData?.deductible ?? 0,
+      copay: initialData?.copay ?? 0,
+      coinsurance: initialData?.coinsurance ?? 0,
+      primaryHolder: initialData?.primaryHolder ?? '',
+      relationshipToHolder: initialData?.relationshipToHolder ?? '',
+      insuranceType: initialData?.insuranceType ?? 'private',
       isPrimary: initialData?.isPrimary ?? false,
       authorizationRequired: initialData?.authorizationRequired ?? false,
-      authorizationCode: initialData?.authorizationCode || '',
+      authorizationCode: initialData?.authorizationCode ?? '',
     },
   });
 
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
+  const onSubmit = async (data: FormData) => {
     setIsPending(true);
     try {
+      // TODO: Replace with actual API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       console.log('Insurance Data:', data);
       onSuccess?.();
@@ -225,7 +205,7 @@ export const InsuranceInfoForm: React.FC<InsuranceInfoFormProps> = ({
           <FormField
             control={form.control}
             name="provider"
-            render={({ field }: { field: ControllerRenderProps<FormData, "provider"> }) => (
+            render={({ field }) => (
               <FormItem className="md:col-span-2">
                 <FormLabel className="text-gray-700 font-medium">
                   Insurance Provider *
@@ -249,7 +229,7 @@ export const InsuranceInfoForm: React.FC<InsuranceInfoFormProps> = ({
           <FormField
             control={form.control}
             name="policyNumber"
-            render={({ field }: { field: ControllerRenderProps<FormData, "policyNumber"> }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-gray-700 font-medium">
                   Policy Number *
@@ -266,25 +246,19 @@ export const InsuranceInfoForm: React.FC<InsuranceInfoFormProps> = ({
           <FormField
             control={form.control}
             name="insuranceType"
-            render={({ field }: { field: ControllerRenderProps<FormData, "insuranceType"> }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-gray-700 font-medium">
                   Insurance Type
                 </FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select insurance type" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {insuranceTypeOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Select
+                  value={field.value}
+                  onChange={field.onChange}
+                  options={INSURANCE_TYPE_OPTIONS}
+                  placeholder="Select insurance type"
+                  error={!!form.formState.errors.insuranceType}
+                  errorMessage={form.formState.errors.insuranceType?.message}
+                />
                 <FormMessage />
               </FormItem>
             )}
@@ -294,7 +268,7 @@ export const InsuranceInfoForm: React.FC<InsuranceInfoFormProps> = ({
           <FormField
             control={form.control}
             name="isPrimary"
-            render={({ field }: { field: ControllerRenderProps<FormData, "isPrimary"> }) => (
+            render={({ field }) => (
               <FormItem className="flex items-center space-x-2 space-y-0 pt-8">
                 <FormControl>
                   <Checkbox
@@ -313,7 +287,7 @@ export const InsuranceInfoForm: React.FC<InsuranceInfoFormProps> = ({
           <FormField
             control={form.control}
             name="validFrom"
-            render={({ field }: { field: ControllerRenderProps<FormData, "validFrom"> }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-gray-700 font-medium">
                   Valid From
@@ -337,7 +311,7 @@ export const InsuranceInfoForm: React.FC<InsuranceInfoFormProps> = ({
           <FormField
             control={form.control}
             name="validUntil"
-            render={({ field }: { field: ControllerRenderProps<FormData, "validUntil"> }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-gray-700 font-medium">
                   Valid Until
@@ -363,7 +337,7 @@ export const InsuranceInfoForm: React.FC<InsuranceInfoFormProps> = ({
           <FormField
             control={form.control}
             name="groupNumber"
-            render={({ field }: { field: ControllerRenderProps<FormData, "groupNumber"> }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel className="text-gray-700 font-medium">
                   Group Number
@@ -397,14 +371,14 @@ export const InsuranceInfoForm: React.FC<InsuranceInfoFormProps> = ({
               <FormField
                 control={form.control}
                 name="coverageAmount"
-                render={({ field }: { field: ControllerRenderProps<FormData, "coverageAmount"> }) => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>Coverage Amount ($)</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         placeholder="e.g., 500000"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => field.onChange(parseFloat(e.target.value) || 0)}
+                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                         value={field.value || ''}
                       />
                     </FormControl>
@@ -416,14 +390,14 @@ export const InsuranceInfoForm: React.FC<InsuranceInfoFormProps> = ({
               <FormField
                 control={form.control}
                 name="deductible"
-                render={({ field }: { field: ControllerRenderProps<FormData, "deductible"> }) => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>Deductible ($)</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         placeholder="e.g., 1000"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => field.onChange(parseFloat(e.target.value) || 0)}
+                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                         value={field.value || ''}
                       />
                     </FormControl>
@@ -435,14 +409,14 @@ export const InsuranceInfoForm: React.FC<InsuranceInfoFormProps> = ({
               <FormField
                 control={form.control}
                 name="copay"
-                render={({ field }: { field: ControllerRenderProps<FormData, "copay"> }) => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>Copay ($)</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         placeholder="e.g., 20"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => field.onChange(parseFloat(e.target.value) || 0)}
+                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                         value={field.value || ''}
                       />
                     </FormControl>
@@ -454,14 +428,14 @@ export const InsuranceInfoForm: React.FC<InsuranceInfoFormProps> = ({
               <FormField
                 control={form.control}
                 name="coinsurance"
-                render={({ field }: { field: ControllerRenderProps<FormData, "coinsurance"> }) => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>Coinsurance (%)</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
                         placeholder="e.g., 20"
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => field.onChange(parseFloat(e.target.value) || 0)}
+                        onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                         value={field.value || ''}
                       />
                     </FormControl>
@@ -493,7 +467,7 @@ export const InsuranceInfoForm: React.FC<InsuranceInfoFormProps> = ({
               <FormField
                 control={form.control}
                 name="primaryHolder"
-                render={({ field }: { field: ControllerRenderProps<FormData, "primaryHolder"> }) => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>Holder Name</FormLabel>
                     <FormControl>
@@ -510,23 +484,17 @@ export const InsuranceInfoForm: React.FC<InsuranceInfoFormProps> = ({
               <FormField
                 control={form.control}
                 name="relationshipToHolder"
-                render={({ field }: { field: ControllerRenderProps<FormData, "relationshipToHolder"> }) => (
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>Relationship</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select relationship" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {relationshipOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Select
+                      value={field.value}
+                      onChange={field.onChange}
+                      options={RELATIONSHIP_OPTIONS}
+                      placeholder="Select relationship"
+                      error={!!form.formState.errors.relationshipToHolder}
+                      errorMessage={form.formState.errors.relationshipToHolder?.message}
+                    />
                     <FormMessage />
                   </FormItem>
                 )}
@@ -539,7 +507,7 @@ export const InsuranceInfoForm: React.FC<InsuranceInfoFormProps> = ({
         <FormField
           control={form.control}
           name="authorizationRequired"
-          render={({ field }: { field: ControllerRenderProps<FormData, "authorizationRequired"> }) => (
+          render={({ field }) => (
             <FormItem className="flex items-center space-x-2 space-y-0">
               <FormControl>
                 <Checkbox
@@ -566,7 +534,7 @@ export const InsuranceInfoForm: React.FC<InsuranceInfoFormProps> = ({
           <FormField
             control={form.control}
             name="authorizationCode"
-            render={({ field }: { field: ControllerRenderProps<FormData, "authorizationCode"> }) => (
+            render={({ field }) => (
               <FormItem>
                 <FormLabel>Authorization Code</FormLabel>
                 <FormControl>

@@ -1,6 +1,6 @@
 // src/features/patient/profile/PrivacySettings.tsx
 import React, { useState } from 'react';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { 
@@ -10,18 +10,16 @@ import {
   Database, 
   Users, 
   FileText, 
-  Activity, 
   Download, 
   Trash2, 
   Save, 
   X,
-  ChevronRight,
   CheckCircle2
 } from 'lucide-react';
 
-import { Button } from '../../../components/ui/button';
-import { Switch } from '../../../components/ui/switch';
-import { Checkbox } from '../../../components/ui/checkbox';
+import { Button } from '../../../components/ui/button/Button';
+import { Switch } from '../../../components/ui/switch/Switch';
+import Select from '../../../components/ui/select/Select'; // ✅ Updated import
 import {
   Form,
   FormControl,
@@ -30,14 +28,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../../../components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../../../components/ui/select';
+} from '../../../components/ui/form/Form';
 import {
   Dialog,
   DialogContent,
@@ -45,7 +36,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '../../../components/ui/dialog';
+} from '../../../components/ui/dialog/Dialog';
 
 // Types
 interface PrivacySettingsData {
@@ -72,6 +63,8 @@ interface PrivacySettingsProps {
     shareWithDoctors?: boolean;
     shareWithHospitals?: boolean;
     shareForResearch?: boolean;
+    shareWithInsurance?: boolean;
+    shareWithPharmacy?: boolean;
     privacy?: {
       shareWithDoctors?: boolean;
       shareWithHospitals?: boolean;
@@ -104,12 +97,13 @@ const privacySchema = z.object({
 
 type FormData = z.infer<typeof privacySchema>;
 
-const retentionOptions = [
-  { value: 30, label: '30 days' },
-  { value: 90, label: '3 months' },
-  { value: 180, label: '6 months' },
-  { value: 365, label: '1 year' },
-  { value: 730, label: '2 years' },
+// Retention options for Select component
+const RETENTION_OPTIONS = [
+  { value: '30', label: '30 days' },
+  { value: '90', label: '3 months' },
+  { value: '180', label: '6 months' },
+  { value: '365', label: '1 year' },
+  { value: '730', label: '2 years' },
 ];
 
 export const PrivacySettings: React.FC<PrivacySettingsProps> = ({ 
@@ -127,8 +121,8 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
       shareWithDoctors: initialData?.shareWithDoctors ?? true,
       shareWithHospitals: initialData?.shareWithHospitals ?? true,
       shareForResearch: initialData?.shareForResearch ?? false,
-      shareWithInsurance: true,
-      shareWithPharmacy: true,
+      shareWithInsurance: initialData?.shareWithInsurance ?? true,
+      shareWithPharmacy: initialData?.shareWithPharmacy ?? true,
       dataRetentionDays: initialData?.privacy?.dataRetentionDays ?? 365,
       allowDataExport: true,
       allowThirdParty: false,
@@ -143,9 +137,10 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
     },
   });
 
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
+  const onSubmit = async (data: FormData) => {
     setIsPending(true);
     try {
+      // TODO: Replace with actual API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       console.log('Privacy Settings:', data);
       onSuccess?.();
@@ -161,6 +156,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
   const handleDataExport = async () => {
     setExportStatus('exporting');
     try {
+      // TODO: Replace with actual API call
       await new Promise(resolve => setTimeout(resolve, 2000));
       setExportStatus('success');
       setTimeout(() => {
@@ -176,6 +172,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
 
   const handleDataDeletion = async () => {
     try {
+      // TODO: Replace with actual API call
       await new Promise(resolve => setTimeout(resolve, 1500));
       setShowDeleteDataDialog(false);
       alert('Your data deletion request has been submitted. You will receive a confirmation email.');
@@ -213,7 +210,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
                 name="shareWithDoctors"
                 render={({ field }) => (
                   <FormItem className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div>
+                    <div className="flex-1">
                       <FormLabel className="font-medium">Share with My Doctors</FormLabel>
                       <FormDescription className="text-xs">
                         Allow your doctors to access your medical history
@@ -234,7 +231,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
                 name="shareWithHospitals"
                 render={({ field }) => (
                   <FormItem className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div>
+                    <div className="flex-1">
                       <FormLabel className="font-medium">Share with Hospitals</FormLabel>
                       <FormDescription className="text-xs">
                         Allow hospitals to access your medical records
@@ -255,7 +252,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
                 name="shareWithInsurance"
                 render={({ field }) => (
                   <FormItem className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div>
+                    <div className="flex-1">
                       <FormLabel className="font-medium">Share with Insurance</FormLabel>
                       <FormDescription className="text-xs">
                         Share information with your insurance provider
@@ -276,7 +273,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
                 name="shareForResearch"
                 render={({ field }) => (
                   <FormItem className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div>
+                    <div className="flex-1">
                       <FormLabel className="font-medium">Share for Medical Research</FormLabel>
                       <FormDescription className="text-xs">
                         Contribute anonymously to medical research
@@ -297,7 +294,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
                 name="allowThirdParty"
                 render={({ field }) => (
                   <FormItem className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div>
+                    <div className="flex-1">
                       <FormLabel className="font-medium">Third-Party Integrations</FormLabel>
                       <FormDescription className="text-xs">
                         Allow integration with third-party health apps
@@ -327,7 +324,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
                 name="showProfileToOthers"
                 render={({ field }) => (
                   <FormItem className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div>
+                    <div className="flex-1">
                       <FormLabel className="font-medium">Show Profile to Others</FormLabel>
                       <FormDescription className="text-xs">
                         Allow other patients to view your basic profile
@@ -348,7 +345,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
                 name="showMedicalHistory"
                 render={({ field }) => (
                   <FormItem className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div>
+                    <div className="flex-1">
                       <FormLabel className="font-medium">Show Medical History</FormLabel>
                       <FormDescription className="text-xs">
                         Allow healthcare providers to see your full history
@@ -378,7 +375,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
                 name="twoFactorAuth"
                 render={({ field }) => (
                   <FormItem className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div>
+                    <div className="flex-1">
                       <FormLabel className="font-medium">Two-Factor Authentication</FormLabel>
                       <FormDescription className="text-xs">
                         Add an extra layer of security to your account
@@ -399,7 +396,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
                 name="loginAlerts"
                 render={({ field }) => (
                   <FormItem className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div>
+                    <div className="flex-1">
                       <FormLabel className="font-medium">Login Alerts</FormLabel>
                       <FormDescription className="text-xs">
                         Get notified when someone logs into your account
@@ -420,7 +417,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
                 name="deviceManagement"
                 render={({ field }) => (
                   <FormItem className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div>
+                    <div className="flex-1">
                       <FormLabel className="font-medium">Device Management</FormLabel>
                       <FormDescription className="text-xs">
                         Manage and track devices accessing your account
@@ -451,23 +448,14 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Data Retention Period</FormLabel>
-                    <Select 
-                      onValueChange={(val) => field.onChange(parseInt(val))} 
-                      defaultValue={field.value?.toString()}
-                    >
-                      <FormControl>
-                        <SelectTrigger className="w-full md:w-64">
-                          <SelectValue placeholder="Select retention period" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {retentionOptions.map((option) => (
-                          <SelectItem key={option.value} value={option.value.toString()}>
-                            {option.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Select
+                      value={field.value?.toString()}
+                      onChange={(val) => field.onChange(parseInt(val))}
+                      options={RETENTION_OPTIONS}
+                      placeholder="Select retention period"
+                      error={!!form.formState.errors.dataRetentionDays}
+                      errorMessage={form.formState.errors.dataRetentionDays?.message}
+                    />
                     <FormDescription>
                       How long we keep your medical data after account inactivity
                     </FormDescription>
@@ -481,7 +469,7 @@ export const PrivacySettings: React.FC<PrivacySettingsProps> = ({
                 name="anonymizedAnalytics"
                 render={({ field }) => (
                   <FormItem className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div>
+                    <div className="flex-1">
                       <FormLabel className="font-medium">Anonymous Analytics</FormLabel>
                       <FormDescription className="text-xs">
                         Help us improve by sharing anonymous usage data

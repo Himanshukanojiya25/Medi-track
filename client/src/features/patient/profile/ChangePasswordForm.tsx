@@ -5,8 +5,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Eye, EyeOff, Shield, CheckCircle, XCircle, Save, Lock } from 'lucide-react';
 
-import { Button } from '../../../components/ui/button';
-import { Input } from '../../../components/ui/input';
+import { Button } from '../../../components/ui/button/Button';
+import { Input } from '../../../components/ui/input/Input';
 import {
   Form,
   FormControl,
@@ -16,7 +16,7 @@ import {
   FormLabel,
   FormMessage,
 } 
-from '../../../components/ui/form';
+from '../../../components/ui/form/Form';
 
 interface ChangePasswordFormProps {
   onSuccess?: () => void;

@@ -1,209 +1,433 @@
 // client/src/features/patient/appointments/CancelAppointmentModal.tsx
 
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-  X,
-  AlertTriangle,
-  Calendar,
-  Clock,
-  User,
-  XCircle,
-  CheckCircle,
-  Loader2,
-} from 'lucide-react';
-import { useAppointments } from '../hooks/useAppointments';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, XCircle, AlertTriangle, Calendar, Clock } from 'lucide-react';
+import { appointmentService } from '../services/appointment.service';
+import type { ID } from '../../../types/shared';
+import { formatDate, formatTime } from '../../../lib/utils';
 
-// ============================================================================
-// TYPES
-// ============================================================================
+// ─── Props ────────────────────────────────────────────────────────────────────
 
 interface CancelAppointmentModalProps {
-  isOpen: boolean;
+  appointmentId: ID;
+  doctorName: string;
+  scheduledAt: string;
+  onSuccess: () => void;
   onClose: () => void;
-  appointmentId: string;
-  onSuccess?: () => void;
 }
 
+// ─── Cancellation Reasons ─────────────────────────────────────────────────────
+
 const CANCEL_REASONS = [
-  { id: 'schedule_conflict', label: 'Schedule conflict', icon: Calendar },
-  { id: 'changed_mind', label: 'Changed my mind', icon: User },
-  { id: 'found_alternative', label: 'Found alternative doctor', icon: User },
-  { id: 'unwell', label: 'Not feeling well', icon: AlertTriangle },
-  { id: 'other', label: 'Other reason', icon: XCircle },
-];
+  'Schedule conflict',
+  'Feeling better, no longer need appointment',
+  'Found another doctor',
+  'Financial reasons',
+  'Transportation issues',
+  'Emergency situation',
+  'Doctor not available',
+  'Other',
+] as const;
 
-// ============================================================================
-// COMPONENT
-// ============================================================================
+// ─── Component ────────────────────────────────────────────────────────────────
 
-export const CancelAppointmentModal: React.FC<CancelAppointmentModalProps> = ({
-  isOpen,
-  onClose,
+const CancelAppointmentModal: React.FC<CancelAppointmentModalProps> = ({
   appointmentId,
+  doctorName,
+  scheduledAt,
   onSuccess,
+  onClose,
 }) => {
-  const { cancelAppointment, isCancelling } = useAppointments();
-  
-  const [selectedReason, setSelectedReason] = useState<string>('');
-  const [additionalNotes, setAdditionalNotes] = useState('');
+  const [selectedReason, setSelectedReason] = useState('');
+  const [customReason, setCustomReason] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
 
-  const handleSubmit = async () => {
-    if (!selectedReason) {
-      setError('Please select a reason for cancellation');
-      return;
-    }
-    
-    setError(null);
-    
+  // Close on Escape
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [onClose]);
+
+  // Lock body scroll
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, []);
+
+  const finalReason =
+    selectedReason === 'Other' ? customReason.trim() : selectedReason;
+
+  const canSubmit = Boolean(finalReason) && !isLoading;
+
+  const handleCancel = async () => {
+    if (!canSubmit) return;
     try {
-      await cancelAppointment(appointmentId, {
-        reason: selectedReason,
-        additionalNotes,
-      });
-      onSuccess?.();
-      onClose();
-    } catch (err) {
+      setIsLoading(true);
+      setError(null);
+      await appointmentService.cancel(appointmentId, { reason: finalReason });
+      onSuccess();
+    } catch {
       setError('Failed to cancel appointment. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  if (!isOpen) return null;
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (e.target === overlayRef.current) onClose();
+  };
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        {/* Backdrop */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-          onClick={onClose}
-        />
-        
+    <>
+      <style>{`
+        @keyframes modalIn {
+          from { opacity: 0; transform: scale(0.96) translateY(8px); }
+          to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .cancel-modal { animation: modalIn 0.22s ease; }
+        .cancel-reason-opt:hover { border-color: #bfdbfe !important; background-color: #eff6ff !important; }
+        .cancel-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+        .cancel-btn-primary:not(:disabled):hover { filter: brightness(0.92); }
+      `}</style>
+
+      {/* Overlay */}
+      <div
+        ref={overlayRef}
+        onClick={handleOverlayClick}
+        style={{
+          position: 'fixed',
+          inset: 0,
+          backgroundColor: 'rgba(0,0,0,0.45)',
+          backdropFilter: 'blur(4px)',
+          zIndex: 1000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: 16,
+        }}
+      >
         {/* Modal */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+        <div
+          className="cancel-modal"
+          style={{
+            backgroundColor: '#ffffff',
+            borderRadius: 20,
+            width: '100%',
+            maxWidth: 480,
+            boxShadow: '0 24px 60px rgba(0,0,0,0.15)',
+            overflow: 'hidden',
+          }}
         >
           {/* Header */}
-          <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-red-50 rounded-full flex items-center justify-center">
-                <AlertTriangle size={20} className="text-red-600" />
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              justifyContent: 'space-between',
+              padding: '20px 24px 16px',
+              borderBottom: '1px solid #f3f4f6',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 12,
+                  backgroundColor: '#fef2f2',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                <XCircle size={20} color="#dc2626" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-gray-900">Cancel Appointment</h2>
-                <p className="text-sm text-gray-500">Please tell us why you're cancelling</p>
+                <h2 style={{ fontSize: 16, fontWeight: 700, color: '#111827' }}>
+                  Cancel Appointment
+                </h2>
+                <p style={{ fontSize: 12, color: '#9ca3af', marginTop: 2 }}>
+                  This action cannot be undone
+                </p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 8,
+                border: '1px solid #e5e7eb',
+                backgroundColor: 'transparent',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                color: '#6b7280',
+              }}
             >
-              <X size={20} />
+              <X size={16} />
             </button>
           </div>
-          
-          {/* Content */}
-          <div className="p-6 space-y-6">
-            {/* Warning Message */}
-            <div className="p-4 bg-red-50 rounded-lg border border-red-100">
-              <p className="text-sm text-red-800">
-                <strong>Cancellation Policy:</strong> If you cancel within 24 hours of your appointment, 
-                a cancellation fee may apply. Please review our cancellation policy for details.
-              </p>
+
+          {/* Appointment Summary */}
+          <div
+            style={{
+              margin: '16px 24px',
+              padding: 14,
+              backgroundColor: '#fafafa',
+              borderRadius: 12,
+              border: '1px solid #f3f4f6',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 8,
+            }}
+          >
+            <p style={{ fontSize: 13, fontWeight: 600, color: '#374151' }}>
+              {doctorName}
+            </p>
+            <div style={{ display: 'flex', gap: 16 }}>
+              <span
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 5,
+                  fontSize: 12,
+                  color: '#6b7280',
+                }}
+              >
+                <Calendar size={12} />
+                {formatDate(scheduledAt)}
+              </span>
+              <span
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 5,
+                  fontSize: 12,
+                  color: '#6b7280',
+                }}
+              >
+                <Clock size={12} />
+                {formatTime(scheduledAt)}
+              </span>
             </div>
-            
-            {/* Reason Selection */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
-                Reason for cancellation <span className="text-red-500">*</span>
-              </label>
-              <div className="space-y-2">
-                {CANCEL_REASONS.map((reason) => {
-                  const Icon = reason.icon;
-                  const isSelected = selectedReason === reason.id;
-                  return (
-                    <button
-                      key={reason.id}
-                      type="button"
-                      onClick={() => setSelectedReason(reason.id)}
-                      className={`w-full flex items-center gap-3 p-3 rounded-lg border-2 transition-all ${
-                        isSelected
-                          ? 'border-red-500 bg-red-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <Icon size={18} className={isSelected ? 'text-red-600' : 'text-gray-400'} />
-                      <span className={`text-sm font-medium ${isSelected ? 'text-red-700' : 'text-gray-700'}`}>
-                        {reason.label}
-                      </span>
-                      {isSelected && <CheckCircle size={16} className="ml-auto text-red-600" />}
-                    </button>
-                  );
-                })}
-              </div>
+          </div>
+
+          {/* Warning */}
+          <div
+            style={{
+              margin: '0 24px 16px',
+              padding: '10px 14px',
+              backgroundColor: '#fffbeb',
+              borderRadius: 10,
+              border: '1px solid #fde68a',
+              display: 'flex',
+              gap: 10,
+              alignItems: 'flex-start',
+            }}
+          >
+            <AlertTriangle size={14} color="#d97706" style={{ flexShrink: 0, marginTop: 1 }} />
+            <p style={{ fontSize: 12, color: '#92400e', lineHeight: 1.5 }}>
+              Repeated cancellations may affect your ability to book future appointments.
+            </p>
+          </div>
+
+          {/* Body */}
+          <div style={{ padding: '0 24px 8px' }}>
+            <p style={{ fontSize: 13, fontWeight: 600, color: '#374151', marginBottom: 12 }}>
+              Reason for cancellation <span style={{ color: '#dc2626' }}>*</span>
+            </p>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {CANCEL_REASONS.map((reason) => (
+                <button
+                  key={reason}
+                  className="cancel-reason-opt"
+                  onClick={() => setSelectedReason(reason)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    padding: '10px 14px',
+                    border: `1.5px solid ${selectedReason === reason ? '#2563eb' : '#e5e7eb'}`,
+                    borderRadius: 10,
+                    backgroundColor: selectedReason === reason ? '#eff6ff' : '#ffffff',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    transition: 'border-color 0.15s, background-color 0.15s',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 16,
+                      height: 16,
+                      borderRadius: '50%',
+                      border: `2px solid ${selectedReason === reason ? '#2563eb' : '#d1d5db'}`,
+                      backgroundColor: selectedReason === reason ? '#2563eb' : 'transparent',
+                      flexShrink: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      transition: 'all 0.15s',
+                    }}
+                  >
+                    {selectedReason === reason && (
+                      <div
+                        style={{
+                          width: 6,
+                          height: 6,
+                          borderRadius: '50%',
+                          backgroundColor: '#ffffff',
+                        }}
+                      />
+                    )}
+                  </div>
+                  <span
+                    style={{
+                      fontSize: 13,
+                      color: selectedReason === reason ? '#1d4ed8' : '#374151',
+                      fontWeight: selectedReason === reason ? 500 : 400,
+                    }}
+                  >
+                    {reason}
+                  </span>
+                </button>
+              ))}
             </div>
-            
-            {/* Additional Notes */}
-            <div>
-              <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-2">
-                Additional notes (optional)
-              </label>
+
+            {/* Custom reason input */}
+            {selectedReason === 'Other' && (
               <textarea
-                id="notes"
+                value={customReason}
+                onChange={(e) => setCustomReason(e.target.value)}
+                placeholder="Please describe your reason..."
+                maxLength={300}
                 rows={3}
-                value={additionalNotes}
-                onChange={(e) => setAdditionalNotes(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-500 resize-none"
-                placeholder="Tell us more about why you're cancelling..."
+                style={{
+                  width: '100%',
+                  marginTop: 10,
+                  padding: '10px 14px',
+                  border: '1.5px solid #e5e7eb',
+                  borderRadius: 10,
+                  fontSize: 13,
+                  color: '#111827',
+                  resize: 'none',
+                  outline: 'none',
+                  boxSizing: 'border-box',
+                  fontFamily: 'inherit',
+                  lineHeight: 1.5,
+                }}
+                onFocus={(e) => { e.currentTarget.style.borderColor = '#2563eb'; }}
+                onBlur={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; }}
               />
-            </div>
-            
-            {/* Error Message */}
+            )}
+
+            {/* Error */}
             {error && (
-              <div className="p-3 bg-red-50 rounded-lg flex items-center gap-2">
-                <AlertTriangle size={16} className="text-red-600" />
-                <p className="text-sm text-red-700">{error}</p>
+              <div
+                style={{
+                  marginTop: 12,
+                  padding: '10px 14px',
+                  backgroundColor: '#fef2f2',
+                  borderRadius: 8,
+                  border: '1px solid #fecaca',
+                  fontSize: 13,
+                  color: '#dc2626',
+                }}
+              >
+                {error}
               </div>
             )}
           </div>
-          
+
           {/* Footer */}
-          <div className="sticky bottom-0 bg-gray-50 border-t border-gray-100 px-6 py-4 flex gap-3">
+          <div
+            style={{
+              display: 'flex',
+              gap: 10,
+              padding: '16px 24px 20px',
+              borderTop: '1px solid #f3f4f6',
+            }}
+          >
             <button
               onClick={onClose}
-              className="flex-1 px-4 py-2 text-gray-700 font-medium bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              disabled={isLoading}
+              style={{
+                flex: 1,
+                padding: '12px 20px',
+                border: '1.5px solid #e5e7eb',
+                borderRadius: 12,
+                backgroundColor: '#ffffff',
+                color: '#374151',
+                fontSize: 14,
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
             >
               Keep Appointment
             </button>
             <button
-              onClick={handleSubmit}
-              disabled={isCancelling}
-              className="flex-1 px-4 py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="cancel-btn-primary"
+              onClick={handleCancel}
+              disabled={!canSubmit}
+              style={{
+                flex: 1,
+                padding: '12px 20px',
+                border: 'none',
+                borderRadius: 12,
+                backgroundColor: '#dc2626',
+                color: '#ffffff',
+                fontSize: 14,
+                fontWeight: 600,
+                cursor: canSubmit ? 'pointer' : 'not-allowed',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+                transition: 'filter 0.15s',
+              }}
             >
-              {isCancelling ? (
+              {isLoading ? (
                 <>
-                  <Loader2 size={18} className="animate-spin" />
-                  <span>Cancelling...</span>
+                  <span
+                    style={{
+                      width: 14,
+                      height: 14,
+                      border: '2px solid rgba(255,255,255,0.3)',
+                      borderTopColor: '#ffffff',
+                      borderRadius: '50%',
+                      animation: 'spin 0.7s linear infinite',
+                      display: 'inline-block',
+                    }}
+                  />
+                  Cancelling...
                 </>
               ) : (
                 <>
-                  <XCircle size={18} />
-                  <span>Cancel Appointment</span>
+                  <XCircle size={15} />
+                  Cancel Appointment
                 </>
               )}
             </button>
           </div>
-        </motion.div>
+        </div>
       </div>
-    </AnimatePresence>
+
+      <style>{`
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
+    </>
   );
 };
 
+export { CancelAppointmentModal };
 export default CancelAppointmentModal;

@@ -6,16 +6,10 @@ import { z } from 'zod';
 import { CalendarIcon, Save, X } from 'lucide-react';
 import { format } from 'date-fns';
 
-import { Button } from '../../../components/ui/button';
-import { Input } from '../../../components/ui/input';
-import { Textarea } from '../../../components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../../../components/ui/select';
+import { Button } from '../../../components/ui/button/Button';
+import { Input } from '../../../components/ui/input/Input';
+import { Textarea } from '../../../components/ui/textarea/Textarea';
+import Select from '../../../components/ui/select/Select'; // ✅ Updated import
 import {
   Form,
   FormControl,
@@ -24,33 +18,30 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '../../../components/ui/form';
+} from '../../../components/ui/form/Form';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '../../../components/ui/popover';
-import { Calendar } from '../../../components/ui/calendar';
+} from '../../../components/ui/popover/Popover';
+import { Calendar } from '../../../components/ui/calendar/Calendar';
 import { cn } from '../../../lib/utils';
 
-// Address Type
-interface Address {
-  street: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string;
-}
-
-// Form Data Type
-interface PersonalInfoFormData {
+// Export the interface so it can be used in ProfileScreen
+export interface PersonalInfoFormData {
   fullName: string;
   email: string;
   phone: string;
   dateOfBirth: Date;
   gender: 'male' | 'female' | 'other' | 'prefer_not_to_say';
   bloodGroup: 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'O+' | 'O-';
-  address: Address;
+  address: {
+    street: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  };
   bio?: string;
 }
 
@@ -59,7 +50,7 @@ interface PersonalInfoFormProps {
   onSuccess?: () => void;
 }
 
-// Validation Schema - Fixed version
+// Validation Schema
 const personalInfoSchema = z.object({
   fullName: z.string()
     .min(2, 'Name must be at least 2 characters')
@@ -73,7 +64,8 @@ const personalInfoSchema = z.object({
   
   phone: z.string()
     .min(10, 'Phone number must be at least 10 digits')
-    .max(15, 'Phone number must be less than 15 digits'),
+    .max(15, 'Phone number must be less than 15 digits')
+    .regex(/^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,3}[)]?[-\s.]?[0-9]{3,4}[-\s.]?[0-9]{3,4}$/, 'Invalid phone number format'),
   
   dateOfBirth: z.date()
     .refine((date) => {
@@ -88,8 +80,8 @@ const personalInfoSchema = z.object({
       if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < date.getDate())) {
         calculatedAge = age - 1;
       }
-      return calculatedAge <= 120;
-    }, 'Age cannot be more than 120 years'),
+      return calculatedAge >= 0 && calculatedAge <= 120;
+    }, 'Age must be between 0 and 120 years'),
   
   gender: z.enum(['male', 'female', 'other', 'prefer_not_to_say']),
   
@@ -99,7 +91,7 @@ const personalInfoSchema = z.object({
     street: z.string().min(5, 'Street address is required').max(200),
     city: z.string().min(2, 'City is required').max(100),
     state: z.string().min(2, 'State is required').max(100),
-    zipCode: z.string().regex(/^\d{5,6}$/, 'Invalid zip code format'),
+    zipCode: z.string().regex(/^\d{5,6}$/, 'Invalid zip code format (5-6 digits)'),
     country: z.string().min(2, 'Country is required').max(100),
   }),
   
@@ -107,6 +99,25 @@ const personalInfoSchema = z.object({
 });
 
 type FormData = z.infer<typeof personalInfoSchema>;
+
+// Options for selects
+const GENDER_OPTIONS = [
+  { value: 'male', label: 'Male' },
+  { value: 'female', label: 'Female' },
+  { value: 'other', label: 'Other' },
+  { value: 'prefer_not_to_say', label: 'Prefer not to say' },
+];
+
+const BLOOD_GROUP_OPTIONS = [
+  { value: 'A+', label: 'A+' },
+  { value: 'A-', label: 'A-' },
+  { value: 'B+', label: 'B+' },
+  { value: 'B-', label: 'B-' },
+  { value: 'AB+', label: 'AB+' },
+  { value: 'AB-', label: 'AB-' },
+  { value: 'O+', label: 'O+' },
+  { value: 'O-', label: 'O-' },
+];
 
 export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({ 
   initialData, 
@@ -137,8 +148,8 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
   const onSubmit = async (data: FormData) => {
     setIsPending(true);
     try {
-      // API call will go here
-      console.log('Form Data:', data);
+      // TODO: Replace with actual API call
+      console.log('Personal Info Form Data:', data);
       
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -146,8 +157,8 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
       onSuccess?.();
       alert('Profile updated successfully');
     } catch (error) {
-      console.error('Error:', error);
-      alert('Failed to update profile');
+      console.error('Error updating profile:', error);
+      alert('Failed to update profile. Please try again.');
     } finally {
       setIsPending(false);
     }
@@ -161,11 +172,17 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           <FormField
             control={form.control}
             name="fullName"
-            render={({ field }: { field: any }) => (
+            render={({ field }) => (
               <FormItem>
-                <FormLabel>Full Name *</FormLabel>
+                <FormLabel className="text-gray-700 font-medium">
+                  Full Name *
+                </FormLabel>
                 <FormControl>
-                  <Input placeholder="Enter your full name" {...field} />
+                  <Input 
+                    placeholder="Enter your full name" 
+                    className="w-full"
+                    {...field} 
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -176,19 +193,21 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           <FormField
             control={form.control}
             name="email"
-            render={({ field }: { field: any }) => (
+            render={({ field }) => (
               <FormItem>
-                <FormLabel>Email Address *</FormLabel>
+                <FormLabel className="text-gray-700 font-medium">
+                  Email Address *
+                </FormLabel>
                 <FormControl>
                   <Input 
                     type="email" 
                     placeholder="you@example.com" 
                     {...field} 
                     disabled
-                    className="bg-gray-50"
+                    className="bg-gray-50 cursor-not-allowed"
                   />
                 </FormControl>
-                <FormDescription>
+                <FormDescription className="text-xs text-gray-500">
                   Email cannot be changed. Contact support if needed.
                 </FormDescription>
                 <FormMessage />
@@ -200,11 +219,17 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           <FormField
             control={form.control}
             name="phone"
-            render={({ field }: { field: any }) => (
+            render={({ field }) => (
               <FormItem>
-                <FormLabel>Phone Number *</FormLabel>
+                <FormLabel className="text-gray-700 font-medium">
+                  Phone Number *
+                </FormLabel>
                 <FormControl>
-                  <Input placeholder="+1 234 567 8900" {...field} />
+                  <Input 
+                    type="tel"
+                    placeholder="+1 234 567 8900" 
+                    {...field} 
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -215,22 +240,19 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           <FormField
             control={form.control}
             name="gender"
-            render={({ field }: { field: any }) => (
+            render={({ field }) => (
               <FormItem>
-                <FormLabel>Gender *</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select your gender" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="female">Female</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                    <SelectItem value="prefer_not_to_say">Prefer not to say</SelectItem>
-                  </SelectContent>
-                </Select>
+                <FormLabel className="text-gray-700 font-medium">
+                  Gender *
+                </FormLabel>
+                <Select
+                  value={field.value}
+                  onChange={field.onChange}
+                  options={GENDER_OPTIONS}
+                  placeholder="Select your gender"
+                  error={!!form.formState.errors.gender}
+                  errorMessage={form.formState.errors.gender?.message}
+                />
                 <FormMessage />
               </FormItem>
             )}
@@ -240,26 +262,19 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           <FormField
             control={form.control}
             name="bloodGroup"
-            render={({ field }: { field: any }) => (
+            render={({ field }) => (
               <FormItem>
-                <FormLabel>Blood Group *</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select blood group" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="A+">A+</SelectItem>
-                    <SelectItem value="A-">A-</SelectItem>
-                    <SelectItem value="B+">B+</SelectItem>
-                    <SelectItem value="B-">B-</SelectItem>
-                    <SelectItem value="AB+">AB+</SelectItem>
-                    <SelectItem value="AB-">AB-</SelectItem>
-                    <SelectItem value="O+">O+</SelectItem>
-                    <SelectItem value="O-">O-</SelectItem>
-                  </SelectContent>
-                </Select>
+                <FormLabel className="text-gray-700 font-medium">
+                  Blood Group *
+                </FormLabel>
+                <Select
+                  value={field.value}
+                  onChange={field.onChange}
+                  options={BLOOD_GROUP_OPTIONS}
+                  placeholder="Select blood group"
+                  error={!!form.formState.errors.bloodGroup}
+                  errorMessage={form.formState.errors.bloodGroup?.message}
+                />
                 <FormMessage />
               </FormItem>
             )}
@@ -269,25 +284,24 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
           <FormField
             control={form.control}
             name="dateOfBirth"
-            render={({ field }: { field: any }) => (
+            render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>Date of Birth *</FormLabel>
+                <FormLabel className="text-gray-700 font-medium">
+                  Date of Birth *
+                </FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
                       <Button
+                        type="button"
                         variant="outline"
                         className={cn(
-                          "w-full pl-3 text-left font-normal",
-                          !field.value && "text-muted-foreground"
+                          "w-full justify-start text-left font-normal",
+                          !field.value && "text-gray-400"
                         )}
                       >
-                        {field.value ? (
-                          format(field.value, "PPP")
-                        ) : (
-                          <span>Pick a date</span>
-                        )}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {field.value ? format(field.value, "PPP") : "Pick a date"}
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
@@ -311,14 +325,16 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
 
         {/* Address Section */}
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Address Information</h3>
+          <h3 className="text-lg font-semibold text-gray-900">Address Information</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField
               control={form.control}
               name="address.street"
-              render={({ field }: { field: any }) => (
+              render={({ field }) => (
                 <FormItem className="md:col-span-2">
-                  <FormLabel>Street Address *</FormLabel>
+                  <FormLabel className="text-gray-700 font-medium">
+                    Street Address *
+                  </FormLabel>
                   <FormControl>
                     <Input placeholder="123 Main St" {...field} />
                   </FormControl>
@@ -330,9 +346,11 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             <FormField
               control={form.control}
               name="address.city"
-              render={({ field }: { field: any }) => (
+              render={({ field }) => (
                 <FormItem>
-                  <FormLabel>City *</FormLabel>
+                  <FormLabel className="text-gray-700 font-medium">
+                    City *
+                  </FormLabel>
                   <FormControl>
                     <Input placeholder="New York" {...field} />
                   </FormControl>
@@ -344,9 +362,11 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             <FormField
               control={form.control}
               name="address.state"
-              render={({ field }: { field: any }) => (
+              render={({ field }) => (
                 <FormItem>
-                  <FormLabel>State *</FormLabel>
+                  <FormLabel className="text-gray-700 font-medium">
+                    State *
+                  </FormLabel>
                   <FormControl>
                     <Input placeholder="NY" {...field} />
                   </FormControl>
@@ -358,9 +378,11 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             <FormField
               control={form.control}
               name="address.zipCode"
-              render={({ field }: { field: any }) => (
+              render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Zip Code *</FormLabel>
+                  <FormLabel className="text-gray-700 font-medium">
+                    Zip Code *
+                  </FormLabel>
                   <FormControl>
                     <Input placeholder="10001" {...field} />
                   </FormControl>
@@ -372,9 +394,11 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
             <FormField
               control={form.control}
               name="address.country"
-              render={({ field }: { field: any }) => (
+              render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Country *</FormLabel>
+                  <FormLabel className="text-gray-700 font-medium">
+                    Country *
+                  </FormLabel>
                   <FormControl>
                     <Input placeholder="United States" {...field} />
                   </FormControl>
@@ -389,9 +413,11 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
         <FormField
           control={form.control}
           name="bio"
-          render={({ field }: { field: any }) => (
+          render={({ field }) => (
             <FormItem>
-              <FormLabel>Bio</FormLabel>
+              <FormLabel className="text-gray-700 font-medium">
+                Bio
+              </FormLabel>
               <FormControl>
                 <Textarea 
                   placeholder="Tell us about yourself..."
@@ -400,7 +426,7 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
                   {...field}
                 />
               </FormControl>
-              <FormDescription>
+              <FormDescription className="text-xs text-gray-500">
                 Brief description about yourself. Maximum 500 characters.
               </FormDescription>
               <FormMessage />
@@ -409,7 +435,7 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
         />
 
         {/* Form Actions */}
-        <div className="flex justify-end gap-4">
+        <div className="flex justify-end gap-4 pt-4 border-t border-gray-200">
           <Button
             type="button"
             variant="outline"
@@ -428,3 +454,5 @@ export const PersonalInfoForm: React.FC<PersonalInfoFormProps> = ({
     </Form>
   );
 };
+
+export default PersonalInfoForm;
